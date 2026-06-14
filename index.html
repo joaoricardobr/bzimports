@@ -1936,6 +1936,18 @@
                 <div id="detailPrice" class="font-title"
                     style="font-size: 2rem; color: var(--primary); margin-bottom: 1.5rem;"></div>
 
+                <!-- Seleção de Cor e Tamanho Interativa -->
+                <div id="detailSelectors" style="margin-bottom: 1.5rem; display: flex; flex-direction: column; gap: 1rem;">
+                    <div id="detailColorsArea" style="display: none;">
+                        <label style="font-size: 0.8rem; font-weight: bold; text-transform: uppercase; color: var(--text-muted); display: block; margin-bottom: 0.5rem; letter-spacing: 1px;">Cor:</label>
+                        <div id="detailColorsList" style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;"></div>
+                    </div>
+                    <div id="detailSizesArea" style="display: none;">
+                        <label style="font-size: 0.8rem; font-weight: bold; text-transform: uppercase; color: var(--text-muted); display: block; margin-bottom: 0.5rem; letter-spacing: 1px;">Tamanho:</label>
+                        <div id="detailSizesList" style="display: flex; gap: 0.5rem; flex-wrap: wrap;"></div>
+                    </div>
+                </div>
+
                 <div
                     style="background: var(--bg-body); padding: 1.5rem; border-radius: var(--radius); border: 1px solid var(--border);">
                     <ul id="detailAttributes"
@@ -2116,11 +2128,13 @@
                     </p>
                     <div class="flex gap-2">
                         <div class="btn-icon site-insta-link"
-                            style="background: rgba(255,255,255,0.1); color: white; cursor: pointer;"><i
-                                data-lucide="instagram"></i></div>
+                            style="background: rgba(255,255,255,0.1); color: white; cursor: pointer;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-instagram"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+                        </div>
                         <div class="btn-icon site-fb-link"
-                            style="background: rgba(255,255,255,0.1); color: white; cursor: pointer;"><i
-                                data-lucide="facebook"></i></div>
+                            style="background: rgba(255,255,255,0.1); color: white; cursor: pointer;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-facebook"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+                        </div>
                     </div>
                 </div>
                 <div>
@@ -2890,8 +2904,9 @@ service cloud.firestore {
         const DBService = {
             async getAll(collectionName) {
                 try {
-                    const q = await getDocs(collection(db, 'alansantos_bz_' + collectionName));
-                    return q.docs.map(d => d.data());
+                    const q = await getDocs(collection(db, 'alansantos_' + collectionName));
+                    const allData = q.docs.map(d => d.data());
+                    return allData.filter(d => d.store === 'bzimports');
                 } catch (e) {
                     if (e.code === 'permission-denied') { } else {
                         console.error("Erro ao ler:", e);
@@ -2904,7 +2919,8 @@ service cloud.firestore {
                 const isPublicCollection = ['orders', 'clients'].includes(collectionName);
                 if (!auth.currentUser && !isPublicCollection) return data;
                 try {
-                    await setDoc(doc(db, 'alansantos_bz_' + collectionName, String(data.id || Date.now())), data, { merge: true });
+                    data.store = 'bzimports';
+                    await setDoc(doc(db, 'alansantos_' + collectionName, String(data.id || Date.now())), data, { merge: true });
                     return data;
                 } catch (e) {
                     console.error("Erro ao salvar:", e);
@@ -2921,7 +2937,7 @@ service cloud.firestore {
             async delete(collectionName, id) {
                 if (!auth.currentUser) return;
                 try {
-                    await deleteDoc(doc(db, 'alansantos_bz_' + collectionName, String(id)));
+                    await deleteDoc(doc(db, 'alansantos_' + collectionName, String(id)));
                 } catch (e) {
                     console.error("Erro ao excluir:", e);
                     showToast("Erro ao excluir do Firebase.", "error");
@@ -2930,8 +2946,10 @@ service cloud.firestore {
             async clear(collectionName) {
                 try {
                     if (!auth.currentUser) return;
-                    const q = await getDocs(collection(db, 'alansantos_bz_' + collectionName));
-                    const promises = q.docs.map((d) => deleteDoc(d.ref));
+                    const q = await getDocs(collection(db, 'alansantos_' + collectionName));
+                    const promises = q.docs
+                        .filter(d => d.data().store === 'bzimports')
+                        .map((d) => deleteDoc(d.ref));
                     await Promise.all(promises);
                 } catch (e) {
                     console.error("Erro ao limpar:", e);
@@ -2939,7 +2957,11 @@ service cloud.firestore {
             },
             async saveCloudBackup(data) {
                 try {
-                    await addDoc(collection(db, 'alansantos_bz_backups'), { timestamp: Date.now(), content: JSON.stringify(data) });
+                    await addDoc(collection(db, 'alansantos_backups'), { 
+                        timestamp: Date.now(), 
+                        content: JSON.stringify(data),
+                        store: 'bzimports'
+                    });
                 } catch (e) {
                     console.error("Erro no backup:", e);
                     showToast("Erro ao salvar backup na nuvem.", "error");
@@ -2947,9 +2969,11 @@ service cloud.firestore {
             },
             async getCloudBackups() {
                 try {
-                    const q = query(collection(db, 'alansantos_bz_backups'), orderBy('timestamp', 'desc'));
+                    const q = query(collection(db, 'alansantos_backups'), orderBy('timestamp', 'desc'));
                     const snap = await getDocs(q);
-                    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                    return snap.docs
+                        .map(d => ({ id: d.id, ...d.data() }))
+                        .filter(d => d.store === 'bzimports');
                 } catch (e) {
                     console.error("Erro ao buscar backups:", e);
                     return [];
@@ -3044,7 +3068,7 @@ service cloud.firestore {
             window.tempSelectedStaff = null;
         }
 
-        window.confirmStaffProfile = () => {
+        window.confirmStaffProfile = async () => {
             const pass = document.getElementById('staffInputPin').value;
             if (pass === String(window.tempSelectedStaff.password || window.tempSelectedStaff.pin)) {
                 if (window.tempSelectedStaff.status === 'Inativo' || window.tempSelectedStaff.status === 'Suspenso') {
@@ -3054,7 +3078,8 @@ service cloud.firestore {
                 document.getElementById('staffSelectionModal').classList.remove('active');
                 document.getElementById('adminView').classList.remove('hidden');
                 document.getElementById('storeView').classList.add('hidden');
-                loadData();
+                showToast("Carregando dados da loja...", "success");
+                await loadData();
                 setAdminTab('dashboard');
                 showToast(`Bem-vindo(a), ${window.currentStaff.name}!`);
                 applyRBAC();
@@ -4169,11 +4194,11 @@ service cloud.firestore {
 
             try {
                 const sett = await DBService.getAll('settings');
-                let ms = sett.find(x => x.id === 'main');
+                let ms = sett.find(x => x.id === 'main_bzimports');
                 const needsSettingsUpdate = !ms || ms.name !== 'BZ IMPORTS' || (ms.email && (ms.email.includes('luasdeprata.com') || ms.email.includes('alandossantos')));
                 if (needsSettingsUpdate) {
                     ms = {
-                        id: 'main',
+                        id: 'main_bzimports',
                         name: 'BZ IMPORTS',
                         subtitle: 'Camisas de Futebol',
                         wa: '74988020692',
@@ -4189,6 +4214,14 @@ service cloud.firestore {
                 window.siteSettings = ms;
             } catch (e) { }
             if (window.applySiteSettings) window.applySiteSettings();
+
+            // Refresh admin views if visible
+            const adminView = document.getElementById('adminView');
+            if (adminView && !adminView.classList.contains('hidden')) {
+                if (window.renderAdminTable) window.renderAdminTable();
+                if (window.loadAdminDashboard) window.loadAdminDashboard();
+            }
+            if (window.applyFilters) window.applyFilters();
         }
 
         window.renderFiltersUI = function () {
@@ -4372,8 +4405,42 @@ service cloud.firestore {
             }
         }
 
+        window.selectedDetailColor = null;
+        window.selectedDetailSize = null;
+
+        window.selectDetailColor = (btn, colorName) => {
+            document.querySelectorAll('.detail-color-pill').forEach(el => {
+                el.style.borderColor = 'var(--border)';
+                el.style.transform = 'scale(1)';
+                el.style.boxShadow = 'none';
+            });
+            btn.style.borderColor = 'var(--primary)';
+            btn.style.transform = 'scale(1.15)';
+            btn.style.boxShadow = '0 0 8px var(--primary)';
+            window.selectedDetailColor = colorName;
+        };
+
+        window.selectDetailSize = (btn, sizeName) => {
+            document.querySelectorAll('.detail-size-pill').forEach(el => {
+                el.style.background = 'var(--bg-card)';
+                el.style.color = 'var(--text-main)';
+                el.style.borderColor = 'var(--border)';
+            });
+            btn.style.background = 'var(--primary)';
+            btn.style.color = 'white';
+            btn.style.borderColor = 'var(--primary)';
+            window.selectedDetailSize = sizeName;
+        };
+
         window.openDetail = function (id) {
             const p = window.products.find(x => x.id == id);
+            if (!p) {
+                console.error("Produto não encontrado no array em memória:", id);
+                return;
+            }
+            window.selectedDetailColor = null;
+            window.selectedDetailSize = null;
+
             const imgSrc = p.images?.[0] || p.image || DEFAULT_PLACEHOLDER;
             const isDefaultImg = imgSrc === DEFAULT_PLACEHOLDER;
 
@@ -4399,15 +4466,61 @@ service cloud.firestore {
             document.getElementById('detailDesc').innerText = p.description || 'Sem descrição.';
 
             document.getElementById('detailAttributes').innerHTML = `
-                <li><strong>Tamanho:</strong> ${p.size || 'Único'}</li>
-                <li><strong>Cor:</strong> ${p.color || '-'}</li>
                 <li><strong>Material:</strong> ${p.material || '-'}</li>
                 <li><strong>Público:</strong> ${p.gender || '-'}</li>
             `;
 
+            // Renderiza seletores de cor
+            const colorsList = document.getElementById('detailColorsList');
+            const colorsArea = document.getElementById('detailColorsArea');
+            const pColors = p.colors || (p.color ? p.color.split(',').map(s => s.trim()).filter(s => s) : []);
+
+            if (pColors.length > 0) {
+                colorsArea.style.display = 'block';
+                colorsList.innerHTML = pColors.map(cName => {
+                    const c = window.AVAILABLE_COLORS.find(x => x.name === cName);
+                    const hex = c ? c.hex : '#ccc';
+                    return `
+                        <button class="detail-color-pill" onclick="selectDetailColor(this, '${cName}')" style="background: ${hex}; width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--border); cursor: pointer; transition: 0.2s; position: relative;" title="${cName}"></button>
+                    `;
+                }).join('');
+            } else {
+                colorsArea.style.display = 'none';
+            }
+
+            // Renderiza seletores de tamanho
+            const sizesList = document.getElementById('detailSizesList');
+            const sizesArea = document.getElementById('detailSizesArea');
+            const pSizes = p.sizes || (p.size ? p.size.split(',').map(s => s.trim()).filter(s => s) : []);
+
+            if (pSizes.length > 0) {
+                sizesArea.style.display = 'block';
+                sizesList.innerHTML = pSizes.map(sName => {
+                    return `
+                        <button class="detail-size-pill" onclick="selectDetailSize(this, '${sName}')" style="padding: 6px 12px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text-main); border-radius: var(--radius); cursor: pointer; font-size: 0.85rem; font-weight: bold; transition: 0.2s;">${sName}</button>
+                    `;
+                }).join('');
+            } else {
+                sizesArea.style.display = 'none';
+            }
+
             const btn = document.getElementById('detailBtnAdd');
             if (p.stock === 0) { btn.disabled = true; btn.innerText = "Esgotado"; btn.style.background = "#555"; }
-            else { btn.disabled = false; btn.innerText = "Adicionar à Sacola"; btn.style.background = ""; btn.onclick = () => { addToCart(p.id); closeProductDetail(); } }
+            else { 
+                btn.disabled = false; 
+                btn.innerText = "Adicionar à Sacola"; 
+                btn.style.background = ""; 
+                btn.onclick = () => { 
+                    if (pColors.length > 0 && !window.selectedDetailColor) {
+                        return showToast("Selecione uma cor!", "error");
+                    }
+                    if (pSizes.length > 0 && !window.selectedDetailSize) {
+                        return showToast("Selecione um tamanho!", "error");
+                    }
+                    addToCart(p.id, window.selectedDetailColor, window.selectedDetailSize); 
+                    closeProductDetail(); 
+                } 
+            }
 
             document.getElementById('productDetailModal').classList.add('active');
         }
@@ -4415,14 +4528,28 @@ service cloud.firestore {
 
         // ================= CARRINHO & CHECKOUT =================
         window.toggleCart = () => { document.getElementById('cartDrawer').classList.toggle('open'); document.getElementById('drawerOverlay').classList.toggle('open'); }
-        window.addToCart = (id) => {
+        window.addToCart = (id, selectedColor = null, selectedSize = null) => {
             const p = window.products.find(x => x.id == id);
-            const i = window.cart.find(x => x.id == id);
+            const pColors = p.colors || (p.color ? p.color.split(',').map(s => s.trim()).filter(s => s) : []);
+            const pSizes = p.sizes || (p.size ? p.size.split(',').map(s => s.trim()).filter(s => s) : []);
+
+            if ((pColors.length > 0 && !selectedColor) || (pSizes.length > 0 && !selectedSize)) {
+                openDetail(id);
+                showToast("Selecione as opções do produto.");
+                return;
+            }
+
+            const i = window.cart.find(x => x.id == id && x.selectedColor === selectedColor && x.selectedSize === selectedSize);
             if (i) {
                 if (!p.noLimit && i.quantity >= p.stock) return showToast('Estoque máximo!', 'error');
                 i.quantity++;
             } else {
-                const cartItem = { ...p, quantity: 1 };
+                const cartItem = { 
+                    ...p, 
+                    quantity: 1, 
+                    selectedColor: selectedColor || null, 
+                    selectedSize: selectedSize || null 
+                };
                 if (p.pricePromo) cartItem.price = p.pricePromo;
                 window.cart.push(cartItem);
             }
@@ -4430,7 +4557,19 @@ service cloud.firestore {
             updateCartUI(true);
             showToast("Peça adicionada!");
         }
-        window.changeCartQty = (id, d) => { const i = window.cart.find(x => x.id == id); const p = window.products.find(x => x.id == id); if (d > 0) { if (!p.noLimit && i.quantity >= p.stock) return; i.quantity++; } else { if (i.quantity > 1) i.quantity--; else window.cart = window.cart.filter(x => x.id != id); } localStorage.setItem('luas_cart', JSON.stringify(window.cart)); updateCartUI(); }
+        window.changeCartQty = (id, selectedColor, selectedSize, d) => { 
+            const i = window.cart.find(x => x.id == id && x.selectedColor === selectedColor && x.selectedSize === selectedSize); 
+            const p = window.products.find(x => x.id == id); 
+            if (d > 0) { 
+                if (!p.noLimit && i.quantity >= p.stock) return; 
+                i.quantity++; 
+            } else { 
+                if (i.quantity > 1) i.quantity--; 
+                else window.cart = window.cart.filter(x => !(x.id == id && x.selectedColor === selectedColor && x.selectedSize === selectedSize)); 
+            } 
+            localStorage.setItem('luas_cart', JSON.stringify(window.cart)); 
+            updateCartUI(); 
+        }
 
         window.applyCoupon = () => {
             const code = document.getElementById('couponInput').value.toUpperCase();
@@ -4486,10 +4625,10 @@ service cloud.firestore {
                     <img src="${imgSrc}" style="width:60px; height:80px; border-radius:4px; ${imgStyle}">
                     <div style="flex:1;">
                         <div class="font-bold" style="font-family:var(--font-title);">${i.name}</div>
-                        <div style="font-size:0.8rem; color:var(--text-muted);">Tam: ${i.size || '-'} | Cor: ${i.color || '-'}</div>
+                        <div style="font-size:0.8rem; color:var(--text-muted);">Tam: ${i.selectedSize || i.size || '-'} | Cor: ${i.selectedColor || i.color || '-'}</div>
                         <div style="margin-top:5px; font-weight:bold;">${formatMoney(i.price)}</div>
                         <div class="qty-controls mt-2" style="display:inline-flex;">
-                            <button class="qty-btn" onclick="changeCartQty('${i.id}', -1)">-</button><span style="padding:0 10px;">${i.quantity}</span><button class="qty-btn" onclick="changeCartQty('${i.id}', 1)">+</button>
+                            <button class="qty-btn" onclick="changeCartQty('${i.id}', ${i.selectedColor ? `'${i.selectedColor}'` : 'null'}, ${i.selectedSize ? `'${i.selectedSize}'` : 'null'}, -1)">-</button><span style="padding:0 10px;">${i.quantity}</span><button class="qty-btn" onclick="changeCartQty('${i.id}', ${i.selectedColor ? `'${i.selectedColor}'` : 'null'}, ${i.selectedSize ? `'${i.selectedSize}'` : 'null'}, 1)">+</button>
                         </div>
                     </div>
                 </div>
@@ -4608,7 +4747,7 @@ service cloud.firestore {
         window.saveSiteData = async function () {
             const waRaw = document.getElementById('siteWaInput').value;
             const s = {
-                id: 'main',
+                id: 'main_bzimports',
                 name: document.getElementById('siteNameInput').value, subtitle: document.getElementById('siteSubInput').value,
                 wa: waRaw.replace(/\D/g, ''), waDisplay: waRaw, email: document.getElementById('siteEmailInput').value,
                 address: document.getElementById('siteAddrInput').value, desc: document.getElementById('siteDescInput').value,
