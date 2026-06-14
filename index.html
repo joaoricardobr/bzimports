@@ -10,7 +10,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Fontes elegantes -->
     <link
-        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&family=Anton&display=swap"
         rel="stylesheet">
 
     <style>
@@ -1323,6 +1323,87 @@
         input:checked+.switch:before {
             transform: translateX(20px);
         }
+
+        /* ===== MELHORIAS VISUAIS ===== */
+        /* Header fixo e ícones alinhados */
+        header { height: var(--header-height) !important; padding: 0 !important; }
+        .header-inner {
+            height: 100% !important; display: flex !important;
+            align-items: center !important; justify-content: space-between !important;
+            flex-direction: row !important; gap: 0 !important; padding: 0 1.5rem;
+        }
+        .header-inner .flex.items-center {
+            display: flex !important; align-items: center !important;
+            gap: 0.5rem !important; flex-shrink: 0;
+        }
+        .btn-icon {
+            width: 40px; height: 40px; padding: 0 !important;
+            border-radius: 50% !important; display: flex !important;
+            align-items: center !important; justify-content: center !important;
+            flex-shrink: 0;
+        }
+        .btn-icon svg, .btn-icon i { width: 20px; height: 20px; display: block; }
+        #headerCartBtn {
+            height: 40px; padding: 0 1rem !important;
+            display: inline-flex !important; align-items: center !important;
+            gap: 0.4rem !important; font-size: 0.85rem;
+            border-radius: 99px !important; border: 2px solid var(--primary) !important;
+            color: var(--primary) !important; background: transparent !important;
+            font-weight: 600; white-space: nowrap;
+        }
+        #headerCartBtn:hover { background: var(--primary) !important; color: #fff !important; }
+        .logo-text h1 { font-size: 1.3rem; line-height: 1.1; }
+        /* Category pills */
+        .cat-pill { padding: 0.5rem 1.2rem; font-size: 0.78rem; font-weight: 600; }
+        .cat-pill.active, .cat-pill:hover {
+            background: var(--primary) !important; color: #fff !important;
+            border-color: var(--primary) !important;
+            transform: translateY(-1px); box-shadow: var(--shadow-md);
+        }
+        /* Product cards */
+        .product-card { border-radius: 1rem; box-shadow: var(--shadow-sm); }
+        .product-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-lg); border-color: var(--primary-light); }
+        .card-body { padding: 1.25rem; }
+        .btn-cart-mini {
+            width: 36px; height: 36px; border-radius: 50%;
+            background: var(--primary-light); border: none; color: var(--primary);
+        }
+        .btn-cart-mini:hover { background: var(--primary); color: #fff; transform: scale(1.15); }
+        /* Admin */
+        .admin-sidebar { background: #1a0a2e; }
+        .menu-item.active { background: rgba(128,0,128,0.25); border-left-color: var(--primary); color: #fff; }
+        .admin-card { border-radius: 1rem; }
+        .data-table th { background: var(--primary-light); color: var(--primary); }
+        .cart-header { background: var(--primary); }
+        .cart-header * { color: #fff !important; }
+        .small-banner { height: 180px; border-radius: 1rem; }
+        .products-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.5rem; }
+        /* Badge blink + cart pulse */
+        @keyframes pulse-cart {
+            0% { box-shadow: 0 0 0 0 rgba(128,0,128,0.8); }
+            70% { box-shadow: 0 0 0 10px rgba(128,0,128,0); }
+            100% { box-shadow: 0 0 0 0 rgba(128,0,128,0); }
+        }
+        @keyframes blink-badge {
+            0%,100% { background-color: var(--secondary); transform: scale(1); }
+            50% { background-color: #ff3b30; transform: scale(1.25); box-shadow: 0 0 10px #ff3b30; }
+        }
+        .cart-pulse { animation: pulse-cart 1.6s infinite; }
+        .badge-blink { animation: blink-badge 1s infinite !important; }
+        /* Mobile */
+        @media (max-width: 640px) {
+            .header-inner { flex-direction: row !important; flex-wrap: nowrap !important; padding: 0 0.75rem; }
+            .logo-text h1 { font-size: 1.05rem; }
+            .logo-text span { display: none; }
+            .search-wrapper { display: none !important; }
+            .products-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 0.75rem; padding: 0.75rem; }
+            .card-body { padding: 0.85rem; }
+            .small-banner { height: 130px; }
+            .admin-main { padding: 0.75rem; }
+        }
+        @media (min-width: 641px) and (max-width: 1024px) {
+            .products-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem; }
+        }
     </style>
 </head>
 
@@ -1946,26 +2027,43 @@
             <button class="btn-icon" style="color: white;" onclick="toggleCart()"><i data-lucide="x"></i></button>
         </div>
 
-        <div id="cartItems" class="cart-body"></div>
-
-        <div class="cart-footer">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                <span style="font-weight: 600;">Total:</span>
-                <span id="cartTotal" class="font-serif" style="font-size: 1.8rem; color: var(--primary);">R$ 0,00</span>
-            </div>
-            <div style="margin-bottom: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
-                <input type="text" id="clientName" placeholder="Seu Nome Completo *" required autocomplete="name">
-                <input type="tel" id="clientPhone" placeholder="Seu WhatsApp *" required autocomplete="tel">
-                <input type="email" id="clientEmail" placeholder="Seu E-mail *" required autocomplete="email">
-                <div style="display: flex; gap: 0.5rem;">
-                    <input type="text" id="clientCEP" placeholder="CEP *" required style="flex: 1;">
-                    <input type="text" id="clientCity" placeholder="Cidade *" required style="flex: 1;">
+        <!-- PASSO 1: ITENS E CARRINHO -->
+        <div id="cartStep1" style="display: flex; flex-direction: column; height: 100%;">
+            <div id="cartItems" class="cart-body"></div>
+            <div class="cart-footer">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <span style="font-weight: 600;">Total:</span>
+                    <span id="cartTotal" class="font-serif" style="font-size: 1.8rem; color: var(--primary);">R$ 0,00</span>
                 </div>
-                <input type="text" id="clientAddress" placeholder="Endereço Completo (Rua, Nº, Bairro) *" required>
+                <button id="btnGoToStep2" onclick="changeCartStep(2)" class="btn btn-primary w-full" style="height: 55px;">
+                    Prosseguir
+                </button>
             </div>
-            <button onclick="checkout()" class="btn btn-primary w-full" style="height: 55px;">
-                Finalizar via WhatsApp
-            </button>
+        </div>
+
+        <!-- PASSO 2: FORMULÁRIO DE DADOS E ENVIO -->
+        <div id="cartStep2" style="display: none; flex-direction: column; height: 100%;">
+            <div class="cart-body" style="padding-top: 1rem;">
+                <button onclick="changeCartStep(1)" class="btn-back" style="background:transparent; border:none; color:var(--text-main); font-weight:600; display:flex; align-items:center; gap:0.5rem; cursor:pointer; margin-bottom: 1.5rem; font-size: 0.9rem;">
+                    <i data-lucide="arrow-left" size="18"></i> Voltar à Sacola
+                </button>
+                <h4 class="font-serif" style="margin-bottom: 1rem; color: var(--primary);">Informações de Entrega</h4>
+                <div style="display: flex; flex-direction: column; gap: 0.8rem;">
+                    <input type="text" id="clientName" placeholder="Seu Nome Completo *" required autocomplete="name">
+                    <input type="tel" id="clientPhone" placeholder="Seu WhatsApp *" required autocomplete="tel">
+                    <input type="email" id="clientEmail" placeholder="Seu E-mail *" required autocomplete="email">
+                    <div style="display: flex; gap: 0.5rem;">
+                        <input type="text" id="clientCEP" placeholder="CEP *" required style="flex: 1;">
+                        <input type="text" id="clientCity" placeholder="Cidade *" required style="flex: 1;">
+                    </div>
+                    <input type="text" id="clientAddress" placeholder="Endereço Completo (Rua, Nº, Bairro) *" required>
+                </div>
+            </div>
+            <div class="cart-footer">
+                <button onclick="checkout()" class="btn btn-primary w-full" style="height: 55px; background: #25D366; border-color: #25D366;">
+                    <i data-lucide="send" size="18" style="margin-right: 5px;"></i> Enviar via WhatsApp
+                </button>
+            </div>
         </div>
     </div>
 
@@ -1998,7 +2096,7 @@
                             data-lucide="home"></i></button>
                     <button onclick="toggleTheme()" class="btn-icon" title="Tema"><i data-lucide="moon"></i></button>
                     <button onclick="openLogin()" class="btn-icon" title="Admin"><i data-lucide="user"></i></button>
-                    <button onclick="toggleCart()" class="btn btn-secondary"
+                    <button id="headerCartBtn" onclick="toggleCart()" class="btn btn-secondary"
                         style="border-color: var(--primary); color: var(--primary); position: relative;">
                         <i data-lucide="shopping-bag"></i> <span class="hide-mobile">Sacola</span>
                         <span id="cartCountBadge"
@@ -2008,8 +2106,36 @@
             </div>
         </header>
 
-        <div class="container" style="padding-top: 2rem;">
-            <div id="topBanners" class="banner-carousel"></div>
+        <!-- ===== TOONHUB CAROUSEL HERO ===== -->
+        <div id="toonhubSection" style="width:100%;position:relative;overflow:hidden;font-family:'Inter',sans-serif;transition:background-color 650ms cubic-bezier(0.4,0,0.2,1);" data-active="0">
+            <div style="width:100%;height:480px;position:relative;overflow:hidden;" id="toonhubInner">
+                <div style="position:absolute;inset:0;pointer-events:none;z-index:50;opacity:0.35;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E&quot;);background-size:200px 200px;"></div>
+                <div style="position:absolute;inset-inline:0;display:flex;align-items:center;justify-content:center;pointer-events:none;user-select:none;z-index:2;top:18%;">
+                    <span style="font-family:'Anton',sans-serif;font-size:clamp(60px,18vw,260px);font-weight:900;color:white;opacity:0.15;line-height:1;text-transform:uppercase;letter-spacing:-0.02em;white-space:nowrap;">NOVA COLEÇÃO</span>
+                </div>
+                <div style="position:absolute;top:1.5rem;left:2rem;z-index:60;font-size:0.7rem;font-weight:600;text-transform:uppercase;color:white;opacity:0.9;letter-spacing:0.18em;">LUAS DE PRATA</div>
+                <div id="toonCarouselItems" style="position:absolute;inset:0;z-index:3;"></div>
+                <div style="position:absolute;bottom:1.5rem;left:1rem;z-index:60;max-width:300px;" id="toonBottomLeft">
+                    <p style="font-weight:700;text-transform:uppercase;letter-spacing:0.02em;margin-bottom:0.5rem;font-size:1rem;color:white;opacity:0.95;">COLEÇÃO EXCLUSIVA</p>
+                    <p style="font-size:0.8rem;color:white;opacity:0.85;line-height:1.6;margin-bottom:1rem;">Roupas e acessórios únicos para o seu estilo. Qualidade e elegância em cada peça.</p>
+                    <div style="display:flex;gap:0.75rem;">
+                        <button id="toonPrev" onclick="toonNavigate('prev')" style="width:44px;height:44px;border-radius:50%;background:transparent;border:2px solid white;color:white;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 150ms;" onmouseover="this.style.background='rgba(255,255,255,0.15)'" onmouseout="this.style.background='transparent'">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 5-7 7 7 7"/></svg>
+                        </button>
+                        <button id="toonNext" onclick="toonNavigate('next')" style="width:44px;height:44px;border-radius:50%;background:transparent;border:2px solid white;color:white;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 150ms;" onmouseover="this.style.background='rgba(255,255,255,0.15)'" onmouseout="this.style.background='transparent'">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                        </button>
+                    </div>
+                </div>
+                <div style="position:absolute;bottom:1.5rem;right:2rem;z-index:60;">
+                    <a onclick="toonGoToProduct()" style="display:flex;align-items:center;gap:0.4rem;font-family:'Anton',sans-serif;font-size:clamp(16px,3vw,40px);font-weight:400;color:white;opacity:0.95;letter-spacing:-0.02em;line-height:1;text-transform:uppercase;text-decoration:none;cursor:pointer;transition:opacity 200ms;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.95'">VER PEÇA <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+                </div>
+                <div id="toonDots" style="position:absolute;bottom:1.5rem;left:50%;transform:translateX(-50%);z-index:60;display:flex;gap:6px;"></div>
+            </div>
+        </div>
+        <!-- ===== END TOONHUB ===== -->
+        <div class="container" style="padding-top: 1.5rem;">
+            <div id="topBanners" style="display:none;"></div>
             <div id="smallBanners" class="small-banners-grid"></div>
         </div>
 
@@ -3288,30 +3414,8 @@ service cloud.firestore {
             const topCont = document.getElementById('topBanners');
             const smCont = document.getElementById('smallBanners');
 
-            const tops = window.banners.filter(b => b.type === 'top');
-            if (tops.length > 0) {
-                topCont.innerHTML = tops.map(b => `
-                    <div class="banner-item" style="background-image: url('${b.img}');" onclick="${b.link ? `window.location.href='${b.link}'` : ''}">
-                        <div class="banner-overlay"></div>
-                        <div class="banner-content">
-                            <h2 class="font-serif" style="font-size: 3rem; margin-bottom: 0.5rem; line-height: 1.1;">${b.title}</h2>
-                            <p style="font-size: 1.1rem; margin-bottom: 1.5rem; opacity: 0.9;">${b.desc || ''}</p>
-                            <button class="btn btn-secondary" style="background: #fff; color: var(--primary); border: none; padding: 0.8rem 1.5rem; font-weight: 600; border-radius: 4px; display: flex; align-items: center; gap: 0.5rem;">
-                                Ver Coleção <i data-lucide="chevron-right" size="18"></i>
-                            </button>
-                        </div>
-                    </div>`).join('');
-
-                if (!window.bannerInterval) {
-                    window.bannerInterval = setInterval(() => {
-                        const carousel = document.getElementById('topBanners');
-                        if (!carousel) return;
-                        const next = carousel.scrollLeft + carousel.offsetWidth;
-                        if (next >= carousel.scrollWidth) carousel.scrollTo({ left: 0, behavior: 'smooth' });
-                        else carousel.scrollBy({ left: carousel.offsetWidth, behavior: 'smooth' });
-                    }, 5000);
-                }
-            }
+            // Top banners now disabled to prioritize the TOONHUB product carousel
+            if (topCont) topCont.style.display = 'none';
 
             const smalls = window.banners.filter(b => b.type === 'small');
             if (smalls.length > 0) {
@@ -3364,7 +3468,29 @@ service cloud.firestore {
         window.closeProductDetail = () => document.getElementById('productDetailModal').classList.remove('active');
 
         // ================= CARRINHO & CHECKOUT =================
-        window.toggleCart = () => { document.getElementById('cartDrawer').classList.toggle('open'); document.getElementById('drawerOverlay').classList.toggle('open'); }
+        window.changeCartStep = (step) => {
+            const step1 = document.getElementById('cartStep1');
+            const step2 = document.getElementById('cartStep2');
+            if (step === 1) {
+                step1.style.display = 'flex';
+                step2.style.display = 'none';
+            } else {
+                if (window.cart.length === 0) return showToast("Sua sacola está vazia", "error");
+                step1.style.display = 'none';
+                step2.style.display = 'flex';
+            }
+        };
+
+        window.toggleCart = () => { 
+            const drawer = document.getElementById('cartDrawer');
+            const overlay = document.getElementById('drawerOverlay');
+            if (!drawer.classList.contains('open')) {
+                changeCartStep(1); // sempre abre no passo 1
+            }
+            drawer.classList.toggle('open'); 
+            overlay.classList.toggle('open'); 
+        }
+
         window.addToCart = (id) => {
             const p = window.products.find(x => x.id == id);
             const i = window.cart.find(x => x.id == id);
@@ -3379,6 +3505,11 @@ service cloud.firestore {
             localStorage.setItem('luas_cart', JSON.stringify(window.cart));
             updateCartUI(true);
             showToast("Peça adicionada!");
+            
+            // Auto open cart
+            if (!document.getElementById('cartDrawer').classList.contains('open')) {
+                toggleCart();
+            }
         }
         window.changeCartQty = (id, d) => { const i = window.cart.find(x => x.id == id); const p = window.products.find(x => x.id == id); if (d > 0) { if (!p.noLimit && i.quantity >= p.stock) return; i.quantity++; } else { if (i.quantity > 1) i.quantity--; else window.cart = window.cart.filter(x => x.id != id); } localStorage.setItem('luas_cart', JSON.stringify(window.cart)); updateCartUI(); }
 
@@ -5137,10 +5268,103 @@ service cloud.firestore {
             }
         }, 60000);
 
+        // ===== TOONHUB CAROUSEL SCRIPT =====
+        let toonIndex = 0;
+        let toonInterval = null;
+        let toonItems = [];
+        const toonColors = ['#800080', '#D4AF37', '#1E1E1E', '#9B2C2C', '#2C7A51', '#4B0082'];
+
+        function renderToonhub() {
+            if (!window.products || window.products.length === 0) return;
+            // Pega até 4 produtos em destaque ou os 4 mais recentes com fotos
+            toonItems = window.products.filter(p => p.image || (p.images && p.images.length > 0)).slice(0, 4);
+            if (toonItems.length === 0) {
+                document.getElementById('toonhubSection').style.display = 'none';
+                return;
+            }
+
+            const container = document.getElementById('toonCarouselItems');
+            const dotsCont = document.getElementById('toonDots');
+            
+            container.innerHTML = toonItems.map((item, i) => {
+                const img = item.images?.[0] || item.image;
+                return `
+                <div class="toon-slide" data-index="${i}" style="position:absolute;inset:0;opacity:${i === 0 ? 1 : 0};transform:${i === 0 ? 'scale(1)' : 'scale(0.95)'};transition:all 800ms cubic-bezier(0.4,0,0.2,1);display:flex;align-items:center;justify-content:center;pointer-events:${i === 0 ? 'auto' : 'none'};">
+                    <img src="${img}" style="max-height:85%;max-width:85%;object-fit:contain;filter:drop-shadow(0 20px 40px rgba(0,0,0,0.3));transition:transform 800ms ease;" alt="${item.name}" />
+                </div>
+                `;
+            }).join('');
+
+            dotsCont.innerHTML = toonItems.map((_, i) => `
+                <button onclick="toonNavigateTo(${i})" style="width:${i === 0 ? '24px' : '8px'};height:8px;border-radius:4px;background:white;opacity:${i === 0 ? '1' : '0.4'};border:none;cursor:pointer;transition:all 300ms;"></button>
+            `).join('');
+
+            updateToonhubUI();
+            startToonhubTimer();
+        }
+
+        function updateToonhubUI() {
+            const section = document.getElementById('toonhubSection');
+            section.style.backgroundColor = toonColors[toonIndex % toonColors.length];
+            section.dataset.active = toonIndex;
+
+            document.querySelectorAll('.toon-slide').forEach((slide, i) => {
+                if (i === toonIndex) {
+                    slide.style.opacity = '1';
+                    slide.style.transform = 'scale(1)';
+                    slide.style.pointerEvents = 'auto';
+                } else {
+                    slide.style.opacity = '0';
+                    slide.style.transform = 'scale(0.95)';
+                    slide.style.pointerEvents = 'none';
+                }
+            });
+
+            document.querySelectorAll('#toonDots button').forEach((dot, i) => {
+                if (i === toonIndex) {
+                    dot.style.width = '24px';
+                    dot.style.opacity = '1';
+                } else {
+                    dot.style.width = '8px';
+                    dot.style.opacity = '0.4';
+                }
+            });
+        }
+
+        window.toonNavigate = (dir) => {
+            if (toonItems.length <= 1) return;
+            if (dir === 'next') toonIndex = (toonIndex + 1) % toonItems.length;
+            else toonIndex = (toonIndex - 1 + toonItems.length) % toonItems.length;
+            updateToonhubUI();
+            startToonhubTimer();
+        };
+
+        window.toonNavigateTo = (i) => {
+            if (i === toonIndex) return;
+            toonIndex = i;
+            updateToonhubUI();
+            startToonhubTimer();
+        };
+
+        window.toonGoToProduct = () => {
+            const id = toonItems[toonIndex]?.id;
+            if (id) viewProductDetail(id);
+        };
+
+        function startToonhubTimer() {
+            clearInterval(toonInterval);
+            toonInterval = setInterval(() => {
+                window.toonNavigate('next');
+            }, 4500);
+        }
+
+        // ============================================
+
         window.addEventListener('load', () => {
             setTimeout(() => {
                 loadSavedTheme();
                 loadAutoBackupConfig();
+                renderToonhub();
             }, 1000);
         });
     </script>
