@@ -1340,6 +1340,81 @@
         input:checked+.switch:before {
             transform: translateX(20px);
         }
+
+        /* Pulsar sacola e badge */
+        @keyframes pulse-cart {
+            0% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.8); }
+            70% { box-shadow: 0 0 0 10px rgba(212, 175, 55, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); }
+        }
+        @keyframes blink-badge {
+            0% { background-color: var(--secondary); transform: scale(1); }
+            50% { background-color: #ff3b30; transform: scale(1.25); box-shadow: 0 0 10px #ff3b30; }
+            100% { background-color: var(--secondary); transform: scale(1); }
+        }
+        .cart-pulse {
+            animation: pulse-cart 1.6s infinite;
+            border-color: var(--primary) !important;
+        }
+        .badge-blink {
+            animation: blink-badge 1s infinite !important;
+            border-color: #fff !important;
+        }
+
+        /* Alerta Flutuante da Sacola */
+        .floating-cart-alert {
+            position: fixed;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 14px 24px;
+            border-radius: 50px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+            z-index: 190;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.95rem;
+            animation: floatUp 0.5s ease-out, pulseAlert 2.2s infinite alternate;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            transition: all 0.3s ease;
+        }
+        .floating-cart-alert:hover {
+            transform: translateX(-50%) scale(1.05);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.35);
+        }
+        .alert-pulse-dot {
+            width: 10px;
+            height: 10px;
+            background: #ff3b30;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 0 rgba(255, 59, 48, 0.75);
+            animation: pulseDot 1.2s infinite;
+        }
+        @keyframes floatUp {
+            from { bottom: -60px; opacity: 0; }
+            to { bottom: 25px; opacity: 1; }
+        }
+        @keyframes pulseAlert {
+            from { box-shadow: 0 10px 25px rgba(212, 175, 55, 0.3); }
+            to { box-shadow: 0 10px 35px rgba(212, 175, 55, 0.85); }
+        }
+        @keyframes pulseDot {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 59, 48, 0.7); }
+            70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(255, 59, 48, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 59, 48, 0); }
+        }
+        
+        /* Ajuste do botão de voltar da sacola */
+        .btn-back:hover {
+            color: var(--secondary) !important;
+            transform: translateX(-3px);
+            transition: all 0.2s ease;
+        }
     </style>
 </head>
 
@@ -1969,20 +2044,24 @@
     <div id="drawerOverlay" class="drawer-overlay" onclick="toggleCart()"></div>
     <div id="cartDrawer" class="cart-drawer">
         <div class="cart-header">
-            <h3 class="font-title" style="font-size: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+            <h3 class="font-title" id="cartTitleText" style="font-size: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
                 <i data-lucide="shopping-bag"></i> Sua Sacola
             </h3>
             <button class="btn-icon" style="color: white;" onclick="toggleCart()"><i data-lucide="x"></i></button>
         </div>
 
-        <div id="cartItems" class="cart-body"></div>
+        <!-- Step 1: Sacola (Produtos) -->
+        <div id="cartStep1" class="cart-body">
+            <div id="cartItems"></div>
+        </div>
 
-        <div class="cart-footer">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                <span style="font-weight: 600;">Total:</span>
-                <span id="cartTotal" class="font-title" style="font-size: 1.8rem; color: var(--primary);">R$ 0,00</span>
-            </div>
-            <div style="margin-bottom: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
+        <!-- Step 2: Entrega (Formulário) -->
+        <div id="cartStep2" class="cart-body hidden">
+            <button onclick="changeCartStep(1)" class="btn-back" style="display: flex; align-items: center; gap: 0.3rem; margin-bottom: 1.5rem; background: none; border: none; color: var(--primary); cursor: pointer; font-weight: bold; font-size: 1rem; padding: 0;">
+                <i data-lucide="arrow-left" style="width: 18px; height: 18px;"></i> Voltar para a Sacola
+            </button>
+            <h4 class="font-title" style="margin-bottom: 1rem; font-size: 1.2rem; color: var(--text);">Dados de Entrega</h4>
+            <div style="display: flex; flex-direction: column; gap: 0.8rem;">
                 <input type="text" id="clientName" placeholder="Seu Nome Completo *" required autocomplete="name">
                 <input type="tel" id="clientPhone" placeholder="Seu WhatsApp *" required autocomplete="tel">
                 <input type="email" id="clientEmail" placeholder="Seu E-mail *" required autocomplete="email">
@@ -1992,10 +2071,32 @@
                 </div>
                 <input type="text" id="clientAddress" placeholder="Endereço Completo (Rua, Nº, Bairro) *" required>
             </div>
-            <button onclick="checkout()" class="btn btn-primary w-full" style="height: 55px;">
-                Finalizar via WhatsApp
+        </div>
+
+        <!-- Footer -->
+        <div class="cart-footer">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <span style="font-weight: 600;">Total:</span>
+                <span id="cartTotal" class="font-title" style="font-size: 1.8rem; color: var(--primary);">R$ 0,00</span>
+            </div>
+            
+            <!-- Botão para avançar para Step 2 -->
+            <button id="btnGoToStep2" onclick="changeCartStep(2)" class="btn btn-primary w-full" style="height: 55px; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                Continuar para Entrega <i data-lucide="arrow-right" style="width: 18px; height: 18px;"></i>
+            </button>
+
+            <!-- Botão para finalizar no Step 2 -->
+            <button id="btnFinalizeOrder" onclick="checkout()" class="btn btn-primary w-full hidden" style="height: 55px; background: var(--success); font-size: 1.1rem; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                Finalizar via WhatsApp <i data-lucide="send" style="width: 18px; height: 18px;"></i>
             </button>
         </div>
+    </div>
+
+    <!-- Alerta Flutuante de Sacola com Itens -->
+    <div id="floatingCartAlert" class="floating-cart-alert hidden" onclick="toggleCart()">
+        <span class="alert-pulse-dot"></span>
+        <span style="font-family: var(--font-title); font-weight: 600;">Você tem itens na sua Sacola!</span>
+        <i data-lucide="shopping-bag" style="width: 18px; height: 18px;"></i>
     </div>
 
     <!-- ============================================== 
@@ -2027,7 +2128,7 @@
                             data-lucide="home"></i></button>
                     <button onclick="toggleTheme()" class="btn-icon" title="Tema"><i data-lucide="moon"></i></button>
                     <button onclick="openLogin()" class="btn-icon" title="Admin"><i data-lucide="user"></i></button>
-                    <button onclick="toggleCart()" class="btn btn-secondary"
+                    <button id="headerCartBtn" onclick="toggleCart()" class="btn btn-secondary"
                         style="border-color: var(--primary); color: var(--primary); position: relative;">
                         <i data-lucide="shopping-bag"></i> <span class="hide-mobile">Sacola</span>
                         <span id="cartCountBadge"
@@ -2906,7 +3007,7 @@ service cloud.firestore {
                 try {
                     const q = await getDocs(collection(db, 'alansantos_' + collectionName));
                     const allData = q.docs.map(d => d.data());
-                    return allData.filter(d => d.store === 'bzimports');
+                    return allData.filter(d => d.store === 'bzimports' || !d.store);
                 } catch (e) {
                     if (e.code === 'permission-denied') { } else {
                         console.error("Erro ao ler:", e);
@@ -2948,7 +3049,7 @@ service cloud.firestore {
                     if (!auth.currentUser) return;
                     const q = await getDocs(collection(db, 'alansantos_' + collectionName));
                     const promises = q.docs
-                        .filter(d => d.data().store === 'bzimports')
+                        .filter(d => d.data().store === 'bzimports' || !d.data().store)
                         .map((d) => deleteDoc(d.ref));
                     await Promise.all(promises);
                 } catch (e) {
@@ -2973,7 +3074,7 @@ service cloud.firestore {
                     const snap = await getDocs(q);
                     return snap.docs
                         .map(d => ({ id: d.id, ...d.data() }))
-                        .filter(d => d.store === 'bzimports');
+                        .filter(d => d.store === 'bzimports' || !d.store);
                 } catch (e) {
                     console.error("Erro ao buscar backups:", e);
                     return [];
@@ -4155,15 +4256,23 @@ service cloud.firestore {
             window.clients = await DBService.getAll('clients');
 
             const defaultBanners = [
-                { id: 'banner-1', title: 'Manto da Seleção 2024', desc: 'Garanta a amarelinha oficial com preços imperdíveis.', img: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=1200&q=80', type: 'top', link: '#?cat=Seleções' },
-                { id: 'banner-2', title: 'Grandes Clubes Europeus', desc: 'Os principais uniformes da Champions League na sua mão.', img: 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=1200&q=80', type: 'top', link: '#?cat=Europeus' }
+                { id: 'banner-1', title: 'Cidades-Sede Copa 2026', desc: 'Edição Limitada das Camisas Oficiais das Cidades-Sede.', img: './fifa_host_cities_banner.png', type: 'top', link: '#?cat=Seleções' },
+                { id: 'banner-2', title: 'Manto da Seleção 2024', desc: 'Garanta a amarelinha oficial com preços imperdíveis.', img: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=1200&q=80', type: 'top', link: '#?cat=Seleções' },
+                { id: 'banner-3', title: 'Grandes Clubes Europeus', desc: 'Os principais uniformes da Champions League na sua mão.', img: 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=1200&q=80', type: 'top', link: '#?cat=Europeus' }
             ];
 
-            const needsBannerUpdate = !window.banners || window.banners.length === 0 || window.banners.some(b => b.desc && b.desc.includes('roupas e acessórios'));
+            const hasOldDefault = window.banners && window.banners.some(b => b.id === 'banner-1' && !b.img.includes('fifa_host_cities_banner'));
+            const needsBannerUpdate = !window.banners || window.banners.length === 0 || hasOldDefault || window.banners.some(b => b.desc && b.desc.includes('roupas e acessórios'));
             if (needsBannerUpdate) {
                 window.banners = defaultBanners;
                 if (auth.currentUser) {
-                    for (let b of defaultBanners) await DBService.put('banners', b);
+                    for (let b of defaultBanners) {
+                        try {
+                            await DBService.put('banners', b);
+                        } catch (err) {
+                            console.error("Erro ao salvar banner no Firebase:", err);
+                        }
+                    }
                 }
             }
 
@@ -4527,7 +4636,45 @@ service cloud.firestore {
         window.closeProductDetail = () => document.getElementById('productDetailModal').classList.remove('active');
 
         // ================= CARRINHO & CHECKOUT =================
-        window.toggleCart = () => { document.getElementById('cartDrawer').classList.toggle('open'); document.getElementById('drawerOverlay').classList.toggle('open'); }
+        window.toggleCart = () => {
+            const drawer = document.getElementById('cartDrawer');
+            const overlay = document.getElementById('drawerOverlay');
+            drawer.classList.toggle('open');
+            overlay.classList.toggle('open');
+            if (drawer.classList.contains('open')) {
+                changeCartStep(1);
+            }
+        };
+
+        window.changeCartStep = function (step) {
+            const step1 = document.getElementById('cartStep1');
+            const step2 = document.getElementById('cartStep2');
+            const btnStep2 = document.getElementById('btnGoToStep2');
+            const btnFinalize = document.getElementById('btnFinalizeOrder');
+            const titleText = document.getElementById('cartTitleText');
+
+            if (!step1 || !step2 || !btnStep2 || !btnFinalize || !titleText) return;
+
+            if (step === 1) {
+                step1.classList.remove('hidden');
+                step2.classList.add('hidden');
+                btnStep2.classList.remove('hidden');
+                btnFinalize.classList.add('hidden');
+                titleText.innerHTML = `<i data-lucide="shopping-bag"></i> Sua Sacola`;
+            } else {
+                if (window.cart.length === 0) {
+                    showToast("Sua sacola está vazia.", "warning");
+                    return;
+                }
+                step1.classList.add('hidden');
+                step2.classList.remove('hidden');
+                btnStep2.classList.add('hidden');
+                btnFinalize.classList.remove('hidden');
+                titleText.innerHTML = `<i data-lucide="map-pin"></i> Entrega`;
+            }
+            lucide.createIcons();
+        };
+
         window.addToCart = (id, selectedColor = null, selectedSize = null) => {
             const p = window.products.find(x => x.id == id);
             const pColors = p.colors || (p.color ? p.color.split(',').map(s => s.trim()).filter(s => s) : []);
@@ -4556,6 +4703,9 @@ service cloud.firestore {
             localStorage.setItem('luas_cart', JSON.stringify(window.cart));
             updateCartUI(true);
             showToast("Peça adicionada!");
+            if (!document.getElementById('cartDrawer').classList.contains('open')) {
+                toggleCart();
+            }
         }
         window.changeCartQty = (id, selectedColor, selectedSize, d) => { 
             const i = window.cart.find(x => x.id == id && x.selectedColor === selectedColor && x.selectedSize === selectedSize); 
@@ -4587,6 +4737,12 @@ service cloud.firestore {
         window.updateCartUI = function (animate = false) {
             const c = document.getElementById('cartItems');
             const badge = document.getElementById('cartCountBadge');
+            const cartBtn = document.getElementById('headerCartBtn');
+            const floatAlert = document.getElementById('floatingCartAlert');
+            const btnStep2 = document.getElementById('btnGoToStep2');
+            
+            if (!c) return;
+
             const subtotal = window.cart.reduce((a, b) => a + (b.price * b.quantity), 0);
 
             let discount = 0;
@@ -4598,23 +4754,40 @@ service cloud.firestore {
 
             if (document.getElementById('cartTotal')) document.getElementById('cartTotal').innerText = formatMoney(total);
 
+            const count = window.cart.reduce((a, b) => a + b.quantity, 0);
+
             if (badge) {
-                const count = window.cart.reduce((a, b) => a + b.quantity, 0);
                 badge.innerText = count;
                 badge.style.display = count === 0 ? 'none' : 'flex';
 
+                if (count > 0) {
+                    badge.classList.add('badge-blink');
+                    cartBtn?.classList.add('cart-pulse');
+                    floatAlert?.classList.remove('hidden');
+                } else {
+                    badge.classList.remove('badge-blink');
+                    cartBtn?.classList.remove('cart-pulse');
+                    floatAlert?.classList.add('hidden');
+                }
+
                 if (animate) {
-                    const cartBtn = badge.parentElement;
-                    cartBtn.classList.add('cart-animate');
+                    cartBtn?.classList.add('cart-animate');
                     badge.classList.add('badge-animate');
                     setTimeout(() => {
-                        cartBtn.classList.remove('cart-animate');
+                        cartBtn?.classList.remove('cart-animate');
                         badge.classList.remove('badge-animate');
                     }, 400);
                 }
             }
 
-            if (window.cart.length === 0) { c.innerHTML = '<p style="text-align:center; color:#888; margin-top: 2rem;">Sua sacola está vazia.</p>'; return; }
+            if (window.cart.length === 0) { 
+                c.innerHTML = '<p style="text-align:center; color:#888; margin-top: 2rem;">Sua sacola está vazia.</p>'; 
+                if (btnStep2) btnStep2.style.display = 'none';
+                return; 
+            }
+            
+            if (btnStep2) btnStep2.style.display = 'flex';
+
             c.innerHTML = window.cart.map(i => {
                 const imgSrc = i.images?.[0] || i.image || DEFAULT_PLACEHOLDER;
                 const isDefaultImg = imgSrc === DEFAULT_PLACEHOLDER;
@@ -4645,6 +4818,9 @@ service cloud.firestore {
                     <div style="font-size:0.9rem; margin-top:10px; display:flex; justify-content:space-between;"><span>Subtotal:</span><span>${formatMoney(subtotal)}</span></div>
                 </div>
             `;
+            setTimeout(() => {
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+            }, 50);
         }
 
         window.checkout = async function () {
@@ -4702,15 +4878,24 @@ service cloud.firestore {
             await DBService.put('clients', clientData);
             if (!window.clients.find(c => c.id === clientData.id)) window.clients.push(clientData);
 
+            const mapsQuery = encodeURIComponent(`${addr}, ${city} - CEP: ${cep}`);
+            const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${mapsQuery}`;
+
             let m = `*PEDIDO #${o.id}*\n\n`;
             m += `👤 *Cliente:* ${n}\n`;
             m += `📧 *E-mail:* ${e}\n`;
             m += `📍 *Entrega:* ${addr}\n`;
-            m += `🏙️ *Cidade:* ${city} - CEP: ${cep}\n\n`;
+            m += `🏙️ *Cidade:* ${city} - CEP: ${cep}\n`;
+            m += `🗺️ *Google Maps:* ${mapsUrl}\n\n`;
             m += `🛍️ *Produtos:*\n`;
 
             for (const i of window.cart) {
-                m += `- ${i.quantity}x ${i.name} (Tam:${i.size})\n`;
+                const optStr = [];
+                if (i.selectedSize || i.size) optStr.push(`Tam:${i.selectedSize || i.size}`);
+                if (i.selectedColor || i.color) optStr.push(`Cor:${i.selectedColor || i.color}`);
+                const opts = optStr.length > 0 ? ` (${optStr.join(', ')})` : '';
+                m += `- ${i.quantity}x ${i.name}${opts}\n`;
+
                 const p = window.products.find(x => x.id === i.id);
                 if (p && !p.noLimit) {
                     p.stock = Math.max(0, p.stock - i.quantity);
