@@ -4,28 +4,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Bz Imports | Camisas de Futebol</title>
+    <title>Luas de Prata | Roupas & Acessórios</title>
 
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Fontes elegantes -->
     <link
-        href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,600;0,700;0,800&family=Inter:wght@300;400;500;600&family=Anton&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap"
         rel="stylesheet">
 
     <style>
         :root {
-            /* Tema Bz Imports */
-            --primary: #FF6D1F;
-            --primary-dark: #D44E0E;
-            --primary-light: #F5E7C6;
-            --secondary: #FAF3E1;
-            --secondary-dark: #E0D3B8;
-            --bg-body: #FAF3E1;
+            /* Tema Luas de Prata */
+            --primary: #800080;
+            --primary-dark: #4B0082;
+            --primary-light: #F3E5F5;
+            --secondary: #FFD700;
+            --secondary-dark: #D4AF37;
+            --bg-body: #FFFFFF;
             --bg-card: #FFFFFF;
-            --text-main: #222222;
-            --text-muted: #666666;
-            --border: #F5E7C6;
+            --text-main: #2C2C2C;
+            --text-muted: #7A7A7A;
+            --border: #E5E5E5;
             --danger: #9B2C2C;
             --success: #2C7A51;
             --warning: #B7791F;
@@ -33,19 +33,19 @@
             --sidebar-collapsed-width: 80px;
             --header-height: 75px;
             --shadow-sm: 0 2px 5px rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 8px 20px rgba(255, 109, 31, 0.1);
-            --shadow-lg: 0 15px 35px rgba(255, 109, 31, 0.15);
-            --radius: 0.8rem;
+            --shadow-md: 0 8px 20px rgba(128, 0, 128, 0.1);
+            --shadow-lg: 0 15px 35px rgba(128, 0, 128, 0.15);
+            --radius: 0.5rem;
 
-            --font-title: 'Montserrat', sans-serif;
+            --font-title: 'Playfair Display', serif;
             --font-body: 'Inter', sans-serif;
         }
 
         body.dark-mode {
-            --primary: #FF6D1F;
-            --primary-dark: #D44E0E;
-            --primary-light: #222222;
-            --secondary: #FAF3E1;
+            --primary: #E5C158;
+            --primary-dark: #D4AF37;
+            --primary-light: #2A2415;
+            --secondary: #F0F0F0;
             --silver: #E0E0E0;
             --bg-body: #121212;
             --bg-card: #1E1E1E;
@@ -69,7 +69,7 @@
         h2,
         h3,
         h4,
-        .font-title {
+        .font-serif {
             font-family: var(--font-title);
             font-weight: 600;
         }
@@ -582,7 +582,7 @@
         .product-card:hover {
             transform: translateY(-8px);
             box-shadow: var(--shadow-lg);
-            border-color: transparent;
+            border-color: var(--primary);
         }
 
         .card-img-box {
@@ -1060,35 +1060,18 @@
         }
 
         .toast {
-            background: #1E1E1E;
-            color: #FFFFFF;
+            background: var(--secondary);
+            color: white;
             padding: 15px 20px;
             border-radius: var(--radius);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+            box-shadow: var(--shadow-lg);
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             animation: slideInRight 0.3s ease-out;
             font-size: 0.9rem;
             pointer-events: auto;
             border-left: 4px solid var(--primary);
-            font-weight: 500;
-        }
-
-        .toast.success {
-            border-left: 4px solid #4ADE80;
-        }
-
-        .toast.success i, .toast.success svg {
-            color: #4ADE80 !important;
-        }
-
-        .toast.error {
-            border-left: 4px solid #F87171;
-        }
-
-        .toast.error i, .toast.error svg {
-            color: #F87171 !important;
         }
 
         @keyframes fadeIn {
@@ -1340,81 +1323,6 @@
         input:checked+.switch:before {
             transform: translateX(20px);
         }
-
-        /* Pulsar sacola e badge */
-        @keyframes pulse-cart {
-            0% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.8); }
-            70% { box-shadow: 0 0 0 10px rgba(212, 175, 55, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); }
-        }
-        @keyframes blink-badge {
-            0% { background-color: var(--secondary); transform: scale(1); }
-            50% { background-color: #ff3b30; transform: scale(1.25); box-shadow: 0 0 10px #ff3b30; }
-            100% { background-color: var(--secondary); transform: scale(1); }
-        }
-        .cart-pulse {
-            animation: pulse-cart 1.6s infinite;
-            border-color: var(--primary) !important;
-        }
-        .badge-blink {
-            animation: blink-badge 1s infinite !important;
-            border-color: #fff !important;
-        }
-
-        /* Alerta Flutuante da Sacola */
-        .floating-cart-alert {
-            position: fixed;
-            bottom: 25px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            padding: 14px 24px;
-            border-radius: 50px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-            z-index: 190;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 0.95rem;
-            animation: floatUp 0.5s ease-out, pulseAlert 2.2s infinite alternate;
-            border: 1px solid rgba(255, 255, 255, 0.25);
-            transition: all 0.3s ease;
-        }
-        .floating-cart-alert:hover {
-            transform: translateX(-50%) scale(1.05);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.35);
-        }
-        .alert-pulse-dot {
-            width: 10px;
-            height: 10px;
-            background: #ff3b30;
-            border-radius: 50%;
-            display: inline-block;
-            box-shadow: 0 0 0 rgba(255, 59, 48, 0.75);
-            animation: pulseDot 1.2s infinite;
-        }
-        @keyframes floatUp {
-            from { bottom: -60px; opacity: 0; }
-            to { bottom: 25px; opacity: 1; }
-        }
-        @keyframes pulseAlert {
-            from { box-shadow: 0 10px 25px rgba(212, 175, 55, 0.3); }
-            to { box-shadow: 0 10px 35px rgba(212, 175, 55, 0.85); }
-        }
-        @keyframes pulseDot {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 59, 48, 0.7); }
-            70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(255, 59, 48, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 59, 48, 0); }
-        }
-        
-        /* Ajuste do botão de voltar da sacola */
-        .btn-back:hover {
-            color: var(--secondary) !important;
-            transform: translateX(-3px);
-            transition: all 0.2s ease;
-        }
     </style>
 </head>
 
@@ -1429,7 +1337,7 @@
         style="z-index: 2000;">
         <div class="modal" style="max-width: 500px;">
             <div class="close-modal" onclick="closePrintModal()"><i data-lucide="x"></i></div>
-            <h3 class="font-title" style="font-size: 1.5rem; margin-bottom: 1.5rem;">Configuração de Catálogo PDF</h3>
+            <h3 class="font-serif" style="font-size: 1.5rem; margin-bottom: 1.5rem;">Configuração de Catálogo PDF</h3>
 
             <div style="display: flex; flex-direction: column; gap: 1rem;">
                 <div>
@@ -1476,7 +1384,7 @@
                 style="width: 64px; height: 64px; background: var(--primary-light); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
                 <i data-lucide="cloud-lightning" class="animate-spin-slow"></i>
             </div>
-            <h3 class="font-title" style="font-size: 1.25rem; margin-bottom: 1rem;">Sincronizando Banco</h3>
+            <h3 class="font-serif" style="font-size: 1.25rem; margin-bottom: 1rem;">Sincronizando Banco</h3>
             <div
                 style="background: var(--border); border-radius: 99px; height: 10px; overflow: hidden; margin-bottom: 0.5rem; width: 100%;">
                 <div id="restoreProgress"
@@ -1490,8 +1398,8 @@
     <div id="loginModal" class="modal-overlay" onclick="if(event.target === this) closeLogin()">
         <div class="modal" style="max-width: 400px; text-align: center;">
             <div style="color: var(--primary); margin-bottom: 1rem;"><i data-lucide="gem" size="48"></i></div>
-            <h2 class="font-title" style="font-size: 1.8rem; margin-bottom: 0.5rem;">Acesso Restrito</h2>
-            <p style="color: var(--text-muted); margin-bottom: 2rem;">Painel Administrativo Bz Imports</p>
+            <h2 class="font-serif" style="font-size: 1.8rem; margin-bottom: 0.5rem;">Acesso Restrito</h2>
+            <p style="color: var(--text-muted); margin-bottom: 2rem;">Painel Administrativo Luas de Prata</p>
             <form onsubmit="handleLogin(event)">
                 <input type="email" id="adminEmail" autocomplete="username" placeholder="E-mail de acesso"
                     style="text-align: center;" required>
@@ -1515,7 +1423,7 @@
     <div id="orderDetailModal" class="modal-overlay" onclick="if(event.target === this) closeOrderDetail()">
         <div class="modal">
             <div class="close-modal" onclick="closeOrderDetail()"><i data-lucide="x"></i></div>
-            <h3 class="font-title" style="font-size: 1.5rem; margin-bottom: 1rem;">Detalhes do Pedido</h3>
+            <h3 class="font-serif" style="font-size: 1.5rem; margin-bottom: 1rem;">Detalhes do Pedido</h3>
             <div id="orderDetailContent"></div>
         </div>
     </div>
@@ -1524,7 +1432,7 @@
     <div id="staffSelectionModal" class="modal-overlay">
         <div class="modal" style="max-width: 500px; text-align: center; border: 2px solid var(--primary);">
             <i data-lucide="shield-check" size="48" style="color: var(--primary); margin-bottom: 1rem;"></i>
-            <h2 class="font-title mb-2">Quem está acessando?</h2>
+            <h2 class="font-serif mb-2">Quem está acessando?</h2>
             <p class="text-muted text-sm mb-6">Selecione seu perfil administrativo para continuar.</p>
 
             <div id="staffProfilesList"
@@ -1556,7 +1464,7 @@
             <div class="flex justify-between items-center mb-6">
                 <div class="flex items-center gap-2">
                     <i data-lucide="shield" style="color: var(--primary);" size="28"></i>
-                    <h2 class="font-title" id="staffFormTitle">Configurar Perfil de Acesso</h2>
+                    <h2 class="font-serif" id="staffFormTitle">Configurar Perfil de Acesso</h2>
                 </div>
                 <button onclick="document.getElementById('staffFormModal').classList.remove('active')"
                     class="btn-icon"><i data-lucide="x"></i></button>
@@ -1706,7 +1614,7 @@
                                     (Padrão)</label>
                             </div>
                             <p class="text-xs mb-1 uppercase font-bold text-muted">ID de Assinatura Automática</p>
-                            <div id="staffTokenDisplay" class="font-title"
+                            <div id="staffTokenDisplay" class="font-serif"
                                 style="font-size: 1.2rem; color: var(--danger); letter-spacing: 1px;">LDP-XXXXXX</div>
                         </div>
                     </div>
@@ -1727,7 +1635,7 @@
         onclick="if(event.target === this) closeClientForm()">
         <div class="modal" style="max-width: 600px;">
             <div class="close-modal" onclick="closeClientForm()"><i data-lucide="x"></i></div>
-            <h3 class="font-title" style="font-size: 1.5rem; margin-bottom: 1.5rem;">Ficha de Cliente</h3>
+            <h3 class="font-serif" style="font-size: 1.5rem; margin-bottom: 1.5rem;">Ficha de Cliente</h3>
             <form onsubmit="saveClient(event)">
                 <input type="hidden" id="cliId">
                 <div style="display: flex; flex-direction: column; gap: 1rem;">
@@ -1768,7 +1676,7 @@
         onclick="if(event.target === this) closeEditOrder()">
         <div class="modal" style="max-width: 800px;">
             <div class="close-modal" onclick="closeEditOrder()"><i data-lucide="x"></i></div>
-            <h3 class="font-title" style="font-size: 1.5rem; margin-bottom: 1rem;">Editar / Novo Pedido</h3>
+            <h3 class="font-serif" style="font-size: 1.5rem; margin-bottom: 1rem;">Editar / Novo Pedido</h3>
             <div style="display:flex; flex-direction:column; gap:1.5rem;">
                 <div
                     style="background: var(--bg-body); padding: 1.5rem; border-radius: var(--radius); border: 1px solid var(--border);">
@@ -1806,7 +1714,7 @@
     <div id="bannerFormModal" class="modal-overlay" onclick="if(event.target === this) closeBannerForm()">
         <div class="modal" style="max-width: 600px;">
             <div class="close-modal" onclick="closeBannerForm()"><i data-lucide="x"></i></div>
-            <h3 class="font-title" style="font-size: 1.5rem; margin-bottom: 1.5rem;">Configurar Banner</h3>
+            <h3 class="font-serif" style="font-size: 1.5rem; margin-bottom: 1.5rem;">Configurar Banner</h3>
             <form onsubmit="saveBanner(event)">
                 <input type="hidden" id="bannerId">
                 <label>Título do Banner</label>
@@ -1837,7 +1745,7 @@
     <div id="couponFormModal" class="modal-overlay" onclick="if(event.target === this) closeCouponForm()">
         <div class="modal" style="max-width: 500px;">
             <div class="close-modal" onclick="closeCouponForm()"><i data-lucide="x"></i></div>
-            <h3 class="font-title" style="font-size: 1.5rem; margin-bottom: 1.5rem;">Novo Cupom de Desconto</h3>
+            <h3 class="font-serif" style="font-size: 1.5rem; margin-bottom: 1.5rem;">Novo Cupom de Desconto</h3>
             <form onsubmit="saveCoupon(event)">
                 <input type="hidden" id="couponId">
                 <label>Código do Cupom</label>
@@ -1859,7 +1767,7 @@
     <div id="productFormModal" class="modal-overlay" onclick="if(event.target === this) closeProductForm()">
         <div class="modal" style="max-width: 900px;">
             <div class="close-modal" onclick="closeProductForm()"><i data-lucide="x"></i></div>
-            <h3 class="font-title" style="font-size: 1.5rem; margin-bottom: 1.5rem;">Ficha da Peça</h3>
+            <h3 class="font-serif" style="font-size: 1.5rem; margin-bottom: 1.5rem;">Ficha da Peça</h3>
 
             <form onsubmit="saveProduct(event)">
                 <input type="hidden" id="prodId">
@@ -2004,24 +1912,12 @@
                 <div id="detailCat"
                     style="color: var(--silver); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px; margin-bottom: 0.5rem; font-weight: bold;">
                 </div>
-                <h2 id="detailName" class="font-title"
+                <h2 id="detailName" class="font-serif"
                     style="font-size: 2.2rem; line-height: 1.1; margin-bottom: 0.5rem;"></h2>
                 <p id="detailSku" style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.5rem;"></p>
 
-                <div id="detailPrice" class="font-title"
+                <div id="detailPrice" class="font-serif"
                     style="font-size: 2rem; color: var(--primary); margin-bottom: 1.5rem;"></div>
-
-                <!-- Seleção de Cor e Tamanho Interativa -->
-                <div id="detailSelectors" style="margin-bottom: 1.5rem; display: flex; flex-direction: column; gap: 1rem;">
-                    <div id="detailColorsArea" style="display: none;">
-                        <label style="font-size: 0.8rem; font-weight: bold; text-transform: uppercase; color: var(--text-muted); display: block; margin-bottom: 0.5rem; letter-spacing: 1px;">Cor:</label>
-                        <div id="detailColorsList" style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;"></div>
-                    </div>
-                    <div id="detailSizesArea" style="display: none;">
-                        <label style="font-size: 0.8rem; font-weight: bold; text-transform: uppercase; color: var(--text-muted); display: block; margin-bottom: 0.5rem; letter-spacing: 1px;">Tamanho:</label>
-                        <div id="detailSizesList" style="display: flex; gap: 0.5rem; flex-wrap: wrap;"></div>
-                    </div>
-                </div>
 
                 <div
                     style="background: var(--bg-body); padding: 1.5rem; border-radius: var(--radius); border: 1px solid var(--border);">
@@ -2044,24 +1940,20 @@
     <div id="drawerOverlay" class="drawer-overlay" onclick="toggleCart()"></div>
     <div id="cartDrawer" class="cart-drawer">
         <div class="cart-header">
-            <h3 class="font-title" id="cartTitleText" style="font-size: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+            <h3 class="font-serif" style="font-size: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
                 <i data-lucide="shopping-bag"></i> Sua Sacola
             </h3>
             <button class="btn-icon" style="color: white;" onclick="toggleCart()"><i data-lucide="x"></i></button>
         </div>
 
-        <!-- Step 1: Sacola (Produtos) -->
-        <div id="cartStep1" class="cart-body">
-            <div id="cartItems"></div>
-        </div>
+        <div id="cartItems" class="cart-body"></div>
 
-        <!-- Step 2: Entrega (Formulário) -->
-        <div id="cartStep2" class="cart-body hidden">
-            <button onclick="changeCartStep(1)" class="btn-back" style="display: flex; align-items: center; gap: 0.3rem; margin-bottom: 1.5rem; background: none; border: none; color: var(--primary); cursor: pointer; font-weight: bold; font-size: 1rem; padding: 0;">
-                <i data-lucide="arrow-left" style="width: 18px; height: 18px;"></i> Voltar para a Sacola
-            </button>
-            <h4 class="font-title" style="margin-bottom: 1rem; font-size: 1.2rem; color: var(--text);">Dados de Entrega</h4>
-            <div style="display: flex; flex-direction: column; gap: 0.8rem;">
+        <div class="cart-footer">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <span style="font-weight: 600;">Total:</span>
+                <span id="cartTotal" class="font-serif" style="font-size: 1.8rem; color: var(--primary);">R$ 0,00</span>
+            </div>
+            <div style="margin-bottom: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
                 <input type="text" id="clientName" placeholder="Seu Nome Completo *" required autocomplete="name">
                 <input type="tel" id="clientPhone" placeholder="Seu WhatsApp *" required autocomplete="tel">
                 <input type="email" id="clientEmail" placeholder="Seu E-mail *" required autocomplete="email">
@@ -2071,27 +1963,11 @@
                 </div>
                 <input type="text" id="clientAddress" placeholder="Endereço Completo (Rua, Nº, Bairro) *" required>
             </div>
-        </div>
-
-        <!-- Footer -->
-        <div class="cart-footer">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                <span style="font-weight: 600;">Total:</span>
-                <span id="cartTotal" class="font-title" style="font-size: 1.8rem; color: var(--primary);">R$ 0,00</span>
-            </div>
-            
-            <!-- Botão para avançar para Step 2 -->
-            <button id="btnGoToStep2" onclick="changeCartStep(2)" class="btn btn-primary w-full" style="height: 55px; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                Continuar para Entrega <i data-lucide="arrow-right" style="width: 18px; height: 18px;"></i>
-            </button>
-
-            <!-- Botão para finalizar no Step 2 -->
-            <button id="btnFinalizeOrder" onclick="checkout()" class="btn btn-primary w-full hidden" style="height: 55px; background: var(--success); font-size: 1.1rem; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                Finalizar via WhatsApp <i data-lucide="send" style="width: 18px; height: 18px;"></i>
+            <button onclick="checkout()" class="btn btn-primary w-full" style="height: 55px;">
+                Finalizar via WhatsApp
             </button>
         </div>
     </div>
-
 
     <!-- ============================================== 
          TELA 1: LOJA VIRTUAL (CLIENTE)
@@ -2106,8 +1982,8 @@
                 <div class="logo-area cursor-pointer" onclick="window.scrollTo(0,0)">
                     <div class="logo-icon"><i data-lucide="gem" size="32"></i></div>
                     <div class="logo-text">
-                        <h1 class="font-title site-name">BZ IMPORTS</h1>
-                        <span class="site-sub">Camisas de Futebol</span>
+                        <h1 class="font-serif site-name">LUAS DE PRATA</h1>
+                        <span class="site-sub">Roupas & Acessórios</span>
                     </div>
                 </div>
 
@@ -2122,7 +1998,7 @@
                             data-lucide="home"></i></button>
                     <button onclick="toggleTheme()" class="btn-icon" title="Tema"><i data-lucide="moon"></i></button>
                     <button onclick="openLogin()" class="btn-icon" title="Admin"><i data-lucide="user"></i></button>
-                    <button id="headerCartBtn" onclick="toggleCart()" class="btn btn-secondary"
+                    <button onclick="toggleCart()" class="btn btn-secondary"
                         style="border-color: var(--primary); color: var(--primary); position: relative;">
                         <i data-lucide="shopping-bag"></i> <span class="hide-mobile">Sacola</span>
                         <span id="cartCountBadge"
@@ -2132,56 +2008,16 @@
             </div>
         </header>
 
-        <!-- ===== TOONHUB CAROUSEL HERO ===== -->
-        <div id="toonhubSection" style="width:100%;position:relative;overflow:hidden;font-family:'Inter',sans-serif;transition:background-color 650ms cubic-bezier(0.4,0,0.2,1);" data-active="0">
-            <div style="width:100%;height:520px;position:relative;overflow:hidden;" id="toonhubInner">
-                <!-- Grain overlay -->
-                <div style="position:absolute;inset:0;pointer-events:none;z-index:50;opacity:0.4;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E\");background-size:200px 200px;"></div>
-                <!-- Ghost text -->
-                <div id="toonGhostText" style="position:absolute;inset-inline:0;display:flex;align-items:center;justify-content:center;pointer-events:none;user-select:none;z-index:2;top:18%;">
-                    <span style="font-family:'Anton',sans-serif;font-size:clamp(70px,20vw,280px);font-weight:900;color:white;opacity:0.18;line-height:1;text-transform:uppercase;letter-spacing:-0.02em;white-space:nowrap;">CAMISAS 2026</span>
-                </div>
-                <!-- Brand label -->
-                <div style="position:absolute;top:1.5rem;left:2rem;z-index:60;font-size:0.7rem;font-weight:600;text-transform:uppercase;color:white;opacity:0.9;letter-spacing:0.18em;">BZ IMPORTS</div>
-                <!-- Carousel items -->
-                <div id="toonCarouselItems" style="position:absolute;inset:0;z-index:3;"></div>
-                <!-- Bottom-left text + nav -->
-                <div style="position:absolute;bottom:1.5rem;left:1rem;z-index:60;max-width:320px;" id="toonBottomLeft">
-                    <p style="font-weight:700;text-transform:uppercase;letter-spacing:0.02em;margin-bottom:0.5rem;font-size:1rem;color:white;opacity:0.95;">COLEÇÃO OFICIAL 2026</p>
-                    <p style="font-size:0.8rem;color:white;opacity:0.85;line-height:1.6;margin-bottom:1rem;">Camisas autênticas das maiores seleções e clubes. Qualidade premium, entregue na sua porta. Peça a sua agora!</p>
-                    <div style="display:flex;gap:0.75rem;">
-                        <button id="toonPrev" onclick="toonNavigate('prev')" style="width:48px;height:48px;border-radius:50%;background:transparent;border:2px solid white;color:white;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform 150ms,background-color 150ms;" onmouseover="this.style.transform='scale(1.08)';this.style.background='rgba(255,255,255,0.12)'" onmouseout="this.style.transform='';this.style.background='transparent'">
-                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 5-7 7 7 7"/></svg>
-                        </button>
-                        <button id="toonNext" onclick="toonNavigate('next')" style="width:48px;height:48px;border-radius:50%;background:transparent;border:2px solid white;color:white;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform 150ms,background-color 150ms;" onmouseover="this.style.transform='scale(1.08)';this.style.background='rgba(255,255,255,0.12)'" onmouseout="this.style.transform='';this.style.background='transparent'">
-                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-                        </button>
-                    </div>
-                </div>
-                <!-- Bottom-right link -->
-                <div style="position:absolute;bottom:1.5rem;right:2rem;z-index:60;">
-                    <a id="toonDiscoverLink" onclick="toonGoToProduct()" style="display:flex;align-items:center;gap:0.4rem;font-family:'Anton',sans-serif;font-size:clamp(18px,3vw,42px);font-weight:400;color:white;opacity:0.95;letter-spacing:-0.02em;line-height:1;text-transform:uppercase;text-decoration:none;cursor:pointer;transition:opacity 200ms;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.95'">
-                        VER PRODUTO
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-                    </a>
-                </div>
-                <!-- Dot indicators -->
-                <div id="toonDots" style="position:absolute;bottom:1.5rem;left:50%;transform:translateX(-50%);z-index:60;display:flex;gap:6px;"></div>
-            </div>
-        </div>
-        <!-- ===== END TOONHUB CAROUSEL ===== -->
-
-        <!-- Banners pequenos abaixo do carrossel TOONHUB -->
-        <div class="container" style="padding-top: 1.5rem;">
-            <div id="topBanners" style="display:none;"></div>
+        <div class="container" style="padding-top: 2rem;">
+            <div id="topBanners" class="banner-carousel"></div>
             <div id="smallBanners" class="small-banners-grid"></div>
         </div>
 
         <div class="container">
             <div class="filter-box">
-                <h2 class="font-title"
+                <h2 class="font-serif"
                     style="font-size: 1.5rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
-                    <i data-lucide="sliders" style="color: var(--primary);"></i> Filtros de Camisas de Futebol
+                    <i data-lucide="sliders" style="color: var(--primary);"></i> Filtros de Roupas & Acessórios
                 </h2>
                 <div class="filter-grid" style="margin-top: 1.5rem;">
                     <div><label>Tamanho</label><select id="filterSize" onchange="applyFilters()">
@@ -2245,7 +2081,7 @@
                     style="background: var(--bg-body); width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; border: 1px solid var(--border);">
                     <i data-lucide="gem" size="40" style="color: var(--primary);"></i>
                 </div>
-                <h3 class="font-title" style="font-size: 1.5rem;">Nenhuma peça encontrada</h3>
+                <h3 class="font-serif" style="font-size: 1.5rem;">Nenhuma peça encontrada</h3>
                 <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Ajuste os filtros de tamanho ou cor.</p>
                 <button onclick="resetFilters()" class="btn btn-secondary">Limpar Filtros</button>
             </div>
@@ -2255,38 +2091,37 @@
             <div class="container"
                 style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 3rem; padding-bottom: 3rem;">
                 <div>
-                    <h3 class="font-title site-name"
-                        style="color: var(--primary); font-size: 1.5rem; margin-bottom: 1rem;">BZ IMPORTS</h3>
+                    <h3 class="font-serif site-name"
+                        style="color: var(--primary); font-size: 1.5rem; margin-bottom: 1rem;">LUAS DE PRATA</h3>
                     <p class="site-desc"
                         style="font-size: 0.9rem; line-height: 1.6; color: #A0A0A0; margin-bottom: 1.5rem; font-weight: 300;">
                         Roupas e Acessórios de alta classe. Elegância, exclusividade e o brilho que você merece.
                     </p>
                     <div class="flex gap-2">
                         <div class="btn-icon site-insta-link"
-                            style="background: rgba(255,255,255,0.1); color: white; cursor: pointer;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-instagram"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
-                        </div>
+                            style="background: rgba(255,255,255,0.1); color: white; cursor: pointer;"><i
+                                data-lucide="instagram"></i></div>
                         <div class="btn-icon site-fb-link"
-                            style="background: rgba(255,255,255,0.1); color: white; cursor: pointer;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-facebook"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
-                        </div>
+                            style="background: rgba(255,255,255,0.1); color: white; cursor: pointer;"><i
+                                data-lucide="facebook"></i></div>
                     </div>
                 </div>
                 <div>
-                    <h4 class="font-title" style="margin-bottom: 1.25rem;">Contato & Atelier</h4>
+                    <h4 class="font-serif" style="margin-bottom: 1.25rem;">Contato & Atelier</h4>
                     <ul style="display: flex; flex-direction: column; gap: 1rem; font-size: 0.95rem; color: #A0A0A0;">
                         <li style="display: flex; gap: 0.75rem;"><i data-lucide="map-pin"
-                                style="color: var(--primary);"></i> <span class="site-addr-text">Centro de Juazeiro Bahia</span></li>
+                                style="color: var(--primary);"></i> <span class="site-addr-text">Shopping Jardins - Lj
+                                45</span></li>
                         <li style="display: flex; gap: 0.75rem;"><i data-lucide="phone"
-                                style="color: var(--primary);"></i> <span class="site-wa-text">(74) 98802-0692</span>
+                                style="color: var(--primary);"></i> <span class="site-wa-text">(87) 9909-4280</span>
                         </li>
                         <li style="display: flex; gap: 0.75rem;"><i data-lucide="mail"
                                 style="color: var(--primary);"></i> <span
-                                class="site-email-text">bzimports@gmail.com</span></li>
+                                class="site-email-text">contato@luasdeprata.com</span></li>
                     </ul>
                 </div>
                 <div>
-                    <h4 class="font-title" style="margin-bottom: 1.25rem;">Acesso Rápido</h4>
+                    <h4 class="font-serif" style="margin-bottom: 1.25rem;">Acesso Rápido</h4>
                     <ul
                         style="display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.95rem; color: #A0A0A0;">
                         <li><a href="#" style="transition: 0.2s;">Novidades</a></li>
@@ -2299,8 +2134,8 @@
             </div>
             <div
                 style="border-top: 1px solid rgba(255,255,255,0.1); padding: 2rem 0; text-align: center; font-size: 0.85rem; color: #666;">
-                <p style="margin-bottom: 0.5rem;">© 2025 <span class="site-name">Bz Imports</span> <span
-                        class="site-sub">Camisas de Futebol</span>. Todos os direitos reservados.</p>
+                <p style="margin-bottom: 0.5rem;">© 2025 <span class="site-name">Luas de Prata</span> <span
+                        class="site-sub">Roupas & Acessórios</span>. Todos os direitos reservados.</p>
                 <p>Site produzido por <strong style="color: var(--primary);">João Ricardo</strong> - Engenheiro da
                     Computação</p>
             </div>
@@ -2315,8 +2150,8 @@
             <div class="sidebar-logo">
                 <i data-lucide="crown" style="color: var(--primary);"></i>
                 <div class="logo-text">
-                    <h3 class="font-title" style="font-size: 1.2rem;">ADMIN</h3>
-                    <span style="font-size: 0.7rem; color: var(--silver);">Bz Imports</span>
+                    <h3 class="font-serif" style="font-size: 1.2rem;">ADMIN</h3>
+                    <span style="font-size: 0.7rem; color: var(--silver);">Luas de Prata</span>
                 </div>
             </div>
 
@@ -2364,7 +2199,7 @@
                 <div class="flex items-center gap-2">
                     <button onclick="document.getElementById('adminSidebar').classList.toggle('active')"
                         class="btn-icon mobile-only" title="Menu"><i data-lucide="menu"></i></button>
-                    <h2 id="pageTitle" class="font-title" style="font-size: 2rem;">Visão Geral</h2>
+                    <h2 id="pageTitle" class="font-serif" style="font-size: 2rem;">Visão Geral</h2>
                 </div>
                 <div class="flex items-center gap-2">
                     <button onclick="window.location.href='?'" class="btn-icon" title="Início"><i
@@ -2376,7 +2211,7 @@
             <!-- TABS -->
             <div id="tab-dashboard" class="admin-tab">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="font-title" style="font-size: 1.5rem;">Desempenho da Loja</h3>
+                    <h3 class="font-serif" style="font-size: 1.5rem;">Desempenho da Loja</h3>
                     <select id="dashPeriod" onchange="loadAdminDashboard()" style="width: auto; margin:0;">
                         <option value="7">Últimos 7 dias</option>
                         <option value="30" selected>Últimos 30 dias</option>
@@ -2393,7 +2228,7 @@
                         <div class="text-white"
                             style="opacity: 0.8; font-size: 0.8rem; text-transform: uppercase; font-weight: bold; letter-spacing: 1px;">
                             Vendas Totais</div>
-                        <div class="font-title" style="font-size: 2.2rem; margin: 0.5rem 0;" id="kpiSales">R$ 0,00</div>
+                        <div class="font-serif" style="font-size: 2.2rem; margin: 0.5rem 0;" id="kpiSales">R$ 0,00</div>
                         <div id="kpiSalesTrend"
                             style="font-size: 0.8rem; display: flex; align-items: center; gap: 5px;"><i
                                 data-lucide="minus"></i> 0% em relação ao período anterior</div>
@@ -2405,7 +2240,7 @@
                                 <div class="text-muted"
                                     style="font-size: 0.8rem; text-transform: uppercase; font-weight: bold; letter-spacing: 1px;">
                                     Novos Pedidos</div>
-                                <div class="font-title" style="font-size: 2.2rem; margin: 0.5rem 0;" id="kpiOrderCount">
+                                <div class="font-serif" style="font-size: 2.2rem; margin: 0.5rem 0;" id="kpiOrderCount">
                                     0</div>
                             </div>
                             <div
@@ -2422,7 +2257,7 @@
                                 <div class="text-muted"
                                     style="font-size: 0.8rem; text-transform: uppercase; font-weight: bold; letter-spacing: 1px;">
                                     Novos Clientes</div>
-                                <div class="font-title" style="font-size: 2.2rem; margin: 0.5rem 0;"
+                                <div class="font-serif" style="font-size: 2.2rem; margin: 0.5rem 0;"
                                     id="kpiClientCount">0</div>
                             </div>
                             <div
@@ -2438,7 +2273,7 @@
                                 <div class="text-muted"
                                     style="font-size: 0.8rem; text-transform: uppercase; font-weight: bold; letter-spacing: 1px;">
                                     Patrimônio (Estoque)</div>
-                                <div class="font-title" style="font-size: 2.2rem; margin: 0.5rem 0;" id="kpiStockVal">R$
+                                <div class="font-serif" style="font-size: 2.2rem; margin: 0.5rem 0;" id="kpiStockVal">R$
                                     0,00</div>
                             </div>
                             <div style="background: #edf2f7; color: #4a5568; padding: 10px; border-radius: 12px;"><i
@@ -2450,13 +2285,13 @@
 
                 <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
                     <div class="dash-widget" style="min-height: 400px;">
-                        <h4 class="font-title mb-6" style="display: flex; align-items: center; gap: 10px;"><i
+                        <h4 class="font-serif mb-6" style="display: flex; align-items: center; gap: 10px;"><i
                                 data-lucide="bar-chart-3" style="color: var(--primary);"></i> Evolução de Vendas</h4>
                         <div style="height: 300px;"><canvas id="salesChart"></canvas></div>
                     </div>
 
                     <div class="dash-widget">
-                        <h4 class="font-title mb-4" style="display: flex; align-items: center; gap: 10px;"><i
+                        <h4 class="font-serif mb-4" style="display: flex; align-items: center; gap: 10px;"><i
                                 data-lucide="award" style="color: var(--secondary);"></i> Mais Vendidos</h4>
                         <div id="dashTopProducts" style="display: flex; flex-direction: column; gap: 1rem;"></div>
                     </div>
@@ -2464,7 +2299,7 @@
 
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;">
                     <div class="dash-widget">
-                        <h4 class="font-title mb-4">Ações Rápidas</h4>
+                        <h4 class="font-serif mb-4">Ações Rápidas</h4>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
                             <button onclick="openProductForm()" class="btn btn-secondary btn-sm"
                                 style="flex-direction: column; padding: 1.5rem; height: auto;"><i
@@ -2475,11 +2310,11 @@
                         </div>
                     </div>
                     <div class="dash-widget">
-                        <h4 class="font-title mb-4">Status de Estoque</h4>
+                        <h4 class="font-serif mb-4">Status de Estoque</h4>
                         <div id="stockStatusSummary"></div>
                     </div>
                     <div class="dash-widget">
-                        <h4 class="font-title mb-4">Cupons Ativos</h4>
+                        <h4 class="font-serif mb-4">Cupons Ativos</h4>
                         <div id="activeCouponsSummary"></div>
                     </div>
                 </div>
@@ -2542,7 +2377,7 @@
 
             <div id="tab-reports" class="admin-tab hidden">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-title">Central de Relatórios</h3>
+                    <h3 class="font-serif">Central de Relatórios</h3>
                     <div class="flex gap-2">
                         <button onclick="generateExportData('csv')" class="btn btn-secondary btn-sm">CSV</button>
                         <button onclick="printReportAction()" class="btn btn-secondary btn-sm"><i
@@ -2567,7 +2402,7 @@
 
             <div id="tab-orders" class="admin-tab hidden">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-title">Gerenciamento de Pedidos</h3>
+                    <h3 class="font-serif">Gerenciamento de Pedidos</h3>
                     <button onclick="openEditOrder('new')" class="btn btn-primary hide-mobile"><i
                             data-lucide="plus"></i> Novo Pedido</button>
                 </div>
@@ -2576,7 +2411,7 @@
 
             <div id="tab-clients" class="admin-tab hidden">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-title">Gerenciamento de Clientes</h3>
+                    <h3 class="font-serif">Gerenciamento de Clientes</h3>
                     <button onclick="openClientForm()" class="btn btn-primary"><i data-lucide="user-plus"></i> Novo
                         Cliente</button>
                 </div>
@@ -2585,7 +2420,7 @@
 
             <div id="tab-brands" class="admin-tab hidden">
                 <div class="dash-widget" style="max-width: 600px;">
-                    <h3 class="font-title mb-4">Coleções / Marcas</h3>
+                    <h3 class="font-serif mb-4">Coleções / Marcas</h3>
                     <div class="flex gap-2 mb-4">
                         <input type="text" id="newBrandInput" placeholder="Nova Coleção" style="margin:0;">
                         <button onclick="addBrand()" class="btn btn-primary">Adicionar</button>
@@ -2599,7 +2434,7 @@
             <div id="tab-categories" class="admin-tab hidden">
                 <div class="dash-widget" style="max-width: 600px;">
                     <div class="flex justify-between items-center mb-4">
-                        <h3 class="font-title">Categorias</h3>
+                        <h3 class="font-serif">Categorias</h3>
                         <div class="flex gap-2">
                             <input type="text" id="newCatName" placeholder="Nova..." style="margin:0; width:150px;">
                             <button onclick="addCategory()" class="btn btn-primary">Add</button>
@@ -2613,7 +2448,7 @@
 
             <div id="tab-banners" class="admin-tab hidden">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-title">Gestão de Banners</h3>
+                    <h3 class="font-serif">Gestão de Banners</h3>
                     <button onclick="openBannerForm()" class="btn btn-primary"><i data-lucide="plus"></i> Novo
                         Banner</button>
                 </div>
@@ -2622,7 +2457,7 @@
 
             <div id="tab-coupons" class="admin-tab hidden">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-title">Cupons de Desconto</h3>
+                    <h3 class="font-serif">Cupons de Desconto</h3>
                     <button onclick="openCouponForm()" class="btn btn-primary"><i data-lucide="plus"></i> Novo
                         Cupom</button>
                 </div>
@@ -2631,7 +2466,7 @@
 
             <div id="tab-siteData" class="admin-tab hidden">
                 <div class="dash-widget" style="max-width: 800px;">
-                    <h3 class="font-title mb-4"><i data-lucide="globe"></i> Dados do Site</h3>
+                    <h3 class="font-serif mb-4"><i data-lucide="globe"></i> Dados do Site</h3>
                     <div
                         style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
                         <div><label>Nome da Loja (Título Principal)</label><input type="text" id="siteNameInput"></div>
@@ -2655,7 +2490,7 @@
             <div id="tab-notes" class="admin-tab hidden" style="background:#f9fbfd; margin:-1.5rem; padding:1.5rem;">
                 <div class="flex justify-between items-center mb-6">
                     <div>
-                        <h2 class="font-title" style="font-size:2.2rem; color:#1a1a1a;">Lista de Tarefas Avançada ✨</h2>
+                        <h2 class="font-serif" style="font-size:2.2rem; color:#1a1a1a;">Lista de Tarefas Avançada ✨</h2>
                         <p class="text-muted" style="color:var(--primary); font-weight:bold;"><i
                                 data-lucide="check-square"></i> Bem-vindo à sua lista de tarefas avançada!</p>
                     </div>
@@ -2684,7 +2519,7 @@
 
                     <div
                         style="background:white; border-radius:12px; padding:1.5rem; border:1px solid #eee; box-shadow:0 4px 15px rgba(0,0,0,0.03);">
-                        <h4 class="font-title mb-4 flex items-center gap-2"><i data-lucide="layout"></i> Conclusão</h4>
+                        <h4 class="font-serif mb-4 flex items-center gap-2"><i data-lucide="layout"></i> Conclusão</h4>
                         <div style="background:#f3f9ff; padding:10px; border-radius:8px; display:inline-block; margin-bottom:1.5rem; cursor:pointer;"
                             class="hover:bg-blue-100 transition">
                             <span class="text-xs font-bold" style="color:#0275d8;"><i data-lucide="grid" size="14"></i>
@@ -2819,7 +2654,7 @@
                 <div class="flex justify-between items-center mb-4">
                     <div class="flex items-center gap-2">
                         <i data-lucide="users" class="text-primary"></i>
-                        <h3 class="font-title">Gestão de Equipe (RBAC)</h3>
+                        <h3 class="font-serif">Gestão de Equipe (RBAC)</h3>
                     </div>
                     <button onclick="openStaffForm()" class="btn btn-primary"><i data-lucide="user-plus"></i> Novo
                         Membro</button>
@@ -2832,7 +2667,7 @@
 
                     <!-- NOVA OPÇÃO: APLICAR IMAGEM PADRÃO GLOBAL -->
                     <div class="dash-widget">
-                        <h3 class="font-title mb-4"><i data-lucide="image"></i> Imagem Padrão Global (Produtos sem foto)
+                        <h3 class="font-serif mb-4"><i data-lucide="image"></i> Imagem Padrão Global (Produtos sem foto)
                         </h3>
                         <p class="text-xs mb-3 text-muted">Aplica uma imagem escolhida a todos os produtos que estão sem
                             foto atualmente na loja, tornando-a oficial para eles (podendo ser deletada ou editada
@@ -2847,7 +2682,7 @@
                     </div>
 
                     <div class="dash-widget">
-                        <h3 class="font-title mb-4"><i data-lucide="settings-2"></i> Pagamento PIX</h3>
+                        <h3 class="font-serif mb-4"><i data-lucide="settings-2"></i> Pagamento PIX</h3>
                         <div style="flex:1">
                             <label>Configurações de Pagamento</label>
                             <input type="text" id="configPixKey" placeholder="Chave PIX" autocomplete="off">
@@ -2872,7 +2707,7 @@ service cloud.firestore {
                     </div>
 
                     <div class="dash-widget">
-                        <h3 class="font-title mb-4"><i data-lucide="palette"></i> Personalização de Cores (Loja)</h3>
+                        <h3 class="font-serif mb-4"><i data-lucide="palette"></i> Personalização de Cores (Loja)</h3>
                         <div
                             style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
                             <div><label>Cor Primária</label><input type="color" id="colorPrimary"
@@ -2894,7 +2729,7 @@ service cloud.firestore {
                     </div>
 
                     <div class="dash-widget">
-                        <h3 class="font-title mb-4"><i data-lucide="cloud"></i> Backups e Restauração</h3>
+                        <h3 class="font-serif mb-4"><i data-lucide="cloud"></i> Backups e Restauração</h3>
                         <div class="flex gap-2 mb-4">
                             <button onclick="exportData('json')" class="btn btn-primary flex-1"><i
                                     data-lucide="cloud"></i> Backup Cloud</button>
@@ -2932,7 +2767,7 @@ service cloud.firestore {
                             style="border: 1px solid var(--border); border-radius: 4px; padding: 1rem;"></div>
                     </div>
                     <div class="dash-widget" style="border-color: var(--danger);">
-                        <h4 class="font-title mb-2" style="color: var(--danger);">Zona de Perigo</h4>
+                        <h4 class="font-serif mb-2" style="color: var(--danger);">Zona de Perigo</h4>
                         <p class="text-xs mb-4">Atenção: Ações irreversíveis.</p>
                         <div class="flex gap-2">
                             <button onclick="forceRestore()" class="btn btn-secondary btn-sm"
@@ -2953,7 +2788,7 @@ service cloud.firestore {
                 <div class="logo-area" onclick="window.location.href='?'" style="cursor: pointer;">
                     <i data-lucide="book-open" style="color: var(--primary);"></i>
                     <div class="logo-text">
-                        <h1 class="font-title">BZ IMPORTS</h1><span style="color: var(--primary);">Lookbook
+                        <h1 class="font-serif">LUAS DE PRATA</h1><span style="color: var(--primary);">Lookbook
                             Digital</span>
                     </div>
                 </div>
@@ -3017,8 +2852,6 @@ service cloud.firestore {
                 </label>
             `).join('');
         };
-
-        const firebaseConfig = {
             apiKey: "AIzaSyBB2JRd9gsrZqYX7NS5Bo81VmgRKXW5708",
             authDomain: "clinica-40450.firebaseapp.com",
             projectId: "clinica-40450",
@@ -3039,9 +2872,8 @@ service cloud.firestore {
         const DBService = {
             async getAll(collectionName) {
                 try {
-                    const q = await getDocs(collection(db, 'alansantos_' + collectionName));
-                    const allData = q.docs.map(d => d.data());
-                    return allData.filter(d => d.store === 'bzimports' || !d.store);
+                    const q = await getDocs(collection(db, collectionName));
+                    return q.docs.map(d => d.data());
                 } catch (e) {
                     if (e.code === 'permission-denied') { } else {
                         console.error("Erro ao ler:", e);
@@ -3054,8 +2886,7 @@ service cloud.firestore {
                 const isPublicCollection = ['orders', 'clients'].includes(collectionName);
                 if (!auth.currentUser && !isPublicCollection) return data;
                 try {
-                    data.store = 'bzimports';
-                    await setDoc(doc(db, 'alansantos_' + collectionName, String(data.id || Date.now())), data, { merge: true });
+                    await setDoc(doc(db, collectionName, String(data.id || Date.now())), data, { merge: true });
                     return data;
                 } catch (e) {
                     console.error("Erro ao salvar:", e);
@@ -3072,7 +2903,7 @@ service cloud.firestore {
             async delete(collectionName, id) {
                 if (!auth.currentUser) return;
                 try {
-                    await deleteDoc(doc(db, 'alansantos_' + collectionName, String(id)));
+                    await deleteDoc(doc(db, collectionName, String(id)));
                 } catch (e) {
                     console.error("Erro ao excluir:", e);
                     showToast("Erro ao excluir do Firebase.", "error");
@@ -3081,10 +2912,8 @@ service cloud.firestore {
             async clear(collectionName) {
                 try {
                     if (!auth.currentUser) return;
-                    const q = await getDocs(collection(db, 'alansantos_' + collectionName));
-                    const promises = q.docs
-                        .filter(d => d.data().store === 'bzimports' || !d.data().store)
-                        .map((d) => deleteDoc(d.ref));
+                    const q = await getDocs(collection(db, collectionName));
+                    const promises = q.docs.map((d) => deleteDoc(d.ref));
                     await Promise.all(promises);
                 } catch (e) {
                     console.error("Erro ao limpar:", e);
@@ -3092,11 +2921,7 @@ service cloud.firestore {
             },
             async saveCloudBackup(data) {
                 try {
-                    await addDoc(collection(db, 'alansantos_backups'), { 
-                        timestamp: Date.now(), 
-                        content: JSON.stringify(data),
-                        store: 'bzimports'
-                    });
+                    await addDoc(collection(db, 'backups'), { timestamp: Date.now(), content: JSON.stringify(data) });
                 } catch (e) {
                     console.error("Erro no backup:", e);
                     showToast("Erro ao salvar backup na nuvem.", "error");
@@ -3104,11 +2929,9 @@ service cloud.firestore {
             },
             async getCloudBackups() {
                 try {
-                    const q = query(collection(db, 'alansantos_backups'), orderBy('timestamp', 'desc'));
+                    const q = query(collection(db, 'backups'), orderBy('timestamp', 'desc'));
                     const snap = await getDocs(q);
-                    return snap.docs
-                        .map(d => ({ id: d.id, ...d.data() }))
-                        .filter(d => d.store === 'bzimports' || !d.store);
+                    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
                 } catch (e) {
                     console.error("Erro ao buscar backups:", e);
                     return [];
@@ -3203,7 +3026,7 @@ service cloud.firestore {
             window.tempSelectedStaff = null;
         }
 
-        window.confirmStaffProfile = async () => {
+        window.confirmStaffProfile = () => {
             const pass = document.getElementById('staffInputPin').value;
             if (pass === String(window.tempSelectedStaff.password || window.tempSelectedStaff.pin)) {
                 if (window.tempSelectedStaff.status === 'Inativo' || window.tempSelectedStaff.status === 'Suspenso') {
@@ -3213,8 +3036,7 @@ service cloud.firestore {
                 document.getElementById('staffSelectionModal').classList.remove('active');
                 document.getElementById('adminView').classList.remove('hidden');
                 document.getElementById('storeView').classList.add('hidden');
-                showToast("Carregando dados da loja...", "success");
-                await loadData();
+                loadData();
                 setAdminTab('dashboard');
                 showToast(`Bem-vindo(a), ${window.currentStaff.name}!`);
                 applyRBAC();
@@ -3267,1021 +3089,11 @@ service cloud.firestore {
             else { renderFiltersUI(); applyFilters(); updateCartUI(); }
 
             if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
-            console.log("%c Bz Imports - Final Version RBAC ", "background: #D4AF37; color: #fff; font-weight: bold; padding: 5px; border-radius: 3px;");
+            console.log("%c Luas de Prata - Final Version RBAC ", "background: #D4AF37; color: #fff; font-weight: bold; padding: 5px; border-radius: 3px;");
         };
 
         async function loadData() {
             window.products = await DBService.getAll('produtos');
-            const needsUpdate = window.products.length > 0 && (window.products.some(p => !p.sku) || window.products.length < 30 || window.products.some(p => p.id === 'prod-1' && p.name.includes('Brasileira I 2024')));
-            if (window.products.length === 0 || needsUpdate) {
-                const seedProducts = [
-          {
-                    "id": "prod-1",
-                    "name": "Argentina 2026 Camisa Reserva Messi 10 Réplica - Masculino",
-                    "sku": "ADI-2026-1",
-                    "supplier": "adidas",
-                    "category": "Seleções",
-                    "cost": 159.96,
-                    "price": 399.9,
-                    "pricePromo": 349.9,
-                    "stock": 15,
-                    "colors": [
-                              "Azul",
-                              "Branco"
-                    ],
-                    "sizes": [
-                              "P",
-                              "M",
-                              "G",
-                              "GG"
-                    ],
-                    "material": "Poliéster Dri-Fit / AEROREADY",
-                    "gender": "Masculino",
-                    "description": "Messi Jersey is a tribute to one of football's greatest legends",
-                    "outStock": false,
-                    "noLimit": false,
-                    "images": [
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/0050_FIFAMZ0326_2.jpg?v=1776695008",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/0048_FIFAMZ0326_4.jpg?v=1776695031",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/0051_FIFAMZ0326_1.jpg?v=1776695031"
-                    ],
-                    "image": "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/0050_FIFAMZ0326_2.jpg?v=1776695008"
-          },
-          {
-                    "id": "prod-2",
-                    "name": "Camisa dos EUA 2026 Mandante - Masculina",
-                    "sku": "NIK-2026-2",
-                    "supplier": "Nike",
-                    "category": "Seleções",
-                    "cost": 139.96,
-                    "price": 349.9,
-                    "pricePromo": 299.9,
-                    "stock": 27,
-                    "colors": [
-                              "Amarelo",
-                              "Verde",
-                              "Vermelho",
-                              "Branco"
-                    ],
-                    "sizes": [
-                              "P",
-                              "M",
-                              "G",
-                              "GG"
-                    ],
-                    "material": "Poliéster Dri-Fit / AEROREADY",
-                    "gender": "Masculino",
-                    "description": "Brilhante e ousado. Estrelas de malha engenheirada em obsidiana escura e características metálicas que acentuam o número do jogador e o emblema modernizam a iconografia americana clássica para um uniforme de visitante limpo e ousado.",
-                    "outStock": false,
-                    "noLimit": false,
-                    "images": [
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_c78fa204-51ce-440a-a410-c8b8a4258deb.jpg?v=1775564013",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_f8aaba70-22cf-481c-ac09-35ab0737ceea.jpg?v=1775564013",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_3562f970-fa0a-4527-abc1-f50499492965.jpg?v=1775564013"
-                    ],
-                    "image": "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_c78fa204-51ce-440a-a410-c8b8a4258deb.jpg?v=1775564013"
-          },
-          {
-                    "id": "prod-3",
-                    "name": "Camisa do Brasil 2026 Mandante - Masculina",
-                    "sku": "NIK-2026-3",
-                    "supplier": "Nike",
-                    "category": "Seleções",
-                    "cost": 139.96,
-                    "price": 349.9,
-                    "pricePromo": 299.9,
-                    "stock": 29,
-                    "colors": [
-                              "Amarelo",
-                              "Verde",
-                              "Vermelho",
-                              "Branco"
-                    ],
-                    "sizes": [
-                              "P",
-                              "M",
-                              "G",
-                              "GG"
-                    ],
-                    "material": "Poliéster Dri-Fit / AEROREADY",
-                    "gender": "Masculino",
-                    "description": "O icônico amarelo canário retorna ao único uniforme do mundo com cinco estrelas sobre o escudo. Uma causa de celebração para os brasileiros. Para todos os outros, um aviso.",
-                    "outStock": false,
-                    "noLimit": false,
-                    "images": [
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_02047e33-3b4e-41f2-869b-ac361dd4b283.jpg?v=1775563958",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_1e5c686d-6495-4fbd-afe7-5b25371c103e.jpg?v=1775563958",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_c5b55900-6c68-4c9a-b4e5-8e51c1c52fa3.jpg?v=1775563959"
-                    ],
-                    "image": "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_02047e33-3b4e-41f2-869b-ac361dd4b283.jpg?v=1775563958"
-          },
-          {
-                    "id": "prod-4",
-                    "name": "Camisa da Espanha 2026 Autêntica Mandante - Masculina",
-                    "sku": "ADI-2026-4",
-                    "supplier": "adidas",
-                    "category": "Seleções",
-                    "cost": 199.96,
-                    "price": 499.9,
-                    "pricePromo": 449.9,
-                    "stock": 11,
-                    "colors": [
-                              "Amarelo",
-                              "Verde",
-                              "Vermelho",
-                              "Branco"
-                    ],
-                    "sizes": [
-                              "P",
-                              "M",
-                              "G",
-                              "GG"
-                    ],
-                    "material": "Poliéster Dri-Fit / AEROREADY",
-                    "gender": "Masculino",
-                    "description": "A Camisa Spain 26 Home Authentic é uma homenagem à elegância e paixão do futebol espanhol. Inspirada nas cores vibrantes da bandeira espanhola, esta camisa foi projetada para fazer uma declaração tanto dentro quanto fora de campo. Ela incorpora a tecnologia Climacool+ da adidas.",
-                    "outStock": false,
-                    "noLimit": false,
-                    "images": [
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_b3db0408-344c-4ba2-b34b-5bedc55c84f1.png?v=1774372376",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_450f9e9b-03a8-4660-87b5-dde79b5b9fd9.png?v=1774372376",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_168b8754-29bc-40f6-9e64-8e519f9f312e.png?v=1774372376"
-                    ],
-                    "image": "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_b3db0408-344c-4ba2-b34b-5bedc55c84f1.png?v=1774372376"
-          },
-          {
-                    "id": "prod-5",
-                    "name": "África do Sul 2026 Camisa Reserva - Masculino",
-                    "sku": "ADI-2026-5",
-                    "supplier": "adidas",
-                    "category": "Seleções",
-                    "cost": 139.96,
-                    "price": 349.9,
-                    "pricePromo": 299.9,
-                    "stock": 19,
-                    "colors": [
-                              "Azul",
-                              "Branco"
-                    ],
-                    "sizes": [
-                              "P",
-                              "M",
-                              "G",
-                              "GG"
-                    ],
-                    "material": "Poliéster Dri-Fit / AEROREADY",
-                    "gender": "Masculino",
-                    "description": "Inspired by a memorable sporting moment. This adidas South Africa 26 Away Jersey borrows design details from the kit the team wore when the beautiful game’s biggest tournament took place on home soil in 2010.",
-                    "outStock": false,
-                    "noLimit": false,
-                    "images": [
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/KY2217_1_APPAREL_Photography_FrontCenterView_white.jpg?v=1780668789",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/KY2217_2_APPAREL_Photography_BackCenterView_white.jpg?v=1780668789",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/KY2217_3_APPAREL_OnModel_StandardView_white.jpg?v=1780668789"
-                    ],
-                    "image": "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/KY2217_1_APPAREL_Photography_FrontCenterView_white.jpg?v=1780668789"
-          },
-          {
-                    "id": "prod-6",
-                    "name": "Argentina 26 Camisa Authentic Reserva de Messi - Masculino",
-                    "sku": "ADI-2026-6",
-                    "supplier": "adidas",
-                    "category": "Seleções",
-                    "cost": 239.96,
-                    "price": 599.9,
-                    "pricePromo": 549.9,
-                    "stock": 21,
-                    "colors": [
-                              "Azul",
-                              "Branco"
-                    ],
-                    "sizes": [
-                              "P",
-                              "M",
-                              "G",
-                              "GG"
-                    ],
-                    "material": "Poliéster Dri-Fit / AEROREADY",
-                    "gender": "Masculino",
-                    "description": "The Argentina 26 Messi Away Authentic Jersey – Men’s is built for elite performance and all-day comfort. Made with advanced moisture-wicking and quick-dry fabric, it efficiently manages sweat to keep you dry, cool, and comfortable during every match or workout. Its breathable performance materials enhance airflow across the body, helping maintain comfort even at high intensity. Designed as the official on-pitch jersey worn by the players, this authentic edition delivers a professional fit and premium feel worthy of champions.",
-                    "outStock": false,
-                    "noLimit": false,
-                    "images": [
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/KH3935_1_APPAREL_Photography_FrontCenterView_white.jpg?v=1779208200",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/KH3935_2_APPAREL_Photography_BackCenterView_white.jpg?v=1779208200",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/KH3935_7_APPAREL_OnModel_DetailView1_white.jpg?v=1779208200"
-                    ],
-                    "image": "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/KH3935_1_APPAREL_Photography_FrontCenterView_white.jpg?v=1779208200"
-          },
-          {
-                    "id": "prod-7",
-                    "name": "Camisa da Argentina 2026 Mandante - Masculina",
-                    "sku": "ADI-2026-7",
-                    "supplier": "adidas",
-                    "category": "Seleções",
-                    "cost": 139.96,
-                    "price": 349.9,
-                    "pricePromo": 299.9,
-                    "stock": 27,
-                    "colors": [
-                              "Amarelo",
-                              "Verde",
-                              "Vermelho",
-                              "Branco"
-                    ],
-                    "sizes": [
-                              "P",
-                              "M",
-                              "G",
-                              "GG"
-                    ],
-                    "material": "Poliéster Dri-Fit / AEROREADY",
-                    "gender": "Masculino",
-                    "description": "A Camisa Argentina 26 Home Replica é mais do que apenas uma camisa; é uma celebração do legado do futebol da Argentina. Este kit é inspirado nas camisas usadas durante as três vitórias da Argentina na Copa do Mundo em '78, '86 e '22, e complementado pelo ano de fundação da confederação como um orgulhoso fechamento. LEGAL. SECO. Pronto",
-                    "outStock": false,
-                    "noLimit": false,
-                    "images": [
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_ab8f6ea2-c16a-4882-822e-aa52e9506054.png?v=1774372572",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_475d3a6c-8863-4a35-9bcc-16bd1dc1df0c.png?v=1774372572",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_220b3fe1-1aa8-4b96-905d-f2011446e83b.png?v=1774372572"
-                    ],
-                    "image": "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_ab8f6ea2-c16a-4882-822e-aa52e9506054.png?v=1774372572"
-          },
-          {
-                    "id": "prod-8",
-                    "name": "Portugal 2026 Camisa Reserva - Masculino",
-                    "sku": "PUM-2026-8",
-                    "supplier": "Puma",
-                    "category": "Seleções",
-                    "cost": 139.96,
-                    "price": 349.9,
-                    "pricePromo": 299.9,
-                    "stock": 22,
-                    "colors": [
-                              "Azul",
-                              "Branco"
-                    ],
-                    "sizes": [
-                              "P",
-                              "M",
-                              "G",
-                              "GG"
-                    ],
-                    "material": "Poliéster Dri-Fit / AEROREADY",
-                    "gender": "Masculino",
-                    "description": "Portugal’s Away Kit is designed for the fans. This Replica jersey pairs the same match-worn look with a casual silhouette, details, and materials, ideal for both game day and everyday wear.",
-                    "outStock": false,
-                    "noLimit": false,
-                    "images": [
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/FIFAMZ0368-1.png?v=1778690010",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/FIFAMZ0368-2.png?v=1778690010",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/FIFAMZ0368-D-Copy.jpg?v=1778689754"
-                    ],
-                    "image": "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/FIFAMZ0368-1.png?v=1778690010"
-          },
-          {
-                    "id": "prod-9",
-                    "name": "Camisa da Alemanha 2026 Mandante - Masculina",
-                    "sku": "ADI-2026-9",
-                    "supplier": "adidas",
-                    "category": "Seleções",
-                    "cost": 139.96,
-                    "price": 349.9,
-                    "pricePromo": 299.9,
-                    "stock": 23,
-                    "colors": [
-                              "Amarelo",
-                              "Verde",
-                              "Vermelho",
-                              "Branco"
-                    ],
-                    "sizes": [
-                              "P",
-                              "M",
-                              "G",
-                              "GG"
-                    ],
-                    "material": "Poliéster Dri-Fit / AEROREADY",
-                    "gender": "Masculino",
-                    "description": "Quando se trata de futebol, herança e inovação andam lado a lado. Nossa Camisa Réplica Germany 26 Home combina elementos clássicos de camisa com a tecnologia e detalhes mais recentes, criando o ícone de amanhã. Confeccionada com construção de dupla malha, esta camisa oferece um ajuste slim que abraça o corpo.",
-                    "outStock": false,
-                    "noLimit": false,
-                    "images": [
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/KD8363_1_APPAREL_Photography_FrontCenterView_white.jpg?v=1774372475",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/KD8363_2_APPAREL_Photography_BackCenterView_white.jpg?v=1774372475",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/KD8363_3_APPAREL_OnModel_StandardView_white.jpg?v=1774372475"
-                    ],
-                    "image": "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/KD8363_1_APPAREL_Photography_FrontCenterView_white.jpg?v=1774372475"
-          },
-          {
-                    "id": "prod-10",
-                    "name": "Camisa da Argentina 2026 Autêntica Visitante - Masculina",
-                    "sku": "ADI-2026-10",
-                    "supplier": "adidas",
-                    "category": "Seleções",
-                    "cost": 199.96,
-                    "price": 499.9,
-                    "pricePromo": 449.9,
-                    "stock": 17,
-                    "colors": [
-                              "Azul",
-                              "Branco"
-                    ],
-                    "sizes": [
-                              "P",
-                              "M",
-                              "G",
-                              "GG"
-                    ],
-                    "material": "Poliéster Dri-Fit / AEROREADY",
-                    "gender": "Masculino",
-                    "description": "Uma homenagem ao espírito da Argentina, o uniforme autêntico Argentina 2026 Away captura a paixão e a criatividade da cultura argentina. Com seu design ousado e redemoinhos, o uniforme é inspirado por expressões artísticas populares. Projetado para aqueles que vivem e respiram futebol, combina estilo com desempenho.",
-                    "outStock": false,
-                    "noLimit": false,
-                    "images": [
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_b6a5a8ac-8a79-460f-904c-9fc586a854f0.jpg?v=1775563942",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_3404ec94-bb76-4104-8c60-fefe492c46ee.jpg?v=1775563942",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_d66e50ec-d14c-471b-b947-0e38a3f4754b.jpg?v=1775563942"
-                    ],
-                    "image": "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_b6a5a8ac-8a79-460f-904c-9fc586a854f0.jpg?v=1775563942"
-          },
-          {
-                    "id": "prod-11",
-                    "name": "Camisa do México 2026 Mandante - Masculina",
-                    "sku": "ADI-2026-11",
-                    "supplier": "adidas",
-                    "category": "Seleções",
-                    "cost": 139.96,
-                    "price": 349.9,
-                    "pricePromo": 299.9,
-                    "stock": 17,
-                    "colors": [
-                              "Amarelo",
-                              "Verde",
-                              "Vermelho",
-                              "Branco"
-                    ],
-                    "sizes": [
-                              "P",
-                              "M",
-                              "G",
-                              "GG"
-                    ],
-                    "material": "Poliéster Dri-Fit / AEROREADY",
-                    "gender": "Masculino",
-                    "description": "Projetada para os fãs apaixonados que carregam seu orgulho nas mangas, a camisa réplica México 26 Home é mais do que apenas um uniforme: é um símbolo de unidade e celebração. Enquanto o México sedia o maior evento de futebol, vista este uniforme verde icônico e junte-se ao coro de \"somos México.\" Fabricada com tecnologia Climacool, esta camisa ajuda você a se sentir fresco e seco, mesmo durante as partidas mais intensas. O tecido duplo oferece um ajuste confortável, permitindo que você se concentre no seu jogo.",
-                    "outStock": false,
-                    "noLimit": false,
-                    "images": [
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_09d4d8ad-c993-4e39-af1c-caed11623a11.png?v=1774372423",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_023818fa-9116-49ea-b362-a9741c544ab4.png?v=1774372423",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_345d344f-638a-42d6-a998-fdb4f445dd48.png?v=1774372423"
-                    ],
-                    "image": "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_09d4d8ad-c993-4e39-af1c-caed11623a11.png?v=1774372423"
-          },
-          {
-                    "id": "prod-12",
-                    "name": "Camisa da Itália 2026 Autêntica Mandante - Masculina",
-                    "sku": "ADI-2026-12",
-                    "supplier": "adidas",
-                    "category": "Seleções",
-                    "cost": 199.96,
-                    "price": 499.9,
-                    "pricePromo": 449.9,
-                    "stock": 18,
-                    "colors": [
-                              "Amarelo",
-                              "Verde",
-                              "Vermelho",
-                              "Branco"
-                    ],
-                    "sizes": [
-                              "P",
-                              "M",
-                              "G",
-                              "GG"
-                    ],
-                    "material": "Poliéster Dri-Fit / AEROREADY",
-                    "gender": "Masculino",
-                    "description": "Quando se trata de futebol, herança e inovação andam de mãos dadas. A Camisa Itália 26 Home Authentic celebra o rico legado cultural do futebol italiano, inspirando-se em sua base fundamental para o futebol global. Esta camisa se concentra na celebração da história da FIGC.",
-                    "outStock": false,
-                    "noLimit": false,
-                    "images": [
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_1a04ff4c-6fbd-4926-bddb-5b4b8f33caf5.png?v=1774372452",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_7edf1719-1b4f-4e59-bbe5-4b05c5d5d1ba.png?v=1774372452",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_802dbaa6-bccb-4708-8a6d-169ae8970c2d.png?v=1774372452"
-                    ],
-                    "image": "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_1a04ff4c-6fbd-4926-bddb-5b4b8f33caf5.png?v=1774372452"
-          },
-          {
-                    "id": "prod-13",
-                    "name": "Camisa do México 2026 Autêntica Mandante - Masculina",
-                    "sku": "ADI-2026-13",
-                    "supplier": "adidas",
-                    "category": "Seleções",
-                    "cost": 199.96,
-                    "price": 499.9,
-                    "pricePromo": 449.9,
-                    "stock": 22,
-                    "colors": [
-                              "Amarelo",
-                              "Verde",
-                              "Vermelho",
-                              "Branco"
-                    ],
-                    "sizes": [
-                              "P",
-                              "M",
-                              "G",
-                              "GG"
-                    ],
-                    "material": "Poliéster Dri-Fit / AEROREADY",
-                    "gender": "Masculino",
-                    "description": "Projetada no espírito de celebração, a Camisa Autêntica México 26 Home é feita para aqueles que são barulhentos, leais e apaixonados pelo México. Resfriamento Avançado. A engenharia superior e os materiais avançados se unem para um desempenho fresco, seco e sem distrações.",
-                    "outStock": false,
-                    "noLimit": false,
-                    "images": [
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_bb8e2e3e-8c87-4469-b928-0dffe04d9d6f.png?v=1774372426",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_b07ff6fb-b72d-4228-9788-656ddf74708b.png?v=1774372426",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_86ceae0e-c9c0-4e6d-94bb-0919a2f91ece.jpg?v=1774372426"
-                    ],
-                    "image": "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_bb8e2e3e-8c87-4469-b928-0dffe04d9d6f.png?v=1774372426"
-          },
-          {
-                    "id": "prod-14",
-                    "name": "Camisa da França 2026 Visitante - Masculina",
-                    "sku": "NIK-2026-14",
-                    "supplier": "Nike",
-                    "category": "Seleções",
-                    "cost": 139.96,
-                    "price": 349.9,
-                    "pricePromo": 299.9,
-                    "stock": 15,
-                    "colors": [
-                              "Azul",
-                              "Branco"
-                    ],
-                    "sizes": [
-                              "P",
-                              "M",
-                              "G",
-                              "GG"
-                    ],
-                    "material": "Poliéster Dri-Fit / AEROREADY",
-                    "gender": "Masculino",
-                    "description": "Liberté Recarregada. Uma referência ao presente da França da Estátua da Liberdade para os EUA, a cor teal clara do uniforme e o brasão oxidado ecoam a pátina icônica da estátua — simbolizando uma federação construída para resistir ao teste do tempo.",
-                    "outStock": false,
-                    "noLimit": false,
-                    "images": [
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_f7f029ac-d57c-4aab-ab4e-45d5d056ac29.jpg?v=1775564083",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_cdcf668e-39bd-44c3-8115-a305f5f587eb.jpg?v=1775564083"
-                    ],
-                    "image": "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_f7f029ac-d57c-4aab-ab4e-45d5d056ac29.jpg?v=1775564083"
-          },
-          {
-                    "id": "prod-15",
-                    "name": "Camisa da Alemanha 2026 Autêntica Visitante - Masculina",
-                    "sku": "ADI-2026-15",
-                    "supplier": "adidas",
-                    "category": "Seleções",
-                    "cost": 199.96,
-                    "price": 499.9,
-                    "pricePromo": 449.9,
-                    "stock": 12,
-                    "colors": [
-                              "Azul",
-                              "Branco"
-                    ],
-                    "sizes": [
-                              "P",
-                              "M",
-                              "G",
-                              "GG"
-                    ],
-                    "material": "Poliéster Dri-Fit / AEROREADY",
-                    "gender": "Masculino",
-                    "description": "Para atletas que exigem desempenho, a Camisa Autêntica Adidas Alemanha 2026 Away combina herança e tecnologia de ponta, inspirada em momentos icônicos da história do futebol. Projetada com tecnologia Climacool+, esta camisa absorve e dispersa o suor, ajudando você a ficar fresco, seco e focado durante partidas intensas.",
-                    "outStock": false,
-                    "noLimit": false,
-                    "images": [
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_9b42b582-6a6d-41a8-bd3a-e6fc6caeb107.jpg?v=1775564043",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_6240ae8a-936f-4906-8076-bb41a5e5674e.jpg?v=1775564043",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_ddff3c68-7a79-4447-8478-6517f738a9c2.jpg?v=1775564043"
-                    ],
-                    "image": "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_9b42b582-6a6d-41a8-bd3a-e6fc6caeb107.jpg?v=1775564043"
-          },
-          {
-                    "id": "prod-16",
-                    "name": "Camisa da Nigéria 2026 Visitante - Masculina",
-                    "sku": "NIK-2026-16",
-                    "supplier": "Nike",
-                    "category": "Seleções",
-                    "cost": 139.96,
-                    "price": 349.9,
-                    "pricePromo": 299.9,
-                    "stock": 11,
-                    "colors": [
-                              "Azul",
-                              "Branco"
-                    ],
-                    "sizes": [
-                              "P",
-                              "M",
-                              "G",
-                              "GG"
-                    ],
-                    "material": "Poliéster Dri-Fit / AEROREADY",
-                    "gender": "Masculino",
-                    "description": "A camisa away 2026 da Nigéria continua sua tradição de designs prontos para a rua que fazem uma declaração bem além do campo. A tecnologia Nike Aero-FIT foi desenvolvida para máxima respirabilidade, permitindo fluxo de ar contra sua pele ajudando você a se manter fresco quando as temperaturas estão subindo.",
-                    "outStock": false,
-                    "noLimit": false,
-                    "images": [
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_1a0d5dda-c1e6-4621-9fa7-c0079d201af8.jpg?v=1775564099",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_fee5668b-690e-4dfd-bc71-43dae22dccc7.jpg?v=1775564099",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_06c3ebe6-dc64-47df-bc04-487c8530320e.jpg?v=1775564099"
-                    ],
-                    "image": "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_1a0d5dda-c1e6-4621-9fa7-c0079d201af8.jpg?v=1775564099"
-          },
-          {
-                    "id": "prod-17",
-                    "name": "Camisa do México 2026 Visitante - Masculina",
-                    "sku": "ADI-2026-17",
-                    "supplier": "adidas",
-                    "category": "Seleções",
-                    "cost": 139.96,
-                    "price": 349.9,
-                    "pricePromo": 299.9,
-                    "stock": 24,
-                    "colors": [
-                              "Azul",
-                              "Branco"
-                    ],
-                    "sizes": [
-                              "P",
-                              "M",
-                              "G",
-                              "GG"
-                    ],
-                    "material": "Poliéster Dri-Fit / AEROREADY",
-                    "gender": "Masculino",
-                    "description": "Homenageando a arte e o espírito do design pré-hispânico, o gráfico sutil nesta Camisa Away Mexico 2026 se inspira na intricada simbologia antiga descoberta por todo o país.",
-                    "outStock": false,
-                    "noLimit": false,
-                    "images": [
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_8c109ac7-6e21-4d48-b300-b77698d533cd.jpg?v=1775564098",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_d0bcbbc6-6277-4814-8ae6-961333f3160f.jpg?v=1775564098",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_3f8e39a9-8573-4371-b269-9246d7cbe74b.jpg?v=1775564098"
-                    ],
-                    "image": "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_8c109ac7-6e21-4d48-b300-b77698d533cd.jpg?v=1775564098"
-          },
-          {
-                    "id": "prod-18",
-                    "name": "Camisa da Itália 2026 Mandante - Masculina",
-                    "sku": "ADI-2026-18",
-                    "supplier": "adidas",
-                    "category": "Seleções",
-                    "cost": 139.96,
-                    "price": 349.9,
-                    "pricePromo": 299.9,
-                    "stock": 17,
-                    "colors": [
-                              "Amarelo",
-                              "Verde",
-                              "Vermelho",
-                              "Branco"
-                    ],
-                    "sizes": [
-                              "P",
-                              "M",
-                              "G",
-                              "GG"
-                    ],
-                    "material": "Poliéster Dri-Fit / AEROREADY",
-                    "gender": "Masculino",
-                    "description": "A Camisa Itália 26 Home Replica é uma homenagem ao coração e à alma do futebol italiano. Feita com paixão e precisão, esta camisa incorpora a celebração e a significância da rica história da FIGC. Ela captura a essência do legado do futebol da Itália.",
-                    "outStock": false,
-                    "noLimit": false,
-                    "images": [
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_3bf28b9c-e9f3-49e3-ac48-fd7473b92b15.png?v=1774372450",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_17d4d957-6d5d-447f-b1ae-d46846959aa4.png?v=1774372450",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_a0c558c2-01bc-4ed9-a179-0a65e4a142f7.png?v=1774372451"
-                    ],
-                    "image": "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_3bf28b9c-e9f3-49e3-ac48-fd7473b92b15.png?v=1774372450"
-          },
-          {
-                    "id": "prod-19",
-                    "name": "Camisa da Colômbia 2026 Autêntica Mandante - Masculina",
-                    "sku": "ADI-2026-19",
-                    "supplier": "adidas",
-                    "category": "Seleções",
-                    "cost": 199.96,
-                    "price": 499.9,
-                    "pricePromo": 449.9,
-                    "stock": 25,
-                    "colors": [
-                              "Amarelo",
-                              "Verde",
-                              "Vermelho",
-                              "Branco"
-                    ],
-                    "sizes": [
-                              "P",
-                              "M",
-                              "G",
-                              "GG"
-                    ],
-                    "material": "Poliéster Dri-Fit / AEROREADY",
-                    "gender": "Masculino",
-                    "description": "Mostre suas cores na camisa Colombia 26 Home Authentic. Inspirado na rica cultura da nação, o design apresenta uma base amarela vibrante adornada com motivos de borboleta para uma energia genuína. Construída para o desempenho, a camisa apresenta a tecnologia avançada Climacool+ da adidas—desenvolvida para resfriamento direcionado e mapeamento corporal para fluxo de ar ideal que ajuda você a se manter fresco.",
-                    "outStock": false,
-                    "noLimit": false,
-                    "images": [
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_695e8c00-a951-4ed8-af81-899e39ed5503.png?v=1774372495",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_4f1daf1f-3a9c-4ace-ae45-a615055c6f66.png?v=1774372495",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_155d2ee3-7540-421e-b583-e76868a1298a.png?v=1774372495"
-                    ],
-                    "image": "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_695e8c00-a951-4ed8-af81-899e39ed5503.png?v=1774372495"
-          },
-          {
-                    "id": "prod-20",
-                    "name": "Camisa da Argentina 2026 Autêntica Mandante - Masculina",
-                    "sku": "ADI-2026-20",
-                    "supplier": "adidas",
-                    "category": "Seleções",
-                    "cost": 199.96,
-                    "price": 499.9,
-                    "pricePromo": 449.9,
-                    "stock": 29,
-                    "colors": [
-                              "Amarelo",
-                              "Verde",
-                              "Vermelho",
-                              "Branco"
-                    ],
-                    "sizes": [
-                              "P",
-                              "M",
-                              "G",
-                              "GG"
-                    ],
-                    "material": "Poliéster Dri-Fit / AEROREADY",
-                    "gender": "Masculino",
-                    "description": "A Camisa Argentina 26 Home Authentic é mais do que apenas uma peça de roupa; é uma celebração do legado do futebol da nação. Onde quer que você use essa camisa com sua prestigiosa terceira estrela, ela incorpora o espírito dos campeões. Projetada para ação, a camisa conta com a tecnologia Climacool+.",
-                    "outStock": false,
-                    "noLimit": false,
-                    "images": [
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_53104866-d11b-446b-842f-9e37e19d1c38.png?v=1774372574",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_3bbf7087-db2d-4f3a-b862-d906d437c705.png?v=1774372575",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_347e2b07-1fee-408b-9424-3551b7810432.png?v=1774372574"
-                    ],
-                    "image": "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_53104866-d11b-446b-842f-9e37e19d1c38.png?v=1774372574"
-          },
-          {
-                    "id": "prod-21",
-                    "name": "Camisa da França 2026 Mandante - Masculina",
-                    "sku": "NIK-2026-21",
-                    "supplier": "Nike",
-                    "category": "Seleções",
-                    "cost": 139.96,
-                    "price": 349.9,
-                    "pricePromo": 299.9,
-                    "stock": 10,
-                    "colors": [
-                              "Amarelo",
-                              "Verde",
-                              "Vermelho",
-                              "Branco"
-                    ],
-                    "sizes": [
-                              "P",
-                              "M",
-                              "G",
-                              "GG"
-                    ],
-                    "material": "Poliéster Dri-Fit / AEROREADY",
-                    "gender": "Masculino",
-                    "description": "Roube o momento. Uma celebração do patrimônio multicultural da França, este icônico uniforme azul francês apresenta uma impressão unificadora de \"FFF\" e detalhes metálicos dinâmicos para jogadores de futebol decididos a conquistar a vitória mais ousada até agora.",
-                    "outStock": false,
-                    "noLimit": false,
-                    "images": [
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_97c7b304-c8ac-48bb-b2a2-d6349ac9c33a.jpg?v=1775564062",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_88eb2f46-5326-42f3-8a6a-5215a4a2d163.jpg?v=1775564062",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_a089814a-e4e2-44b9-bf1c-41bdb412ea45.jpg?v=1775564062"
-                    ],
-                    "image": "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_97c7b304-c8ac-48bb-b2a2-d6349ac9c33a.jpg?v=1775564062"
-          },
-          {
-                    "id": "prod-22",
-                    "name": "Camisa da Inglaterra 2026 Mandante - Infantil",
-                    "sku": "NIK-2026-22",
-                    "supplier": "Nike",
-                    "category": "Seleções",
-                    "cost": 99.96,
-                    "price": 249.9,
-                    "pricePromo": 219.9,
-                    "stock": 24,
-                    "colors": [
-                              "Amarelo",
-                              "Verde",
-                              "Vermelho",
-                              "Branco"
-                    ],
-                    "sizes": [
-                              "8 anos",
-                              "10 anos",
-                              "12 anos",
-                              "14 anos"
-                    ],
-                    "material": "Poliéster Dri-Fit / AEROREADY",
-                    "gender": "Unissex",
-                    "description": "Feliz e glorioso. O uniforme de casa da Inglaterra honra a herança do futebol da nação, apresentando um padrão de malha sob encomenda que simboliza o tecido da Inglaterra. Acima do brasão, uma estrela de ouro exibida com orgulho reflete um país apaixonado por legado.",
-                    "outStock": false,
-                    "noLimit": false,
-                    "images": [
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_54f59fd1-10b1-4430-b581-a46bbd87255c.jpg?v=1775563986",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_30ab4bb1-1325-4b8f-ad8f-3d486852508e.jpg?v=1775563987",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_2f9daab7-a70e-496c-8394-f61e5281e93d.jpg?v=1775563986"
-                    ],
-                    "image": "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_54f59fd1-10b1-4430-b581-a46bbd87255c.jpg?v=1775563986"
-          },
-          {
-                    "id": "prod-23",
-                    "name": "Camisa da Alemanha 2026 Visitante - Masculina",
-                    "sku": "ADI-2026-23",
-                    "supplier": "adidas",
-                    "category": "Seleções",
-                    "cost": 139.96,
-                    "price": 349.9,
-                    "pricePromo": 299.9,
-                    "stock": 26,
-                    "colors": [
-                              "Azul",
-                              "Branco"
-                    ],
-                    "sizes": [
-                              "P",
-                              "M",
-                              "G",
-                              "GG"
-                    ],
-                    "material": "Poliéster Dri-Fit / AEROREADY",
-                    "gender": "Masculino",
-                    "description": "Apresentando a Camisa de Visitante da Alemanha 2026. Inspirada por momentos lendários, ela combina herança do futebol com inovação. Projetada para atletas e fãs de futebol igualmente, faça desta sua escolha preferida para conforto e estilo dentro e fora de campo.",
-                    "outStock": false,
-                    "noLimit": false,
-                    "images": [
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_5fe1b402-ce80-4dc7-94af-ebe68b7edd76.jpg?v=1775563947",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_7454d1c1-cfcc-43d5-a838-b4667fe2a983.jpg?v=1775563947",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_32e563c7-5161-4819-82db-85478ec64732.jpg?v=1775563946"
-                    ],
-                    "image": "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_5fe1b402-ce80-4dc7-94af-ebe68b7edd76.jpg?v=1775563947"
-          },
-          {
-                    "id": "prod-24",
-                    "name": "Camisa da Alemanha 2026 Autêntica Mandante - Masculina",
-                    "sku": "ADI-2026-24",
-                    "supplier": "adidas",
-                    "category": "Seleções",
-                    "cost": 199.96,
-                    "price": 499.9,
-                    "pricePromo": 449.9,
-                    "stock": 11,
-                    "colors": [
-                              "Amarelo",
-                              "Verde",
-                              "Vermelho",
-                              "Branco"
-                    ],
-                    "sizes": [
-                              "P",
-                              "M",
-                              "G",
-                              "GG"
-                    ],
-                    "material": "Poliéster Dri-Fit / AEROREADY",
-                    "gender": "Masculino",
-                    "description": "Quando se trata de futebol, a Camisa Autêntica Germany 26 Home é um símbolo de herança e inovação. Inspirada em momentos icônicos, esta camisa é projetada para ser o ícone de amanhã. Esta camisa é confeccionada com tecnologia Climacool+.",
-                    "outStock": false,
-                    "noLimit": false,
-                    "images": [
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_61d45520-598b-40d1-a19c-dc2f4d43085a.png?v=1774372477",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_47d93dd6-9074-41bf-a91c-34372751b41e.png?v=1774372477",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_7aef6fa2-fb0c-4354-a698-8d229109b955.jpg?v=1774372477"
-                    ],
-                    "image": "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_61d45520-598b-40d1-a19c-dc2f4d43085a.png?v=1774372477"
-          },
-          {
-                    "id": "prod-25",
-                    "name": "Camisa do Japão 2026-27 Autêntica Mandante - Masculina",
-                    "sku": "ADI-2026-25",
-                    "supplier": "adidas",
-                    "category": "Seleções",
-                    "cost": 199.96,
-                    "price": 499.9,
-                    "pricePromo": 449.9,
-                    "stock": 17,
-                    "colors": [
-                              "Amarelo",
-                              "Verde",
-                              "Vermelho",
-                              "Branco"
-                    ],
-                    "sizes": [
-                              "P",
-                              "M",
-                              "G",
-                              "GG"
-                    ],
-                    "material": "Poliéster Dri-Fit / AEROREADY",
-                    "gender": "Masculino",
-                    "description": "A camisa autêntica Japão 26/27 Home da adidas canaliza ambição e orgulho em uma silhueta de alto desempenho. Feita para jogadores e fãs que miram no horizonte. Um gráfico inspirado em paisagem adiciona profundidade visual, enquanto o logo 3-Barras da adidas e o brasão japonês são integrados para um acabamento ousado e unificado.",
-                    "outStock": false,
-                    "noLimit": false,
-                    "images": [
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_5975e9aa-665b-42c2-a93e-c1da0e990f7c.png?v=1774372440",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_4e0a2838-601c-4129-8cef-7c434462edd0.png?v=1774372440",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_27497aa0-3f4e-405a-beb6-3e20772165c2.png?v=1774372440"
-                    ],
-                    "image": "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_5975e9aa-665b-42c2-a93e-c1da0e990f7c.png?v=1774372440"
-          },
-          {
-                    "id": "prod-26",
-                    "name": "Camisa da Colômbia 2026 Mandante - Masculina",
-                    "sku": "ADI-2026-26",
-                    "supplier": "adidas",
-                    "category": "Seleções",
-                    "cost": 139.96,
-                    "price": 349.9,
-                    "pricePromo": 299.9,
-                    "stock": 20,
-                    "colors": [
-                              "Amarelo",
-                              "Verde",
-                              "Vermelho",
-                              "Branco"
-                    ],
-                    "sizes": [
-                              "P",
-                              "M",
-                              "G",
-                              "GG"
-                    ],
-                    "material": "Poliéster Dri-Fit / AEROREADY",
-                    "gender": "Masculino",
-                    "description": "A Camisa Réplica Colombia 26 Home é uma homenagem ao espírito vibrante do futebol colombiano. Inspirada pelo realismo mágico, esta camisa mistura elementos fantásticos com o mundo real, capturando a essência da cultura colombiana. Fabricada com um ajuste esbelto, esta camisa oferece uma silhueta elegante, uma escolha inteligente para mostrar sua paixão pelo jogo.",
-                    "outStock": false,
-                    "noLimit": false,
-                    "images": [
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_55556576-2225-4f6e-89fd-92619caa592b.png?v=1774372493",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_21772985-e55e-4fd1-82e2-c28ffb036dc7.png?v=1774372493",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_5a622395-d253-4805-8251-41b4bc177fe0.png?v=1774372494"
-                    ],
-                    "image": "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_55556576-2225-4f6e-89fd-92619caa592b.png?v=1774372493"
-          },
-          {
-                    "id": "prod-27",
-                    "name": "Camisa da Espanha 2026 Mandante - Masculina",
-                    "sku": "ADI-2026-27",
-                    "supplier": "adidas",
-                    "category": "Seleções",
-                    "cost": 139.96,
-                    "price": 349.9,
-                    "pricePromo": 299.9,
-                    "stock": 14,
-                    "colors": [
-                              "Amarelo",
-                              "Verde",
-                              "Vermelho",
-                              "Branco"
-                    ],
-                    "sizes": [
-                              "P",
-                              "M",
-                              "G",
-                              "GG"
-                    ],
-                    "material": "Poliéster Dri-Fit / AEROREADY",
-                    "gender": "Masculino",
-                    "description": "A Camisa Spain 26 Home é uma homenagem à paixão e herança do futebol espanhol. Inspirada nas cores vibrantes da bandeira espanhola, foi projetada para fazer uma declaração tanto dentro quanto fora de campo. FRESCO. SECO. PRONTO",
-                    "outStock": false,
-                    "noLimit": false,
-                    "images": [
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_8b6f5358-fe86-4ed5-96dc-051e62e3e943.png?v=1774372373",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_cc6099fc-cab0-444f-8e07-eae73a6e0564.png?v=1774372373",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_ea12072d-793d-4ead-b906-9a51eb7976f4.png?v=1774372373"
-                    ],
-                    "image": "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_8b6f5358-fe86-4ed5-96dc-051e62e3e943.png?v=1774372373"
-          },
-          {
-                    "id": "prod-28",
-                    "name": "Camisa da Alemanha 2026 Mandante - Infantil",
-                    "sku": "ADI-2026-28",
-                    "supplier": "adidas",
-                    "category": "Seleções",
-                    "cost": 99.96,
-                    "price": 249.9,
-                    "pricePromo": 219.9,
-                    "stock": 23,
-                    "colors": [
-                              "Amarelo",
-                              "Verde",
-                              "Vermelho",
-                              "Branco"
-                    ],
-                    "sizes": [
-                              "8 anos",
-                              "10 anos",
-                              "12 anos",
-                              "14 anos"
-                    ],
-                    "material": "Poliéster Dri-Fit / AEROREADY",
-                    "gender": "Unissex",
-                    "description": "A Camisa Réplica Germany 26 Home é projetada para jovens entusiastas do futebol que sonham em emular seus heróis no campo. Esta camisa combina a essência de momentos icônicos com tecnologia de ponta para que possam se destacar em estilo e desempenho. A tecnologia de tecido Climacool integrada absorve e dispersa o suor para um desempenho fresco, seco e sem distrações, enquanto um ajuste regular oferece liberdade de movimento, para que se sintam focados e prontos durante partidas intensas.",
-                    "outStock": false,
-                    "noLimit": false,
-                    "images": [
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_630c13c2-fbee-4d6c-a1e0-127e9ab8d5b2.png?v=1774372471",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_a8dc43a5-c71a-4857-8a75-29291f4cf403.png?v=1774372471",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_ae29e0a9-e071-454c-a551-9724d729eef6.png?v=1774372471"
-                    ],
-                    "image": "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_630c13c2-fbee-4d6c-a1e0-127e9ab8d5b2.png?v=1774372471"
-          },
-          {
-                    "id": "prod-29",
-                    "name": "Camisa da Bélgica 2026 Mandante - Infantil",
-                    "sku": "ADI-2026-29",
-                    "supplier": "adidas",
-                    "category": "Seleções",
-                    "cost": 99.96,
-                    "price": 249.9,
-                    "pricePromo": 219.9,
-                    "stock": 22,
-                    "colors": [
-                              "Amarelo",
-                              "Verde",
-                              "Vermelho",
-                              "Branco"
-                    ],
-                    "sizes": [
-                              "8 anos",
-                              "10 anos",
-                              "12 anos",
-                              "14 anos"
-                    ],
-                    "material": "Poliéster Dri-Fit / AEROREADY",
-                    "gender": "Unissex",
-                    "description": "Alimente o amor deles pelo jogo na camisa Belgium 26 Home. Inspirada pelo espírito ardente dos Red Devils e decorada com motivos de diabo e chama ousados, captura o espírito da equipe belga. Feita para crianças ativas, incorpora a tecnologia adidas Climacool para ajudá-los a se manter frescos durante todo o jogo graças às fibras de secagem rápida para uma sensação de pele fresca. A silhueta de futebol esbelta é finalizada com o logo adidas e o brasão da Associação Real Belga de Futebol para um visual cheio de caráter e orgulho nacional.",
-                    "outStock": false,
-                    "noLimit": false,
-                    "images": [
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/JZ5988_1_APPAREL_Photography_FrontCenterView_white.jpg?v=1774372512",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/JZ5988_2_APPAREL_Photography_BackCenterView_white.jpg?v=1774372512",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/JZ5988_3_APPAREL_OnModel_StandardView_white.jpg?v=1774372512"
-                    ],
-                    "image": "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/JZ5988_1_APPAREL_Photography_FrontCenterView_white.jpg?v=1774372512"
-          },
-          {
-                    "id": "prod-30",
-                    "name": "Camisa da Argentina 2026 Mandante - Feminina",
-                    "sku": "ADI-2026-30",
-                    "supplier": "adidas",
-                    "category": "Seleções",
-                    "cost": 139.96,
-                    "price": 349.9,
-                    "pricePromo": 299.9,
-                    "stock": 17,
-                    "colors": [
-                              "Amarelo",
-                              "Verde",
-                              "Vermelho",
-                              "Branco"
-                    ],
-                    "sizes": [
-                              "P",
-                              "M",
-                              "G",
-                              "GG"
-                    ],
-                    "material": "Poliéster Dri-Fit / AEROREADY",
-                    "gender": "Feminino",
-                    "description": "Celebre a paixão dos campeões com a camisa Argentina 26 Home Replica. Inspirada na intensidade da La Albiceleste, essa camisa marca a primeira Copa do Mundo em que o time veste com orgulho a 3ª estrela de campeão. O design usa um elegante gradiente para prestar homenagem às vitórias de 1978, 1986 e 2022 com confiança casual discreta, mas certamente assegurada.",
-                    "outStock": false,
-                    "noLimit": false,
-                    "images": [
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/KA8125_1_APPAREL_Photography_FrontCenterView_white.jpg?v=1774372570",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/KA8125_2_APPAREL_Photography_BackCenterView_white.jpg?v=1774372570",
-                              "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/KA8125_3_APPAREL_OnModel_StandardView_white.jpg?v=1774372570"
-                    ],
-                    "image": "https://cdn.shopify.com/s/files/1/0591/0478/8538/files/KA8125_1_APPAREL_Photography_FrontCenterView_white.jpg?v=1774372570"
-          }
-];
-                if (auth.currentUser) {
-                    for (let p of seedProducts) await DBService.put('produtos', p);
-                    window.products = await DBService.getAll('produtos');
-                } else {
-                    window.products = seedProducts;
-                }
-            }
             window.brands = await DBService.getAll('brands');
             window.banners = await DBService.getAll('banners');
             window.coupons = await DBService.getAll('coupons');
@@ -4290,84 +3102,15 @@ service cloud.firestore {
             window.clients = await DBService.getAll('clients');
 
             const defaultBanners = [
-                // ===== 4 BANNERS DE TOPO =====
-                {
-                    id: 'banner-top-1', type: 'top',
-                    title: 'Argentina 2026 — Messi #10',
-                    desc: 'Camisa oficial reserva de Messi. Edição autêntica Copa do Mundo 2026.',
-                    img: 'https://cdn.shopify.com/s/files/1/0591/0478/8538/files/0048_FIFAMZ0326_4.jpg?v=1776695031',
-                    link: '#?cat=Seleções', _v: 2
-                },
-                {
-                    id: 'banner-top-2', type: 'top',
-                    title: 'Brasil 2026 — A Canarinha',
-                    desc: 'O icônico amarelo com cinco estrelas. Peça a sua camisa oficial!',
-                    img: 'https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_1e5c686d-6495-4fbd-afe7-5b25371c103e.jpg?v=1775563958',
-                    link: '#?cat=Seleções', _v: 2
-                },
-                {
-                    id: 'banner-top-3', type: 'top',
-                    title: 'Espanha 2026 — Campeões',
-                    desc: 'A camisa Authentic da atual campeã da Euro. ClimaCool+ adidas.',
-                    img: 'https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_450f9e9b-03a8-4660-87b5-dde79b5b9fd9.png?v=1774372376',
-                    link: '#?cat=Seleções', _v: 2
-                },
-                {
-                    id: 'banner-top-4', type: 'top',
-                    title: 'Alemanha 2026 — Die Mannschaft',
-                    desc: 'Clássico branco imaculado. A camisa da Mannschaft que marcou história.',
-                    img: 'https://cdn.shopify.com/s/files/1/0591/0478/8538/files/KD8363_3_APPAREL_OnModel_StandardView_white.jpg?v=1774372475',
-                    link: '#?cat=Seleções', _v: 2
-                },
-                // ===== 4 BANNERS PEQUENOS =====
-                {
-                    id: 'banner-small-1', type: 'small',
-                    title: '🇦🇷 Argentina Mandante',
-                    img: 'https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_ab8f6ea2-c16a-4882-822e-aa52e9506054.png?v=1774372572',
-                    link: '#?cat=Seleções', _v: 2
-                },
-                {
-                    id: 'banner-small-2', type: 'small',
-                    title: '🇵🇹 Portugal Reserva',
-                    img: 'https://cdn.shopify.com/s/files/1/0591/0478/8538/files/FIFAMZ0368-1.png?v=1778690010',
-                    link: '#?cat=Seleções', _v: 2
-                },
-                {
-                    id: 'banner-small-3', type: 'small',
-                    title: '🇿🇦 África do Sul 2026',
-                    img: 'https://cdn.shopify.com/s/files/1/0591/0478/8538/files/KY2217_3_APPAREL_OnModel_StandardView_white.jpg?v=1780668789',
-                    link: '#?cat=Seleções', _v: 2
-                },
-                {
-                    id: 'banner-small-4', type: 'small',
-                    title: '🇺🇸 EUA 2026 Mandante',
-                    img: 'https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_3562f970-fa0a-4527-abc1-f50499492965.jpg?v=1775564013',
-                    link: '#?cat=Seleções', _v: 2
-                },
+                { id: 'banner-1', title: 'Luas de Prata', desc: 'Sua melhor escolha em roupas e acessórios.', img: 'https://images.pexels.com/photos/1536619/pexels-photo-1536619.jpeg', type: 'top', link: '#?cat=Roupas' },
+                { id: 'banner-2', title: 'Nova Coleção Ouro', desc: 'Elegância que brilha com você.', img: 'https://images.pexels.com/photos/2657594/pexels-photo-2657594.jpeg', type: 'top', link: '#?cat=Novidades' }
             ];
 
-            // Força atualização se banners antigos ou vazios
-            const hasOldBanners = !window.banners || window.banners.length === 0
-                || window.banners.some(b => !b._v || b._v < 2)
-                || window.banners.some(b => b.desc && b.desc.includes('roupas e acessórios'));
-            if (hasOldBanners) {
-                // Limpa banners antigos no Firebase
-                if (auth.currentUser && window.banners) {
-                    for (let old of window.banners) {
-                        try { await DBService.delete('banners', old.id); } catch(e) {}
-                    }
-                }
-                window.banners = defaultBanners;
-                if (auth.currentUser) {
-                    for (let b of defaultBanners) {
-                        try { await DBService.put('banners', b); } catch (err) { console.error("Banner save err:", err); }
-                    }
-                }
-            }
+            if (!window.banners || window.banners.length === 0) window.banners = defaultBanners;
 
             if (auth.currentUser) {
                 try {
-                    const requestedCats = ["Brasileirão", "Europeus", "Seleções", "Ligas Alternativas", "Retrô", "Novidades", "Promoções"];
+                    const requestedCats = ["Anéis", "Blusa", "Blusas", "Brinco", "Brincos", "Calças alfaiataria", "Colar", "Colares", "Conjunto", "Conjunto alfaiataria short + colete", "Conjunto brincos e pingente", "Conjunto calça + blusa", "Conjunto saia + blusa", "Conjuntos", "Novidades", "Pingente", "Pingentes", "Promoções", "Pulseira", "Pulseiras", "Roupas - short + colete", "Roupas - short + colete comprido", "Short", "Sobretudos", "Tornozeleiras", "Vestidos"];
                     let addedAny = false;
                     for (const rc of requestedCats) {
                         if (!window.categories.find(c => c.id === rc || c.name === rc)) {
@@ -4392,34 +3135,10 @@ service cloud.firestore {
 
             try {
                 const sett = await DBService.getAll('settings');
-                let ms = sett.find(x => x.id === 'main_bzimports');
-                const needsSettingsUpdate = !ms || ms.name !== 'BZ IMPORTS' || (ms.email && (ms.email.includes('luasdeprata.com') || ms.email.includes('alandossantos')));
-                if (needsSettingsUpdate) {
-                    ms = {
-                        id: 'main_bzimports',
-                        name: 'BZ IMPORTS',
-                        subtitle: 'Camisas de Futebol',
-                        wa: '74988020692',
-                        waDisplay: '(74) 98802-0692',
-                        email: 'bzimports@gmail.com',
-                        address: 'Centro de Juazeiro Bahia',
-                        desc: 'Sua loja virtual de camisas de futebol de alta qualidade e mantos sagrados.'
-                    };
-                    if (auth.currentUser) {
-                        await DBService.put('settings', ms);
-                    }
-                }
-                window.siteSettings = ms;
+                const ms = sett.find(x => x.id === 'main');
+                if (ms) window.siteSettings = { ...window.siteSettings, ...ms };
             } catch (e) { }
             if (window.applySiteSettings) window.applySiteSettings();
-
-            // Refresh admin views if visible
-            const adminView = document.getElementById('adminView');
-            if (adminView && !adminView.classList.contains('hidden')) {
-                if (window.renderAdminTable) window.renderAdminTable();
-                if (window.loadAdminDashboard) window.loadAdminDashboard();
-            }
-            if (window.applyFilters) window.applyFilters();
         }
 
         window.renderFiltersUI = function () {
@@ -4566,57 +3285,45 @@ service cloud.firestore {
         }
 
         window.renderStoreBanners = () => {
-            // topBanners foi substituído pelo carrossel TOONHUB — apenas os banners pequenos são renderizados aqui
+            const topCont = document.getElementById('topBanners');
             const smCont = document.getElementById('smallBanners');
-            if (!smCont) return;
 
-            const smalls = (window.banners || []).filter(b => b.type === 'small');
+            const tops = window.banners.filter(b => b.type === 'top');
+            if (tops.length > 0) {
+                topCont.innerHTML = tops.map(b => `
+                    <div class="banner-item" style="background-image: url('${b.img}');" onclick="${b.link ? `window.location.href='${b.link}'` : ''}">
+                        <div class="banner-overlay"></div>
+                        <div class="banner-content">
+                            <h2 class="font-serif" style="font-size: 3rem; margin-bottom: 0.5rem; line-height: 1.1;">${b.title}</h2>
+                            <p style="font-size: 1.1rem; margin-bottom: 1.5rem; opacity: 0.9;">${b.desc || ''}</p>
+                            <button class="btn btn-secondary" style="background: #fff; color: var(--primary); border: none; padding: 0.8rem 1.5rem; font-weight: 600; border-radius: 4px; display: flex; align-items: center; gap: 0.5rem;">
+                                Ver Coleção <i data-lucide="chevron-right" size="18"></i>
+                            </button>
+                        </div>
+                    </div>`).join('');
+
+                if (!window.bannerInterval) {
+                    window.bannerInterval = setInterval(() => {
+                        const carousel = document.getElementById('topBanners');
+                        if (!carousel) return;
+                        const next = carousel.scrollLeft + carousel.offsetWidth;
+                        if (next >= carousel.scrollWidth) carousel.scrollTo({ left: 0, behavior: 'smooth' });
+                        else carousel.scrollBy({ left: carousel.offsetWidth, behavior: 'smooth' });
+                    }, 5000);
+                }
+            }
+
+            const smalls = window.banners.filter(b => b.type === 'small');
             if (smalls.length > 0) {
                 smCont.innerHTML = smalls.map(b => `
-                    <div class="small-banner" style="background-image: url('${b.img}'); cursor:pointer;" onclick="${b.link ? `window.location.href='${b.link}'` : ''}">
+                    <div class="small-banner" style="background-image: url('${b.img}'); cursor:pointer;" onclick="${b.link ? `window.open('${b.link}','_blank')` : ''}">
                         <span>${b.title}</span>
                     </div>`).join('');
-            } else {
-                smCont.innerHTML = '';
             }
         }
 
-        window.selectedDetailColor = null;
-        window.selectedDetailSize = null;
-
-        window.selectDetailColor = (btn, colorName) => {
-            document.querySelectorAll('.detail-color-pill').forEach(el => {
-                el.style.borderColor = 'var(--border)';
-                el.style.transform = 'scale(1)';
-                el.style.boxShadow = 'none';
-            });
-            btn.style.borderColor = 'var(--primary)';
-            btn.style.transform = 'scale(1.15)';
-            btn.style.boxShadow = '0 0 8px var(--primary)';
-            window.selectedDetailColor = colorName;
-        };
-
-        window.selectDetailSize = (btn, sizeName) => {
-            document.querySelectorAll('.detail-size-pill').forEach(el => {
-                el.style.background = 'var(--bg-card)';
-                el.style.color = 'var(--text-main)';
-                el.style.borderColor = 'var(--border)';
-            });
-            btn.style.background = 'var(--primary)';
-            btn.style.color = 'white';
-            btn.style.borderColor = 'var(--primary)';
-            window.selectedDetailSize = sizeName;
-        };
-
         window.openDetail = function (id) {
             const p = window.products.find(x => x.id == id);
-            if (!p) {
-                console.error("Produto não encontrado no array em memória:", id);
-                return;
-            }
-            window.selectedDetailColor = null;
-            window.selectedDetailSize = null;
-
             const imgSrc = p.images?.[0] || p.image || DEFAULT_PLACEHOLDER;
             const isDefaultImg = imgSrc === DEFAULT_PLACEHOLDER;
 
@@ -4642,151 +3349,38 @@ service cloud.firestore {
             document.getElementById('detailDesc').innerText = p.description || 'Sem descrição.';
 
             document.getElementById('detailAttributes').innerHTML = `
+                <li><strong>Tamanho:</strong> ${p.size || 'Único'}</li>
+                <li><strong>Cor:</strong> ${p.color || '-'}</li>
                 <li><strong>Material:</strong> ${p.material || '-'}</li>
                 <li><strong>Público:</strong> ${p.gender || '-'}</li>
             `;
 
-            // Renderiza seletores de cor
-            const colorsList = document.getElementById('detailColorsList');
-            const colorsArea = document.getElementById('detailColorsArea');
-            const pColors = p.colors || (p.color ? p.color.split(',').map(s => s.trim()).filter(s => s) : []);
-
-            if (pColors.length > 0) {
-                colorsArea.style.display = 'block';
-                colorsList.innerHTML = pColors.map(cName => {
-                    const c = window.AVAILABLE_COLORS.find(x => x.name === cName);
-                    const hex = c ? c.hex : '#ccc';
-                    return `
-                        <button class="detail-color-pill" onclick="selectDetailColor(this, '${cName}')" style="background: ${hex}; width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--border); cursor: pointer; transition: 0.2s; position: relative;" title="${cName}"></button>
-                    `;
-                }).join('');
-            } else {
-                colorsArea.style.display = 'none';
-            }
-
-            // Renderiza seletores de tamanho
-            const sizesList = document.getElementById('detailSizesList');
-            const sizesArea = document.getElementById('detailSizesArea');
-            const pSizes = p.sizes || (p.size ? p.size.split(',').map(s => s.trim()).filter(s => s) : []);
-
-            if (pSizes.length > 0) {
-                sizesArea.style.display = 'block';
-                sizesList.innerHTML = pSizes.map(sName => {
-                    return `
-                        <button class="detail-size-pill" onclick="selectDetailSize(this, '${sName}')" style="padding: 6px 12px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text-main); border-radius: var(--radius); cursor: pointer; font-size: 0.85rem; font-weight: bold; transition: 0.2s;">${sName}</button>
-                    `;
-                }).join('');
-            } else {
-                sizesArea.style.display = 'none';
-            }
-
             const btn = document.getElementById('detailBtnAdd');
             if (p.stock === 0) { btn.disabled = true; btn.innerText = "Esgotado"; btn.style.background = "#555"; }
-            else { 
-                btn.disabled = false; 
-                btn.innerText = "Adicionar à Sacola"; 
-                btn.style.background = ""; 
-                btn.onclick = () => { 
-                    if (pColors.length > 0 && !window.selectedDetailColor) {
-                        return showToast("Selecione uma cor!", "error");
-                    }
-                    if (pSizes.length > 0 && !window.selectedDetailSize) {
-                        return showToast("Selecione um tamanho!", "error");
-                    }
-                    addToCart(p.id, window.selectedDetailColor, window.selectedDetailSize); 
-                    closeProductDetail(); 
-                } 
-            }
+            else { btn.disabled = false; btn.innerText = "Adicionar à Sacola"; btn.style.background = ""; btn.onclick = () => { addToCart(p.id); closeProductDetail(); } }
 
             document.getElementById('productDetailModal').classList.add('active');
         }
         window.closeProductDetail = () => document.getElementById('productDetailModal').classList.remove('active');
 
         // ================= CARRINHO & CHECKOUT =================
-        window.toggleCart = () => {
-            const drawer = document.getElementById('cartDrawer');
-            const overlay = document.getElementById('drawerOverlay');
-            drawer.classList.toggle('open');
-            overlay.classList.toggle('open');
-            if (drawer.classList.contains('open')) {
-                changeCartStep(1);
-            }
-        };
-
-        window.changeCartStep = function (step) {
-            const step1 = document.getElementById('cartStep1');
-            const step2 = document.getElementById('cartStep2');
-            const btnStep2 = document.getElementById('btnGoToStep2');
-            const btnFinalize = document.getElementById('btnFinalizeOrder');
-            const titleText = document.getElementById('cartTitleText');
-
-            if (!step1 || !step2 || !btnStep2 || !btnFinalize || !titleText) return;
-
-            if (step === 1) {
-                step1.classList.remove('hidden');
-                step2.classList.add('hidden');
-                btnStep2.classList.remove('hidden');
-                btnFinalize.classList.add('hidden');
-                titleText.innerHTML = `<i data-lucide="shopping-bag"></i> Sua Sacola`;
-            } else {
-                if (window.cart.length === 0) {
-                    showToast("Sua sacola está vazia.", "warning");
-                    return;
-                }
-                step1.classList.add('hidden');
-                step2.classList.remove('hidden');
-                btnStep2.classList.add('hidden');
-                btnFinalize.classList.remove('hidden');
-                titleText.innerHTML = `<i data-lucide="map-pin"></i> Entrega`;
-            }
-            lucide.createIcons();
-        };
-
-        window.addToCart = (id, selectedColor = null, selectedSize = null) => {
+        window.toggleCart = () => { document.getElementById('cartDrawer').classList.toggle('open'); document.getElementById('drawerOverlay').classList.toggle('open'); }
+        window.addToCart = (id) => {
             const p = window.products.find(x => x.id == id);
-            const pColors = p.colors || (p.color ? p.color.split(',').map(s => s.trim()).filter(s => s) : []);
-            const pSizes = p.sizes || (p.size ? p.size.split(',').map(s => s.trim()).filter(s => s) : []);
-
-            if ((pColors.length > 0 && !selectedColor) || (pSizes.length > 0 && !selectedSize)) {
-                openDetail(id);
-                showToast("Selecione as opções do produto.");
-                return;
-            }
-
-            const i = window.cart.find(x => x.id == id && x.selectedColor === selectedColor && x.selectedSize === selectedSize);
+            const i = window.cart.find(x => x.id == id);
             if (i) {
                 if (!p.noLimit && i.quantity >= p.stock) return showToast('Estoque máximo!', 'error');
                 i.quantity++;
             } else {
-                const cartItem = { 
-                    ...p, 
-                    quantity: 1, 
-                    selectedColor: selectedColor || null, 
-                    selectedSize: selectedSize || null 
-                };
+                const cartItem = { ...p, quantity: 1 };
                 if (p.pricePromo) cartItem.price = p.pricePromo;
                 window.cart.push(cartItem);
             }
             localStorage.setItem('luas_cart', JSON.stringify(window.cart));
             updateCartUI(true);
             showToast("Peça adicionada!");
-            if (!document.getElementById('cartDrawer').classList.contains('open')) {
-                toggleCart();
-            }
         }
-        window.changeCartQty = (id, selectedColor, selectedSize, d) => { 
-            const i = window.cart.find(x => x.id == id && x.selectedColor === selectedColor && x.selectedSize === selectedSize); 
-            const p = window.products.find(x => x.id == id); 
-            if (d > 0) { 
-                if (!p.noLimit && i.quantity >= p.stock) return; 
-                i.quantity++; 
-            } else { 
-                if (i.quantity > 1) i.quantity--; 
-                else window.cart = window.cart.filter(x => !(x.id == id && x.selectedColor === selectedColor && x.selectedSize === selectedSize)); 
-            } 
-            localStorage.setItem('luas_cart', JSON.stringify(window.cart)); 
-            updateCartUI(); 
-        }
+        window.changeCartQty = (id, d) => { const i = window.cart.find(x => x.id == id); const p = window.products.find(x => x.id == id); if (d > 0) { if (!p.noLimit && i.quantity >= p.stock) return; i.quantity++; } else { if (i.quantity > 1) i.quantity--; else window.cart = window.cart.filter(x => x.id != id); } localStorage.setItem('luas_cart', JSON.stringify(window.cart)); updateCartUI(); }
 
         window.applyCoupon = () => {
             const code = document.getElementById('couponInput').value.toUpperCase();
@@ -4804,12 +3398,6 @@ service cloud.firestore {
         window.updateCartUI = function (animate = false) {
             const c = document.getElementById('cartItems');
             const badge = document.getElementById('cartCountBadge');
-            const cartBtn = document.getElementById('headerCartBtn');
-            const floatAlert = document.getElementById('floatingCartAlert');
-            const btnStep2 = document.getElementById('btnGoToStep2');
-            
-            if (!c) return;
-
             const subtotal = window.cart.reduce((a, b) => a + (b.price * b.quantity), 0);
 
             let discount = 0;
@@ -4821,40 +3409,23 @@ service cloud.firestore {
 
             if (document.getElementById('cartTotal')) document.getElementById('cartTotal').innerText = formatMoney(total);
 
-            const count = window.cart.reduce((a, b) => a + b.quantity, 0);
-
             if (badge) {
+                const count = window.cart.reduce((a, b) => a + b.quantity, 0);
                 badge.innerText = count;
                 badge.style.display = count === 0 ? 'none' : 'flex';
 
-                if (count > 0) {
-                    badge.classList.add('badge-blink');
-                    cartBtn?.classList.add('cart-pulse');
-                    floatAlert?.classList.remove('hidden');
-                } else {
-                    badge.classList.remove('badge-blink');
-                    cartBtn?.classList.remove('cart-pulse');
-                    floatAlert?.classList.add('hidden');
-                }
-
                 if (animate) {
-                    cartBtn?.classList.add('cart-animate');
+                    const cartBtn = badge.parentElement;
+                    cartBtn.classList.add('cart-animate');
                     badge.classList.add('badge-animate');
                     setTimeout(() => {
-                        cartBtn?.classList.remove('cart-animate');
+                        cartBtn.classList.remove('cart-animate');
                         badge.classList.remove('badge-animate');
                     }, 400);
                 }
             }
 
-            if (window.cart.length === 0) { 
-                c.innerHTML = '<p style="text-align:center; color:#888; margin-top: 2rem;">Sua sacola está vazia.</p>'; 
-                if (btnStep2) btnStep2.style.display = 'none';
-                return; 
-            }
-            
-            if (btnStep2) btnStep2.style.display = 'flex';
-
+            if (window.cart.length === 0) { c.innerHTML = '<p style="text-align:center; color:#888; margin-top: 2rem;">Sua sacola está vazia.</p>'; return; }
             c.innerHTML = window.cart.map(i => {
                 const imgSrc = i.images?.[0] || i.image || DEFAULT_PLACEHOLDER;
                 const isDefaultImg = imgSrc === DEFAULT_PLACEHOLDER;
@@ -4865,10 +3436,10 @@ service cloud.firestore {
                     <img src="${imgSrc}" style="width:60px; height:80px; border-radius:4px; ${imgStyle}">
                     <div style="flex:1;">
                         <div class="font-bold" style="font-family:var(--font-title);">${i.name}</div>
-                        <div style="font-size:0.8rem; color:var(--text-muted);">Tam: ${i.selectedSize || i.size || '-'} | Cor: ${i.selectedColor || i.color || '-'}</div>
+                        <div style="font-size:0.8rem; color:var(--text-muted);">Tam: ${i.size || '-'} | Cor: ${i.color || '-'}</div>
                         <div style="margin-top:5px; font-weight:bold;">${formatMoney(i.price)}</div>
                         <div class="qty-controls mt-2" style="display:inline-flex;">
-                            <button class="qty-btn" onclick="changeCartQty('${i.id}', ${i.selectedColor ? `'${i.selectedColor}'` : 'null'}, ${i.selectedSize ? `'${i.selectedSize}'` : 'null'}, -1)">-</button><span style="padding:0 10px;">${i.quantity}</span><button class="qty-btn" onclick="changeCartQty('${i.id}', ${i.selectedColor ? `'${i.selectedColor}'` : 'null'}, ${i.selectedSize ? `'${i.selectedSize}'` : 'null'}, 1)">+</button>
+                            <button class="qty-btn" onclick="changeCartQty('${i.id}', -1)">-</button><span style="padding:0 10px;">${i.quantity}</span><button class="qty-btn" onclick="changeCartQty('${i.id}', 1)">+</button>
                         </div>
                     </div>
                 </div>
@@ -4885,9 +3456,6 @@ service cloud.firestore {
                     <div style="font-size:0.9rem; margin-top:10px; display:flex; justify-content:space-between;"><span>Subtotal:</span><span>${formatMoney(subtotal)}</span></div>
                 </div>
             `;
-            setTimeout(() => {
-                if (typeof lucide !== 'undefined') lucide.createIcons();
-            }, 50);
         }
 
         window.checkout = async function () {
@@ -4945,24 +3513,15 @@ service cloud.firestore {
             await DBService.put('clients', clientData);
             if (!window.clients.find(c => c.id === clientData.id)) window.clients.push(clientData);
 
-            const mapsQuery = encodeURIComponent(`${addr}, ${city} - CEP: ${cep}`);
-            const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${mapsQuery}`;
-
             let m = `*PEDIDO #${o.id}*\n\n`;
             m += `👤 *Cliente:* ${n}\n`;
             m += `📧 *E-mail:* ${e}\n`;
             m += `📍 *Entrega:* ${addr}\n`;
-            m += `🏙️ *Cidade:* ${city} - CEP: ${cep}\n`;
-            m += `🗺️ *Google Maps:* ${mapsUrl}\n\n`;
+            m += `🏙️ *Cidade:* ${city} - CEP: ${cep}\n\n`;
             m += `🛍️ *Produtos:*\n`;
 
             for (const i of window.cart) {
-                const optStr = [];
-                if (i.selectedSize || i.size) optStr.push(`Tam:${i.selectedSize || i.size}`);
-                if (i.selectedColor || i.color) optStr.push(`Cor:${i.selectedColor || i.color}`);
-                const opts = optStr.length > 0 ? ` (${optStr.join(', ')})` : '';
-                m += `- ${i.quantity}x ${i.name}${opts}\n`;
-
+                m += `- ${i.quantity}x ${i.name} (Tam:${i.size})\n`;
                 const p = window.products.find(x => x.id === i.id);
                 if (p && !p.noLimit) {
                     p.stock = Math.max(0, p.stock - i.quantity);
@@ -4976,8 +3535,7 @@ service cloud.firestore {
             window.cart = []; window.appliedCoupon = null; localStorage.removeItem('luas_cart'); updateCartUI(); toggleCart(); applyFilters();
 
             // Número solicitado para envio no checkout via WhatsApp
-            const s = window.siteSettings || {};
-            const waNumber = s.wa ? (s.wa.startsWith('55') ? s.wa : '55' + s.wa) : '5574988020692';
+            const waNumber = '5582993750047';
             window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(m)}`, '_blank');
         }
 
@@ -4999,7 +3557,7 @@ service cloud.firestore {
         window.saveSiteData = async function () {
             const waRaw = document.getElementById('siteWaInput').value;
             const s = {
-                id: 'main_bzimports',
+                id: 'main',
                 name: document.getElementById('siteNameInput').value, subtitle: document.getElementById('siteSubInput').value,
                 wa: waRaw.replace(/\D/g, ''), waDisplay: waRaw, email: document.getElementById('siteEmailInput').value,
                 address: document.getElementById('siteAddrInput').value, desc: document.getElementById('siteDescInput').value,
@@ -5228,7 +3786,7 @@ service cloud.firestore {
                         <i data-lucide="user" style="color:var(--text-main);" size="28"></i>
                     </div>
                     <div style="text-align:center;">
-                        <h4 class="font-title">${s.name}</h4>
+                        <h4 class="font-serif">${s.name}</h4>
                         <div class="text-xs text-muted mb-2">${s.email}</div>
                         <div class="text-xs text-muted mb-3" style="font-family:monospace; background:#f5f5f5; padding:3px; border-radius:4px;">ID: ${s.token}</div>
                         <div class="flex justify-between text-xs mb-1"><span>Comissão:</span> <strong>${s.comission || 0}%</strong></div>
@@ -6523,7 +5081,7 @@ service cloud.firestore {
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `backup_bzimports_${new Date().getTime()}.json`;
+            a.download = `backup_luasdeprata_${new Date().getTime()}.json`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -6585,167 +5143,6 @@ service cloud.firestore {
                 loadAutoBackupConfig();
             }, 1000);
         });
-    </script>
-    <script>
-    // ============ TOONHUB CAROUSEL (BZ IMPORTS EDITION) ============
-    (function() {
-        // Paleta de cores por slide — tons vibrantes que combinam com camisas
-        const TOON_COLORS = [
-            { bg: '#1a3a6b', panel: '#1e4080' },  // Argentina — azul profundo
-            { bg: '#006633', panel: '#007a3d' },  // EUA / Brasil — verde
-            { bg: '#cc0000', panel: '#e60000' },  // Espanha — vermelho
-            { bg: '#c07200', panel: '#d98200' },  // África do Sul — dourado
-        ];
-
-        let toonActiveIndex = 0;
-        let toonIsAnimating = false;
-        let toonItems = [];  // preenchido com window.products dinamicamente
-        let toonAutoInterval = null;
-
-        function isMobile() { return window.innerWidth < 640; }
-
-        function getToonProducts() {
-            const prods = window.products || [];
-            // Pega os 4 primeiros com imagem
-            return prods.filter(p => p.images && p.images[0]).slice(0, 4);
-        }
-
-        function buildToon() {
-            toonItems = getToonProducts();
-            if (toonItems.length < 2) return; // não monta com menos de 2 produtos
-
-            // Preload imagens
-            toonItems.forEach(p => {
-                const img = new Image();
-                img.src = p.images[0];
-            });
-
-            renderToon();
-            buildDots();
-            startAutoplay();
-
-            window.addEventListener('resize', () => renderToon());
-        }
-
-        function renderToon() {
-            const n = toonItems.length;
-            if (!n) return;
-            const section = document.getElementById('toonhubSection');
-            const container = document.getElementById('toonCarouselItems');
-            if (!section || !container) return;
-
-            const mob = isMobile();
-            const active = toonActiveIndex;
-            const left   = (active + n - 1) % n;
-            const right  = (active + 1) % n;
-            const back   = (active + 2) % n;
-
-            // Cor de fundo da secção
-            const colorIdx = active % TOON_COLORS.length;
-            section.style.backgroundColor = TOON_COLORS[colorIdx].bg;
-
-            container.innerHTML = toonItems.map((p, idx) => {
-                let style = '';
-                const img = p.images[0];
-                const transition = 'transform 650ms cubic-bezier(0.4,0,0.2,1), filter 650ms cubic-bezier(0.4,0,0.2,1), opacity 650ms cubic-bezier(0.4,0,0.2,1), left 650ms cubic-bezier(0.4,0,0.2,1), height 650ms cubic-bezier(0.4,0,0.2,1), bottom 650ms cubic-bezier(0.4,0,0.2,1)';
-
-                if (idx === active) {
-                    style = `position:absolute; aspect-ratio:0.7/1; height:${mob?'58%':'88%'}; bottom:${mob?'18%':'0'}; left:50%; transform:translateX(-50%) scale(${mob?1.2:1.55}); filter:none; opacity:1; z-index:20; transition:${transition}; will-change:transform,filter,opacity;`;
-                } else if (idx === left) {
-                    style = `position:absolute; aspect-ratio:0.7/1; height:${mob?'20%':'30%'}; bottom:${mob?'28%':'12%'}; left:${mob?'18%':'28%'}; transform:translateX(-50%) scale(1); filter:blur(2px); opacity:0.8; z-index:10; transition:${transition}; will-change:transform,filter,opacity;`;
-                } else if (idx === right) {
-                    style = `position:absolute; aspect-ratio:0.7/1; height:${mob?'20%':'30%'}; bottom:${mob?'28%':'12%'}; left:${mob?'82%':'72%'}; transform:translateX(-50%) scale(1); filter:blur(2px); opacity:0.8; z-index:10; transition:${transition}; will-change:transform,filter,opacity;`;
-                } else {
-                    style = `position:absolute; aspect-ratio:0.7/1; height:${mob?'14%':'22%'}; bottom:${mob?'28%':'12%'}; left:50%; transform:translateX(-50%) scale(1); filter:blur(4px); opacity:0.6; z-index:5; transition:${transition}; will-change:transform,filter,opacity;`;
-                }
-
-                // Clique no item central abre o produto
-                const clickAttr = idx === active ? `onclick="toonOpenProduct('${p.id}')" style="${style} cursor:pointer;"` : `style="${style}"`;
-                return `<div ${clickAttr}><img src="${img}" style="width:100%;height:100%;object-fit:contain;object-position:bottom center;user-select:none;pointer-events:none;" draggable="false"/></div>`;
-            }).join('');
-
-            // Atualiza dots
-            updateDots();
-
-            // Atualiza texto inferior
-            const prod = toonItems[active];
-            const bottomLeft = document.getElementById('toonBottomLeft');
-            if (bottomLeft && prod) {
-                const nameEl = bottomLeft.querySelector('p:first-child');
-                if (nameEl) nameEl.textContent = prod.name.length > 45 ? prod.name.slice(0,45)+'…' : prod.name;
-            }
-        }
-
-        function buildDots() {
-            const dotsEl = document.getElementById('toonDots');
-            if (!dotsEl) return;
-            dotsEl.innerHTML = toonItems.map((_, i) =>
-                `<button onclick="toonGoTo(${i})" style="width:${i===toonActiveIndex?24:8}px;height:8px;border-radius:4px;background:rgba(255,255,255,${i===toonActiveIndex?0.95:0.45});border:none;cursor:pointer;transition:all 400ms;padding:0;"></button>`
-            ).join('');
-        }
-
-        function updateDots() {
-            const dotsEl = document.getElementById('toonDots');
-            if (!dotsEl) return;
-            Array.from(dotsEl.children).forEach((btn, i) => {
-                btn.style.width = i === toonActiveIndex ? '24px' : '8px';
-                btn.style.background = `rgba(255,255,255,${i === toonActiveIndex ? 0.95 : 0.45})`;
-            });
-        }
-
-        window.toonNavigate = function(dir) {
-            if (toonIsAnimating || !toonItems.length) return;
-            toonIsAnimating = true;
-            const n = toonItems.length;
-            toonActiveIndex = dir === 'next' ? (toonActiveIndex + 1) % n : (toonActiveIndex + n - 1) % n;
-            renderToon();
-            setTimeout(() => { toonIsAnimating = false; }, 650);
-            resetAutoplay();
-        };
-
-        window.toonGoTo = function(idx) {
-            if (toonIsAnimating || idx === toonActiveIndex) return;
-            toonIsAnimating = true;
-            toonActiveIndex = idx;
-            renderToon();
-            setTimeout(() => { toonIsAnimating = false; }, 650);
-            resetAutoplay();
-        };
-
-        window.toonOpenProduct = function(id) {
-            if (typeof openDetail === 'function') openDetail(id);
-        };
-
-        window.toonGoToProduct = function() {
-            const prod = toonItems[toonActiveIndex];
-            if (prod && typeof openDetail === 'function') openDetail(prod.id);
-        };
-
-        function startAutoplay() {
-            toonAutoInterval = setInterval(() => {
-                if (!toonIsAnimating) window.toonNavigate('next');
-            }, 4500);
-        }
-
-        function resetAutoplay() {
-            clearInterval(toonAutoInterval);
-            startAutoplay();
-        }
-
-        // Aguarda os produtos estarem disponíveis
-        function waitAndBuild() {
-            if (window.products && window.products.length > 1) {
-                buildToon();
-            } else {
-                setTimeout(waitAndBuild, 300);
-            }
-        }
-
-        // Inicializa após a loja carregar
-        document.addEventListener('DOMContentLoaded', () => setTimeout(waitAndBuild, 800));
-        window.addEventListener('load', () => setTimeout(waitAndBuild, 1200));
-    })();
-    // ============ END TOONHUB CAROUSEL ============
     </script>
 </body>
 
