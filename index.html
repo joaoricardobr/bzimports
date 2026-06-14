@@ -10,7 +10,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Fontes elegantes -->
     <link
-        href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,600;0,700;0,800&family=Inter:wght@300;400;500;600&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,600;0,700;0,800&family=Inter:wght@300;400;500;600&family=Anton&display=swap"
         rel="stylesheet">
 
     <style>
@@ -2092,12 +2092,6 @@
         </div>
     </div>
 
-    <!-- Alerta Flutuante de Sacola com Itens -->
-    <div id="floatingCartAlert" class="floating-cart-alert hidden" onclick="toggleCart()">
-        <span class="alert-pulse-dot"></span>
-        <span style="font-family: var(--font-title); font-weight: 600;">Você tem itens na sua Sacola!</span>
-        <i data-lucide="shopping-bag" style="width: 18px; height: 18px;"></i>
-    </div>
 
     <!-- ============================================== 
          TELA 1: LOJA VIRTUAL (CLIENTE)
@@ -2138,8 +2132,48 @@
             </div>
         </header>
 
-        <div class="container" style="padding-top: 2rem;">
-            <div id="topBanners" class="banner-carousel"></div>
+        <!-- ===== TOONHUB CAROUSEL HERO ===== -->
+        <div id="toonhubSection" style="width:100%;position:relative;overflow:hidden;font-family:'Inter',sans-serif;transition:background-color 650ms cubic-bezier(0.4,0,0.2,1);" data-active="0">
+            <div style="width:100%;height:520px;position:relative;overflow:hidden;" id="toonhubInner">
+                <!-- Grain overlay -->
+                <div style="position:absolute;inset:0;pointer-events:none;z-index:50;opacity:0.4;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E\");background-size:200px 200px;"></div>
+                <!-- Ghost text -->
+                <div id="toonGhostText" style="position:absolute;inset-inline:0;display:flex;align-items:center;justify-content:center;pointer-events:none;user-select:none;z-index:2;top:18%;">
+                    <span style="font-family:'Anton',sans-serif;font-size:clamp(70px,20vw,280px);font-weight:900;color:white;opacity:0.18;line-height:1;text-transform:uppercase;letter-spacing:-0.02em;white-space:nowrap;">CAMISAS 2026</span>
+                </div>
+                <!-- Brand label -->
+                <div style="position:absolute;top:1.5rem;left:2rem;z-index:60;font-size:0.7rem;font-weight:600;text-transform:uppercase;color:white;opacity:0.9;letter-spacing:0.18em;">BZ IMPORTS</div>
+                <!-- Carousel items -->
+                <div id="toonCarouselItems" style="position:absolute;inset:0;z-index:3;"></div>
+                <!-- Bottom-left text + nav -->
+                <div style="position:absolute;bottom:1.5rem;left:1rem;z-index:60;max-width:320px;" id="toonBottomLeft">
+                    <p style="font-weight:700;text-transform:uppercase;letter-spacing:0.02em;margin-bottom:0.5rem;font-size:1rem;color:white;opacity:0.95;">COLEÇÃO OFICIAL 2026</p>
+                    <p style="font-size:0.8rem;color:white;opacity:0.85;line-height:1.6;margin-bottom:1rem;">Camisas autênticas das maiores seleções e clubes. Qualidade premium, entregue na sua porta. Peça a sua agora!</p>
+                    <div style="display:flex;gap:0.75rem;">
+                        <button id="toonPrev" onclick="toonNavigate('prev')" style="width:48px;height:48px;border-radius:50%;background:transparent;border:2px solid white;color:white;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform 150ms,background-color 150ms;" onmouseover="this.style.transform='scale(1.08)';this.style.background='rgba(255,255,255,0.12)'" onmouseout="this.style.transform='';this.style.background='transparent'">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 5-7 7 7 7"/></svg>
+                        </button>
+                        <button id="toonNext" onclick="toonNavigate('next')" style="width:48px;height:48px;border-radius:50%;background:transparent;border:2px solid white;color:white;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform 150ms,background-color 150ms;" onmouseover="this.style.transform='scale(1.08)';this.style.background='rgba(255,255,255,0.12)'" onmouseout="this.style.transform='';this.style.background='transparent'">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                        </button>
+                    </div>
+                </div>
+                <!-- Bottom-right link -->
+                <div style="position:absolute;bottom:1.5rem;right:2rem;z-index:60;">
+                    <a id="toonDiscoverLink" onclick="toonGoToProduct()" style="display:flex;align-items:center;gap:0.4rem;font-family:'Anton',sans-serif;font-size:clamp(18px,3vw,42px);font-weight:400;color:white;opacity:0.95;letter-spacing:-0.02em;line-height:1;text-transform:uppercase;text-decoration:none;cursor:pointer;transition:opacity 200ms;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.95'">
+                        VER PRODUTO
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                    </a>
+                </div>
+                <!-- Dot indicators -->
+                <div id="toonDots" style="position:absolute;bottom:1.5rem;left:50%;transform:translateX(-50%);z-index:60;display:flex;gap:6px;"></div>
+            </div>
+        </div>
+        <!-- ===== END TOONHUB CAROUSEL ===== -->
+
+        <!-- Banners pequenos abaixo do carrossel TOONHUB -->
+        <div class="container" style="padding-top: 1.5rem;">
+            <div id="topBanners" style="display:none;"></div>
             <div id="smallBanners" class="small-banners-grid"></div>
         </div>
 
@@ -4256,22 +4290,77 @@ service cloud.firestore {
             window.clients = await DBService.getAll('clients');
 
             const defaultBanners = [
-                { id: 'banner-1', title: 'Cidades-Sede Copa 2026', desc: 'Edição Limitada das Camisas Oficiais das Cidades-Sede.', img: './fifa_host_cities_banner.png', type: 'top', link: '#?cat=Seleções' },
-                { id: 'banner-2', title: 'Manto da Seleção 2024', desc: 'Garanta a amarelinha oficial com preços imperdíveis.', img: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=1200&q=80', type: 'top', link: '#?cat=Seleções' },
-                { id: 'banner-3', title: 'Grandes Clubes Europeus', desc: 'Os principais uniformes da Champions League na sua mão.', img: 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=1200&q=80', type: 'top', link: '#?cat=Europeus' }
+                // ===== 4 BANNERS DE TOPO =====
+                {
+                    id: 'banner-top-1', type: 'top',
+                    title: 'Argentina 2026 — Messi #10',
+                    desc: 'Camisa oficial reserva de Messi. Edição autêntica Copa do Mundo 2026.',
+                    img: 'https://cdn.shopify.com/s/files/1/0591/0478/8538/files/0048_FIFAMZ0326_4.jpg?v=1776695031',
+                    link: '#?cat=Seleções', _v: 2
+                },
+                {
+                    id: 'banner-top-2', type: 'top',
+                    title: 'Brasil 2026 — A Canarinha',
+                    desc: 'O icônico amarelo com cinco estrelas. Peça a sua camisa oficial!',
+                    img: 'https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_1e5c686d-6495-4fbd-afe7-5b25371c103e.jpg?v=1775563958',
+                    link: '#?cat=Seleções', _v: 2
+                },
+                {
+                    id: 'banner-top-3', type: 'top',
+                    title: 'Espanha 2026 — Campeões',
+                    desc: 'A camisa Authentic da atual campeã da Euro. ClimaCool+ adidas.',
+                    img: 'https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_450f9e9b-03a8-4660-87b5-dde79b5b9fd9.png?v=1774372376',
+                    link: '#?cat=Seleções', _v: 2
+                },
+                {
+                    id: 'banner-top-4', type: 'top',
+                    title: 'Alemanha 2026 — Die Mannschaft',
+                    desc: 'Clássico branco imaculado. A camisa da Mannschaft que marcou história.',
+                    img: 'https://cdn.shopify.com/s/files/1/0591/0478/8538/files/KD8363_3_APPAREL_OnModel_StandardView_white.jpg?v=1774372475',
+                    link: '#?cat=Seleções', _v: 2
+                },
+                // ===== 4 BANNERS PEQUENOS =====
+                {
+                    id: 'banner-small-1', type: 'small',
+                    title: '🇦🇷 Argentina Mandante',
+                    img: 'https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_ab8f6ea2-c16a-4882-822e-aa52e9506054.png?v=1774372572',
+                    link: '#?cat=Seleções', _v: 2
+                },
+                {
+                    id: 'banner-small-2', type: 'small',
+                    title: '🇵🇹 Portugal Reserva',
+                    img: 'https://cdn.shopify.com/s/files/1/0591/0478/8538/files/FIFAMZ0368-1.png?v=1778690010',
+                    link: '#?cat=Seleções', _v: 2
+                },
+                {
+                    id: 'banner-small-3', type: 'small',
+                    title: '🇿🇦 África do Sul 2026',
+                    img: 'https://cdn.shopify.com/s/files/1/0591/0478/8538/files/KY2217_3_APPAREL_OnModel_StandardView_white.jpg?v=1780668789',
+                    link: '#?cat=Seleções', _v: 2
+                },
+                {
+                    id: 'banner-small-4', type: 'small',
+                    title: '🇺🇸 EUA 2026 Mandante',
+                    img: 'https://cdn.shopify.com/s/files/1/0591/0478/8538/files/image_3562f970-fa0a-4527-abc1-f50499492965.jpg?v=1775564013',
+                    link: '#?cat=Seleções', _v: 2
+                },
             ];
 
-            const hasOldDefault = window.banners && window.banners.some(b => b.id === 'banner-1' && !b.img.includes('fifa_host_cities_banner'));
-            const needsBannerUpdate = !window.banners || window.banners.length === 0 || hasOldDefault || window.banners.some(b => b.desc && b.desc.includes('roupas e acessórios'));
-            if (needsBannerUpdate) {
+            // Força atualização se banners antigos ou vazios
+            const hasOldBanners = !window.banners || window.banners.length === 0
+                || window.banners.some(b => !b._v || b._v < 2)
+                || window.banners.some(b => b.desc && b.desc.includes('roupas e acessórios'));
+            if (hasOldBanners) {
+                // Limpa banners antigos no Firebase
+                if (auth.currentUser && window.banners) {
+                    for (let old of window.banners) {
+                        try { await DBService.delete('banners', old.id); } catch(e) {}
+                    }
+                }
                 window.banners = defaultBanners;
                 if (auth.currentUser) {
                     for (let b of defaultBanners) {
-                        try {
-                            await DBService.put('banners', b);
-                        } catch (err) {
-                            console.error("Erro ao salvar banner no Firebase:", err);
-                        }
+                        try { await DBService.put('banners', b); } catch (err) { console.error("Banner save err:", err); }
                     }
                 }
             }
@@ -4477,40 +4566,18 @@ service cloud.firestore {
         }
 
         window.renderStoreBanners = () => {
-            const topCont = document.getElementById('topBanners');
+            // topBanners foi substituído pelo carrossel TOONHUB — apenas os banners pequenos são renderizados aqui
             const smCont = document.getElementById('smallBanners');
+            if (!smCont) return;
 
-            const tops = window.banners.filter(b => b.type === 'top');
-            if (tops.length > 0) {
-                topCont.innerHTML = tops.map(b => `
-                    <div class="banner-item" style="background-image: url('${b.img}');" onclick="${b.link ? `window.location.href='${b.link}'` : ''}">
-                        <div class="banner-overlay"></div>
-                        <div class="banner-content">
-                            <h2 class="font-title" style="font-size: 3rem; margin-bottom: 0.5rem; line-height: 1.1;">${b.title}</h2>
-                            <p style="font-size: 1.1rem; margin-bottom: 1.5rem; opacity: 0.9;">${b.desc || ''}</p>
-                            <button class="btn btn-secondary" style="background: #fff; color: var(--primary); border: none; padding: 0.8rem 1.5rem; font-weight: 600; border-radius: 4px; display: flex; align-items: center; gap: 0.5rem;">
-                                Ver Coleção <i data-lucide="chevron-right" size="18"></i>
-                            </button>
-                        </div>
-                    </div>`).join('');
-
-                if (!window.bannerInterval) {
-                    window.bannerInterval = setInterval(() => {
-                        const carousel = document.getElementById('topBanners');
-                        if (!carousel) return;
-                        const next = carousel.scrollLeft + carousel.offsetWidth;
-                        if (next >= carousel.scrollWidth) carousel.scrollTo({ left: 0, behavior: 'smooth' });
-                        else carousel.scrollBy({ left: carousel.offsetWidth, behavior: 'smooth' });
-                    }, 5000);
-                }
-            }
-
-            const smalls = window.banners.filter(b => b.type === 'small');
+            const smalls = (window.banners || []).filter(b => b.type === 'small');
             if (smalls.length > 0) {
                 smCont.innerHTML = smalls.map(b => `
-                    <div class="small-banner" style="background-image: url('${b.img}'); cursor:pointer;" onclick="${b.link ? `window.open('${b.link}','_blank')` : ''}">
+                    <div class="small-banner" style="background-image: url('${b.img}'); cursor:pointer;" onclick="${b.link ? `window.location.href='${b.link}'` : ''}">
                         <span>${b.title}</span>
                     </div>`).join('');
+            } else {
+                smCont.innerHTML = '';
             }
         }
 
@@ -6456,7 +6523,7 @@ service cloud.firestore {
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `backup_luasdeprata_${new Date().getTime()}.json`;
+            a.download = `backup_bzimports_${new Date().getTime()}.json`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -6518,6 +6585,167 @@ service cloud.firestore {
                 loadAutoBackupConfig();
             }, 1000);
         });
+    </script>
+    <script>
+    // ============ TOONHUB CAROUSEL (BZ IMPORTS EDITION) ============
+    (function() {
+        // Paleta de cores por slide — tons vibrantes que combinam com camisas
+        const TOON_COLORS = [
+            { bg: '#1a3a6b', panel: '#1e4080' },  // Argentina — azul profundo
+            { bg: '#006633', panel: '#007a3d' },  // EUA / Brasil — verde
+            { bg: '#cc0000', panel: '#e60000' },  // Espanha — vermelho
+            { bg: '#c07200', panel: '#d98200' },  // África do Sul — dourado
+        ];
+
+        let toonActiveIndex = 0;
+        let toonIsAnimating = false;
+        let toonItems = [];  // preenchido com window.products dinamicamente
+        let toonAutoInterval = null;
+
+        function isMobile() { return window.innerWidth < 640; }
+
+        function getToonProducts() {
+            const prods = window.products || [];
+            // Pega os 4 primeiros com imagem
+            return prods.filter(p => p.images && p.images[0]).slice(0, 4);
+        }
+
+        function buildToon() {
+            toonItems = getToonProducts();
+            if (toonItems.length < 2) return; // não monta com menos de 2 produtos
+
+            // Preload imagens
+            toonItems.forEach(p => {
+                const img = new Image();
+                img.src = p.images[0];
+            });
+
+            renderToon();
+            buildDots();
+            startAutoplay();
+
+            window.addEventListener('resize', () => renderToon());
+        }
+
+        function renderToon() {
+            const n = toonItems.length;
+            if (!n) return;
+            const section = document.getElementById('toonhubSection');
+            const container = document.getElementById('toonCarouselItems');
+            if (!section || !container) return;
+
+            const mob = isMobile();
+            const active = toonActiveIndex;
+            const left   = (active + n - 1) % n;
+            const right  = (active + 1) % n;
+            const back   = (active + 2) % n;
+
+            // Cor de fundo da secção
+            const colorIdx = active % TOON_COLORS.length;
+            section.style.backgroundColor = TOON_COLORS[colorIdx].bg;
+
+            container.innerHTML = toonItems.map((p, idx) => {
+                let style = '';
+                const img = p.images[0];
+                const transition = 'transform 650ms cubic-bezier(0.4,0,0.2,1), filter 650ms cubic-bezier(0.4,0,0.2,1), opacity 650ms cubic-bezier(0.4,0,0.2,1), left 650ms cubic-bezier(0.4,0,0.2,1), height 650ms cubic-bezier(0.4,0,0.2,1), bottom 650ms cubic-bezier(0.4,0,0.2,1)';
+
+                if (idx === active) {
+                    style = `position:absolute; aspect-ratio:0.7/1; height:${mob?'58%':'88%'}; bottom:${mob?'18%':'0'}; left:50%; transform:translateX(-50%) scale(${mob?1.2:1.55}); filter:none; opacity:1; z-index:20; transition:${transition}; will-change:transform,filter,opacity;`;
+                } else if (idx === left) {
+                    style = `position:absolute; aspect-ratio:0.7/1; height:${mob?'20%':'30%'}; bottom:${mob?'28%':'12%'}; left:${mob?'18%':'28%'}; transform:translateX(-50%) scale(1); filter:blur(2px); opacity:0.8; z-index:10; transition:${transition}; will-change:transform,filter,opacity;`;
+                } else if (idx === right) {
+                    style = `position:absolute; aspect-ratio:0.7/1; height:${mob?'20%':'30%'}; bottom:${mob?'28%':'12%'}; left:${mob?'82%':'72%'}; transform:translateX(-50%) scale(1); filter:blur(2px); opacity:0.8; z-index:10; transition:${transition}; will-change:transform,filter,opacity;`;
+                } else {
+                    style = `position:absolute; aspect-ratio:0.7/1; height:${mob?'14%':'22%'}; bottom:${mob?'28%':'12%'}; left:50%; transform:translateX(-50%) scale(1); filter:blur(4px); opacity:0.6; z-index:5; transition:${transition}; will-change:transform,filter,opacity;`;
+                }
+
+                // Clique no item central abre o produto
+                const clickAttr = idx === active ? `onclick="toonOpenProduct('${p.id}')" style="${style} cursor:pointer;"` : `style="${style}"`;
+                return `<div ${clickAttr}><img src="${img}" style="width:100%;height:100%;object-fit:contain;object-position:bottom center;user-select:none;pointer-events:none;" draggable="false"/></div>`;
+            }).join('');
+
+            // Atualiza dots
+            updateDots();
+
+            // Atualiza texto inferior
+            const prod = toonItems[active];
+            const bottomLeft = document.getElementById('toonBottomLeft');
+            if (bottomLeft && prod) {
+                const nameEl = bottomLeft.querySelector('p:first-child');
+                if (nameEl) nameEl.textContent = prod.name.length > 45 ? prod.name.slice(0,45)+'…' : prod.name;
+            }
+        }
+
+        function buildDots() {
+            const dotsEl = document.getElementById('toonDots');
+            if (!dotsEl) return;
+            dotsEl.innerHTML = toonItems.map((_, i) =>
+                `<button onclick="toonGoTo(${i})" style="width:${i===toonActiveIndex?24:8}px;height:8px;border-radius:4px;background:rgba(255,255,255,${i===toonActiveIndex?0.95:0.45});border:none;cursor:pointer;transition:all 400ms;padding:0;"></button>`
+            ).join('');
+        }
+
+        function updateDots() {
+            const dotsEl = document.getElementById('toonDots');
+            if (!dotsEl) return;
+            Array.from(dotsEl.children).forEach((btn, i) => {
+                btn.style.width = i === toonActiveIndex ? '24px' : '8px';
+                btn.style.background = `rgba(255,255,255,${i === toonActiveIndex ? 0.95 : 0.45})`;
+            });
+        }
+
+        window.toonNavigate = function(dir) {
+            if (toonIsAnimating || !toonItems.length) return;
+            toonIsAnimating = true;
+            const n = toonItems.length;
+            toonActiveIndex = dir === 'next' ? (toonActiveIndex + 1) % n : (toonActiveIndex + n - 1) % n;
+            renderToon();
+            setTimeout(() => { toonIsAnimating = false; }, 650);
+            resetAutoplay();
+        };
+
+        window.toonGoTo = function(idx) {
+            if (toonIsAnimating || idx === toonActiveIndex) return;
+            toonIsAnimating = true;
+            toonActiveIndex = idx;
+            renderToon();
+            setTimeout(() => { toonIsAnimating = false; }, 650);
+            resetAutoplay();
+        };
+
+        window.toonOpenProduct = function(id) {
+            if (typeof openDetail === 'function') openDetail(id);
+        };
+
+        window.toonGoToProduct = function() {
+            const prod = toonItems[toonActiveIndex];
+            if (prod && typeof openDetail === 'function') openDetail(prod.id);
+        };
+
+        function startAutoplay() {
+            toonAutoInterval = setInterval(() => {
+                if (!toonIsAnimating) window.toonNavigate('next');
+            }, 4500);
+        }
+
+        function resetAutoplay() {
+            clearInterval(toonAutoInterval);
+            startAutoplay();
+        }
+
+        // Aguarda os produtos estarem disponíveis
+        function waitAndBuild() {
+            if (window.products && window.products.length > 1) {
+                buildToon();
+            } else {
+                setTimeout(waitAndBuild, 300);
+            }
+        }
+
+        // Inicializa após a loja carregar
+        document.addEventListener('DOMContentLoaded', () => setTimeout(waitAndBuild, 800));
+        window.addEventListener('load', () => setTimeout(waitAndBuild, 1200));
+    })();
+    // ============ END TOONHUB CAROUSEL ============
     </script>
 </body>
 
