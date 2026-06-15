@@ -3836,6 +3836,9 @@ service cloud.firestore {
                                 <i data-lucide="upload"></i> Restaurar Local <input type="file" accept=".json"
                                     class="hidden" onchange="restoreBackup(this)">
                             </label>
+                            <button onclick="window.location.reload()" class="btn btn-secondary flex-1">
+                                <i data-lucide="refresh-cw"></i> Restaurar do Firebase
+                            </button>
                         </div>
                         <h4 class="mt-4 mb-2 text-sm font-bold">Nuvem</h4>
                         <div id="cloudBackupsList"
@@ -4146,6 +4149,7 @@ service cloud.firestore {
             const p = window.currentStaff.perms || {};
 
             const checkView = (module) => {
+                if (window.currentStaff.id === 'master') return true; // Admin Mestre tem acesso total sempre
                 if (p[module] === true) return true; // Legado
                 if (p[module] && p[module].view === true) return true; // Novo
                 return false;
