@@ -4942,6 +4942,14 @@ service cloud.firestore {
                     }
                 }
                 window.siteSettings = ms;
+
+                const pk = sett.find(x => x.id === 'pix_key_bzimports');
+                if (pk && pk.value) {
+                    window.pixKey = pk.value;
+                    localStorage.setItem('luas_pix_key', window.pixKey);
+                    const configPixKeyEl = document.getElementById('configPixKey');
+                    if (configPixKeyEl) configPixKeyEl.value = window.pixKey;
+                }
             } catch (e) { }
             if (window.applySiteSettings) window.applySiteSettings();
 
@@ -6947,7 +6955,19 @@ service cloud.firestore {
         }
 
         // Backups e Zera BD
-        window.saveSettings = () => { window.pixKey = document.getElementById('configPixKey').value; localStorage.setItem('luas_pix_key', window.pixKey); showToast('Configurações salvas!'); }
+        window.saveSettings = async () => {
+            window.pixKey = document.getElementById('configPixKey').value;
+            localStorage.setItem('luas_pix_key', window.pixKey);
+            try {
+                if (auth.currentUser) {
+                    await DBService.put('settings', { id: 'pix_key_bzimports', value: window.pixKey });
+                }
+                showToast('Configurações salvas!');
+            } catch (e) {
+                console.error("Erro ao salvar chave PIX no Firebase:", e);
+                showToast('Configurações salvas localmente, mas erro ao salvar no Firebase.', 'warning');
+            }
+        }
         window.resetSystem = async () => { if (confirm('Isso apagará TODOS os dados?')) { if (prompt('Senha de confirmação (luas2026):') === 'luas2026') { showToast("Limpando banco..."); await DBService.clear('produtos'); await DBService.clear('orders'); await DBService.clear('clients'); window.location.reload(); } } }
         window.forceRestore = async () => { if (confirm("Deseja restaurar as peças originais? Isos apagará as atuais.")) { showToast("Restaurando..."); await DBService.clear('produtos'); window.location.reload(); } }
 
