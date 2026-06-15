@@ -1125,6 +1125,14 @@
             color: #F87171 !important;
         }
 
+        .toast.warning {
+            border-left: 4px solid #FBBF24;
+        }
+
+        .toast.warning i, .toast.warning svg {
+            color: #FBBF24 !important;
+        }
+
         @keyframes fadeIn {
             from {
                 opacity: 0;
@@ -3323,6 +3331,10 @@
 
             <!-- TABS -->
             <div id="tab-dashboard" class="admin-tab">
+                <div id="syncStatusBanner" style="display:none; background:#FEF3C7; border:1px solid #F59E0B; border-radius:8px; padding:0.75rem 1rem; margin-bottom:1rem; font-size:0.85rem; color:#92400E;">
+                    <i data-lucide="refresh-cw" size="16" style="display:inline; vertical-align:middle; margin-right:6px;"></i>
+                    <span id="syncStatusText"></span>
+                </div>
                 <div class="admin-section-head flex justify-between items-center">
                     <h3 class="admin-section-title font-title"><i data-lucide="activity" style="color: var(--primary);"></i> Desempenho da Loja</h3>
                     <select id="dashPeriod" onchange="loadAdminDashboard()" style="width: auto; margin:0;">
@@ -3992,63 +4004,210 @@ service cloud.firestore {
 
         // SERVIÇO DB
         const DBService = {
+            // ====== CHAVE DO CACHE LOCAL ======
+            _lsKey(collectionName) {
+                return `bz_cache_${collectionName}`;
+            },
+            _readCache(collectionName) {
+                try {
+                    const raw = localStorage.getItem(this._lsKey(collectionName));
+                    return raw ? JSON.parse(raw) : [];
+                } catch { return []; }
+            },
+            _writeCache(collectionName, items) {
+                try {
+                    localStorage.setItem(this._lsKey(collectionName), JSON.stringify(items));
+                } catch (e) { console.warn("Cache local cheio:", e); }
+            },
+            _upsertCache(collectionName, data) {
+                const list = this._readCache(collectionName);
+                const idx = list.findIndex(x => String(x.id) === String(data.id));
+                if (idx !== -1) list[idx] = data; else list.push(data);
+                this._writeCache(collectionName, list);
+            },
+            _deleteFromCache(collectionName, id) {
+                const list = this._readCache(collectionName).filter(x => String(x.id) !== String(id));
+                this._writeCache(collectionName, list);
+            },
+
+            // ====== LEITURA ======
             async getAll(collectionName) {
                 try {
                     const q = await getDocs(collection(db, 'alansantos_' + collectionName));
-                    const allData = q.docs.map(d => d.data());
-                    return allData.filter(d => d.store === 'bzimports');
-                } catch (e) {
-                    if (e.code === 'permission-denied') { } else {
-                        console.error("Erro ao ler:", e);
+                    const allData = q.docs.map(d => d.data()).filter(d => d.store === 'bzimports');
+                    console.log(`📖 Firebase ${collectionName}: ${allData.length} documento(s) encontrado(s)`);
+                    if (allData.length > 0) {
+                        // Atualiza cache local com dados frescos do Firebase
+                        this._writeCache(collectionName, allData);
                     }
-                    return [];
+                    // Se Firebase retornou vazio, tenta o cache local (pode ter dados salvos off-line)
+                    if (allData.length === 0) {
+                        const cached = this._readCache(collectionName);
+                        if (cached.length > 0) {
+                            console.log(`⚠️ Firebase retornou VAZIO para ${collectionName}. Usando cache local (${cached.length} itens).`);
+                            return cached;
+                        }
+                    }
+                    return allData;
+                } catch (e) {
+                    console.error(`❌ Firebase ERRO ao ler ${collectionName}:`, e.code || e.message || e);
+                    // Fallback para cache local
+                    const cached = this._readCache(collectionName);
+                    console.log(`⚠️ Firebase indisponível para ${collectionName}. Usando cache local (${cached.length} itens).`);
+                    if (cached.length > 0) {
+                        // Marca como pendente para re-sincronizar
+                        const pending = JSON.parse(localStorage.getItem('bz_pending_sync') || '[]');
+                        if (!pending.includes(collectionName)) {
+                            pending.push(collectionName);
+                            localStorage.setItem('bz_pending_sync', JSON.stringify(pending));
+                        }
+                    }
+                    return cached;
                 }
             },
+
+            // ====== ESCRITA ======
             async put(collectionName, data) {
-                // Permite salvar se estiver autenticado no Firebase, se for coleção pública ou se houver um admin logado localmente no painel
                 const isPublicCollection = ['orders', 'clients'].includes(collectionName);
-                if (!auth.currentUser && !isPublicCollection && !window.currentStaff) return data;
+                if (!auth.currentUser && !isPublicCollection && !window.currentStaff) {
+                    console.warn(`⚠️ PUT cancelado para ${collectionName}: usuário não autenticado e sem staff.`);
+                    return { ...data, _firebaseSaved: false };
+                }
+
+                // Garante store tag
+                data.store = 'bzimports';
+                // Garante ID único se não houver
+                if (!data.id) data.id = String(Date.now());
+
+                // Sempre salva no cache local primeiro (persistência imediata)
+                this._upsertCache(collectionName, data);
+
+                // Tenta salvar no Firebase
                 try {
-                    data.store = 'bzimports';
-                    await setDoc(doc(db, 'alansantos_' + collectionName, String(data.id || Date.now())), data, { merge: true });
-                    return data;
+                    await setDoc(doc(db, 'alansantos_' + collectionName, String(data.id)), data, { merge: true });
+                    console.log(`✅ Firebase salvo: ${collectionName}/${data.id}`);
+                    return { ...data, _firebaseSaved: true };
                 } catch (e) {
-                    console.error("Erro ao salvar:", e);
+                    console.error(`❌ Firebase ERRO ao salvar ${collectionName}/${data.id}:`, e.code || e.message || e);
                     if (e.code === 'permission-denied') {
                         if (!auth.currentUser && isPublicCollection) {
-                            console.warn("Ignorando erro de permissão no Firebase para cliente público. O pedido será enviado via WhatsApp.");
-                            return data;
+                            console.warn("Permissão negada para coleção pública sem autenticação. Pedido enviado via WhatsApp.");
+                            return { ...data, _firebaseSaved: false };
                         }
-                        showToast("Acesso Negado: Permissão insuficiente no Firebase.", "error");
+                        console.warn(`⚠️ Firebase: permissão negada para ${collectionName}. Dado salvo APENAS localmente.`);
+                    } else {
+                        console.warn(`⚠️ Firebase: erro inesperado (${e.code || 'desconhecido'}) para ${collectionName}. Dado salvo APENAS localmente.`);
                     }
-                    throw e;
+                    // Marca coleção para sincronização pendente
+                    const pending = JSON.parse(localStorage.getItem('bz_pending_sync') || '[]');
+                    if (!pending.includes(collectionName)) {
+                        pending.push(collectionName);
+                        localStorage.setItem('bz_pending_sync', JSON.stringify(pending));
+                    }
+                    showToast("⚠️ Dados salvos localmente. Firebase retornou erro. Será sincronizado automaticamente.", "warning");
+                    return { ...data, _firebaseSaved: false };
                 }
             },
+
+            // ====== EXCLUSÃO ======
             async delete(collectionName, id) {
                 if (!auth.currentUser && !window.currentStaff) return;
+                this._deleteFromCache(collectionName, id);
                 try {
                     await deleteDoc(doc(db, 'alansantos_' + collectionName, String(id)));
+                    console.log(`✅ Firebase deletado: ${collectionName}/${id}`);
                 } catch (e) {
-                    console.error("Erro ao excluir:", e);
-                    showToast("Erro ao excluir do Firebase.", "error");
+                    console.error(`❌ Firebase ERRO ao deletar ${collectionName}/${id}:`, e.code || e.message || e);
+                    if (e.code === 'permission-denied') {
+                        const pending = JSON.parse(localStorage.getItem('bz_pending_sync') || '[]');
+                        if (!pending.includes(collectionName)) {
+                            pending.push(collectionName);
+                            localStorage.setItem('bz_pending_sync', JSON.stringify(pending));
+                        }
+                    }
                 }
             },
+
+            // ====== LIMPAR COLEÇÃO ======
             async clear(collectionName) {
+                if (!auth.currentUser && !window.currentStaff) return;
+                this._writeCache(collectionName, []);
                 try {
-                    if (!auth.currentUser && !window.currentStaff) return;
                     const q = await getDocs(collection(db, 'alansantos_' + collectionName));
                     const promises = q.docs
                         .filter(d => d.data().store === 'bzimports')
-                        .map((d) => deleteDoc(d.ref));
+                        .map(d => deleteDoc(d.ref));
                     await Promise.all(promises);
+                    console.log(`✅ Firebase coleção ${collectionName} limpa: ${promises.length} documento(s) removido(s)`);
                 } catch (e) {
-                    console.error("Erro ao limpar:", e);
+                    console.error(`❌ Firebase ERRO ao limpar ${collectionName}:`, e.code || e.message || e);
                 }
             },
+
+            // ====== SINCRONIZAÇÃO PENDENTE ======
+            // Chame isso após login bem-sucedido para enviar dados do cache para o Firebase
+            async syncPending() {
+                const pending = JSON.parse(localStorage.getItem('bz_pending_sync') || '[]');
+                if (pending.length === 0) return;
+                console.log("Sincronizando coleções pendentes:", pending);
+                let synced = [];
+                let failed = [];
+                for (const collectionName of pending) {
+                    const cached = this._readCache(collectionName);
+                    if (cached.length === 0) { synced.push(collectionName); continue; }
+                    let allOk = true;
+                    for (const data of cached) {
+                        try {
+                            await setDoc(doc(db, 'alansantos_' + collectionName, String(data.id)), data, { merge: true });
+                        } catch (e) {
+                            console.error(`Falha ao sincronizar ${collectionName}/${data.id}:`, e);
+                            allOk = false;
+                            failed.push(collectionName);
+                        }
+                    }
+                    if (allOk) synced.push(collectionName);
+                }
+                const stillPending = pending.filter(c => !synced.includes(c));
+                localStorage.setItem('bz_pending_sync', JSON.stringify(stillPending));
+                if (synced.length > 0) {
+                    console.log("✅ Sincronizado com Firebase:", synced);
+                    showToast(`✅ ${synced.length} coleção(ões) sincronizadas com o Firebase!`, "success");
+                }
+                if (failed.length > 0) {
+                    const uniqueFailed = [...new Set(failed)];
+                    console.warn("❌ Falha ao sincronizar:", uniqueFailed);
+                    showToast(`⚠️ ${uniqueFailed.length} coleção(ões) com falha. Tentativa será refeita.`, "error");
+                }
+            },
+
+            // ====== AUTO-SYNC PERIÓDICO ======
+            _autoSyncInterval: null,
+            startAutoSync() {
+                if (this._autoSyncInterval) return;
+                this._autoSyncInterval = setInterval(async () => {
+                    const pending = JSON.parse(localStorage.getItem('bz_pending_sync') || '[]');
+                    if (pending.length > 0 && auth.currentUser) {
+                        console.log(`🔄 Auto-sync: ${pending.length} coleção(ões) pendente(s)`);
+                        await this.syncPending();
+                    }
+                }, 30000); // Tenta sincronizar a cada 30 segundos
+            },
+            stopAutoSync() {
+                if (this._autoSyncInterval) {
+                    clearInterval(this._autoSyncInterval);
+                    this._autoSyncInterval = null;
+                }
+            },
+            getPendingCount() {
+                const pending = JSON.parse(localStorage.getItem('bz_pending_sync') || '[]');
+                return pending.length;
+            },
+
+            // ====== BACKUP NA NUVEM ======
             async saveCloudBackup(data) {
                 try {
-                    await addDoc(collection(db, 'alansantos_backups'), { 
-                        timestamp: Date.now(), 
+                    await addDoc(collection(db, 'alansantos_backups'), {
+                        timestamp: Date.now(),
                         content: JSON.stringify(data),
                         store: 'bzimports'
                     });
@@ -4069,11 +4228,6 @@ service cloud.firestore {
                     return [];
                 }
             }
-        };
-
-        window.DBService = DBService;
-        window.products = []; window.cart = []; window.orders = []; window.clients = []; window.brands = [];
-        window.banners = []; window.coupons = []; window.categories = []; window.appliedCoupon = null;
         window.currentFilter = 'Todos'; window.pixKey = localStorage.getItem('luas_pix_key') || "sua_chave_pix_aqui";
         window.visibleProductsLimit = 50; window.adminViewMode = 'list';
 
@@ -4082,9 +4236,10 @@ service cloud.firestore {
             const c = document.getElementById('toastContainer');
             const t = document.createElement('div');
             t.className = `toast ${type}`;
-            t.innerHTML = `<i data-lucide="${type === 'success' ? 'check-circle' : 'alert-circle'}" size="20"></i> <span>${msg}</span>`;
+            const icon = type === 'success' ? 'check-circle' : type === 'warning' ? 'alert-triangle' : 'alert-circle';
+            t.innerHTML = `<i data-lucide="${icon}" size="20"></i> <span>${msg}</span>`;
             c.appendChild(t); lucide.createIcons();
-            setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 3000);
+            setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 4000);
         }
 
         window.formatMoney = (val) => {
@@ -4111,16 +4266,21 @@ service cloud.firestore {
                     document.getElementById('adminView').classList.remove('hidden');
                     document.getElementById('storeView').classList.add('hidden');
                     await loadData();
+                    await DBService.syncPending();
+                    DBService.startAutoSync();
                     setAdminTab(localStorage.getItem('adminActiveTab') || 'dashboard');
                 } else if (!window.currentStaff) {
                     showStaffSelection();
                 } else {
                     document.getElementById('adminView').classList.remove('hidden'); document.getElementById('storeView').classList.add('hidden');
                     await loadData();
+                    await DBService.syncPending();
+                    DBService.startAutoSync();
                     setAdminTab(localStorage.getItem('adminActiveTab') || 'dashboard');
                 }
             } else {
                 window.currentStaff = null;
+                DBService.stopAutoSync();
                 document.getElementById('adminView').classList.add('hidden'); document.getElementById('storeView').classList.remove('hidden');
                 window.orders = []; window.clients = [];
             }
@@ -4170,6 +4330,8 @@ service cloud.firestore {
                 document.getElementById('storeView').classList.add('hidden');
                 showToast("Carregando dados da loja...", "success");
                 await loadData();
+                await DBService.syncPending();
+                DBService.startAutoSync();
                 setAdminTab('dashboard');
                 showToast(`Bem-vindo(a), ${window.currentStaff.name}!`);
                 applyRBAC();
@@ -4276,15 +4438,14 @@ service cloud.firestore {
             
             let shouldSeed = false;
             // Só verifica e semeia quando o admin está logado
-            // Visitantes anônimos não têm permissão para ler alansantos_config
             if (auth.currentUser && (window.products.length === 0 || hasOldData)) {
                 try {
-                    const flagRef = doc(db, 'alansantos_config', 'seed_bzimports_v2');
+                    // Usamos a coleção alansantos_categories para contornar problemas de permissão na coleção alansantos_config
+                    const flagRef = doc(db, 'alansantos_categories', 'seed_flag_v2');
                     const flagSnap = await getDoc(flagRef);
                     if (!flagSnap.exists()) {
                         shouldSeed = true; // Primeira vez com admin logado: semeia
                     }
-                    // Se flag existe: admin deletou intencionalmente, não semeia
                 } catch(e) {
                     console.warn('Não foi possível verificar flag de seed:', e.message);
                 }
@@ -5295,12 +5456,19 @@ service cloud.firestore {
                 if (auth.currentUser) {
                     // Semeia produtos padrão pela 1a vez
                     for (let p of seedProducts) await DBService.put('produtos', p);
-                    // Salva flag no Firebase: nunca mais semear automaticamente
-                    await setDoc(doc(db, 'alansantos_config', 'seed_bzimports_v2'), { done: true, store: 'bzimports', ts: Date.now() });
+                    // Salva flag no Firebase na coleção alansantos_categories
+                    await setDoc(doc(db, 'alansantos_categories', 'seed_flag_v2'), { done: true, store: 'bzimports', ts: Date.now() });
                     window.products = await DBService.getAll('produtos');
                 } else {
                     window.products = seedProducts;
                 }
+            }
+
+            // FALLBACK LOCAL: Se mesmo assim a lista ficou vazia, usamos os seedProducts locais para não deixar a vitrine/catálogo vazios
+            if (!window.products || window.products.length === 0) {
+                console.log("Vitrine/Catálogo vazia no Firebase. Carregando produtos padrão (fallback).");
+                window.products = seedProducts;
+            }
             }
             window.brands = await DBService.getAll('brands');
             window.banners = await DBService.getAll('banners');
@@ -6669,6 +6837,17 @@ service cloud.firestore {
         window.loadAdminDashboard = function () {
             if (!document.getElementById('kpiSales')) return;
 
+            // Verifica sync pendente
+            const pendingSync = JSON.parse(localStorage.getItem('bz_pending_sync') || '[]');
+            const syncBanner = document.getElementById('syncStatusBanner');
+            const syncText = document.getElementById('syncStatusText');
+            if (pendingSync.length > 0 && auth.currentUser) {
+                syncBanner.style.display = 'block';
+                syncText.textContent = `${pendingSync.length} coleção(ões) pendente(s) de sincronização com o Firebase. Tentativa automática a cada 30s.`;
+            } else {
+                syncBanner.style.display = 'none';
+            }
+
             const period = document.getElementById('dashPeriod').value;
             const now = Date.now();
             const periodMs = period === 'all' ? Infinity : (parseInt(period) * 24 * 60 * 60 * 1000);
@@ -7584,74 +7763,84 @@ service cloud.firestore {
 
         window.saveProduct = async (e) => {
             e.preventDefault();
-            const id = document.getElementById('prodId').value;
-            const name = document.getElementById('prodName').value;
-            const price = parseFloat(document.getElementById('prodPrice').value);
-            const promo = parseFloat(document.getElementById('prodPricePromo').value);
+            try {
+                const id = document.getElementById('prodId').value;
+                const name = document.getElementById('prodName').value;
+                const price = parseFloat(document.getElementById('prodPrice').value);
+                const promo = parseFloat(document.getElementById('prodPricePromo').value);
 
-            const urlInput = document.getElementById('prodImgUrl');
-            if (urlInput && urlInput.value.trim() !== '' && !currentProductImages.includes(urlInput.value.trim())) {
-                currentProductImages.push(urlInput.value.trim());
+                const urlInput = document.getElementById('prodImgUrl');
+                if (urlInput && urlInput.value.trim() !== '' && !currentProductImages.includes(urlInput.value.trim())) {
+                    currentProductImages.push(urlInput.value.trim());
+                }
+
+                if (!name || isNaN(price)) return showToast("Preencha Nome e Preço!", "error");
+
+                const p = {
+                    id: id || Date.now(),
+                    name: name,
+                    sku: document.getElementById('prodSku').value,
+                    supplier: document.getElementById('prodSupplier').value,
+                    category: document.getElementById('prodCat').value,
+                    cost: parseFloat(document.getElementById('prodCost').value) || 0,
+                    price: price,
+                    pricePromo: isNaN(promo) ? null : promo,
+                    stock: parseInt(document.getElementById('prodStock').value) || 0,
+                    video: document.getElementById('prodVideoUrl').value.trim() || '',
+                    
+                    // Cores Múltiplas
+                    colors: [
+                        ...Array.from(document.querySelectorAll('.color-cb:checked')).map(cb => cb.value),
+                        ...document.getElementById('prodColorCustom').value.split(',').map(s => s.trim()).filter(s => s !== '')
+                    ],
+                    // Tamanhos Múltiplos e Estoque por Tamanho
+                    sizes: (() => {
+                        const sz = [];
+                        Array.from(document.querySelectorAll('.size-cb:checked')).forEach(cb => sz.push(cb.value));
+                        const cSz = document.getElementById('prodSizeCustom').value;
+                        if (cSz) cSz.split(',').forEach(s => { if (s.trim()) sz.push(s.trim()); });
+                        return sz;
+                    })(),
+                    stockBySize: (() => {
+                        const sbs = {};
+                        Array.from(document.querySelectorAll('.size-cb:checked')).forEach(cb => {
+                            sbs[cb.value] = parseInt(document.getElementById('stock_size_' + cb.value).value) || 0;
+                        });
+                        const cSz = document.getElementById('prodSizeCustom').value;
+                        if (cSz) cSz.split(',').forEach(s => { if (s.trim()) sbs[s.trim()] = 0; });
+                        return sbs;
+                    })(),
+
+                    material: document.getElementById('prodMaterial').value,
+                    gender: document.getElementById('prodGender').value,
+                    description: document.getElementById('prodDesc').value,
+                    outStock: document.getElementById('prodOutStock').checked,
+                    noLimit: document.getElementById('prodNoLimit').checked,
+                    images: currentProductImages.length ? currentProductImages : [],
+                    image: currentProductImages.length ? currentProductImages[0] : ''
+                };
+
+                // Se o usuário preencheu estoque por tamanho, atualizamos o estoque total
+                if (p.sizes.length > 0) {
+                    const sum = Object.values(p.stockBySize).reduce((a, b) => a + b, 0);
+                    if (sum > 0) p.stock = sum;
+                }
+
+                const result = await DBService.put('produtos', p);
+                if (id) {
+                    const idx = window.products.findIndex(x => x.id == id);
+                    if (idx !== -1) window.products[idx] = p; else window.products.push(p);
+                } else window.products.push(p);
+                closeProductForm(); renderAdminTable(); applyFilters();
+                if (result && result._firebaseSaved) {
+                    showToast("✅ Produto salvo no Firebase com sucesso!");
+                } else {
+                    showToast("⚠️ Produto salvo localmente. Será sincronizado com o Firebase automaticamente.", "warning");
+                }
+            } catch (err) {
+                console.error("Erro ao salvar produto:", err);
+                showToast("❌ Erro ao salvar produto: " + (err.message || 'Erro desconhecido'), "error");
             }
-
-            if (!name || isNaN(price)) return showToast("Preencha Nome e Preço!", "error");
-
-            const p = {
-                id: id || Date.now(),
-                name: name,
-                sku: document.getElementById('prodSku').value,
-                supplier: document.getElementById('prodSupplier').value,
-                category: document.getElementById('prodCat').value,
-                cost: parseFloat(document.getElementById('prodCost').value) || 0,
-                price: price,
-                pricePromo: isNaN(promo) ? null : promo,
-                stock: parseInt(document.getElementById('prodStock').value) || 0,
-                video: document.getElementById('prodVideoUrl').value.trim() || '',
-                
-                // Cores Múltiplas
-                colors: [
-                    ...Array.from(document.querySelectorAll('.color-cb:checked')).map(cb => cb.value),
-                    ...document.getElementById('prodColorCustom').value.split(',').map(s => s.trim()).filter(s => s !== '')
-                ],
-                // Tamanhos Múltiplos e Estoque por Tamanho
-                sizes: (() => {
-                    const sz = [];
-                    Array.from(document.querySelectorAll('.size-cb:checked')).forEach(cb => sz.push(cb.value));
-                    const cSz = document.getElementById('prodSizeCustom').value;
-                    if (cSz) cSz.split(',').forEach(s => { if (s.trim()) sz.push(s.trim()); });
-                    return sz;
-                })(),
-                stockBySize: (() => {
-                    const sbs = {};
-                    Array.from(document.querySelectorAll('.size-cb:checked')).forEach(cb => {
-                        sbs[cb.value] = parseInt(document.getElementById('stock_size_' + cb.value).value) || 0;
-                    });
-                    const cSz = document.getElementById('prodSizeCustom').value;
-                    if (cSz) cSz.split(',').forEach(s => { if (s.trim()) sbs[s.trim()] = 0; });
-                    return sbs;
-                })(),
-
-                material: document.getElementById('prodMaterial').value,
-                gender: document.getElementById('prodGender').value,
-                description: document.getElementById('prodDesc').value,
-                outStock: document.getElementById('prodOutStock').checked,
-                noLimit: document.getElementById('prodNoLimit').checked,
-                images: currentProductImages.length ? currentProductImages : [],
-                image: currentProductImages.length ? currentProductImages[0] : ''
-            };
-
-            // Se o usuário preencheu estoque por tamanho, atualizamos o estoque total
-            if (p.sizes.length > 0) {
-                const sum = Object.values(p.stockBySize).reduce((a, b) => a + b, 0);
-                if (sum > 0) p.stock = sum;
-            }
-
-            await DBService.put('produtos', p);
-            if (id) {
-                const idx = window.products.findIndex(x => x.id == id);
-                if (idx !== -1) window.products[idx] = p; else window.products.push(p);
-            } else window.products.push(p);
-            closeProductForm(); renderAdminTable(); applyFilters(); showToast("Peça salva no catálogo!");
         }
 
         window.deleteProduct = async (id) => { if (confirm("Excluir peça permanentemente?")) { await DBService.delete('produtos', id); window.products = window.products.filter(x => x.id != id); renderAdminTable(); applyFilters(); } }
@@ -7746,7 +7935,7 @@ service cloud.firestore {
             }
             // Salva o flag no Firebase: não semear mais automaticamente
             try {
-                await setDoc(doc(db, 'alansantos_config', 'seed_bzimports_v2'), { done: true, store: 'bzimports', ts: Date.now() });
+                await setDoc(doc(db, 'alansantos_categories', 'seed_flag_v2'), { done: true, store: 'bzimports', ts: Date.now() });
             } catch(e) { console.warn('Flag não salvo:', e); }
             window.products = [];
             if (window.renderAdminTable) window.renderAdminTable();
@@ -7762,7 +7951,7 @@ service cloud.firestore {
             await DBService.clear('orders');
             await DBService.clear('clients');
             // Salva flag para não semear mais
-            try { await setDoc(doc(db, 'alansantos_config', 'seed_bzimports_v2'), { done: true, store: 'bzimports', ts: Date.now() }); } catch(e) {}
+            try { await setDoc(doc(db, 'alansantos_categories', 'seed_flag_v2'), { done: true, store: 'bzimports', ts: Date.now() }); } catch(e) {}
             window.location.reload();
         };
 
@@ -7771,7 +7960,7 @@ service cloud.firestore {
             showToast('Restaurando...');
             await DBService.clear('produtos');
             // Remove o flag para permitir a semeadura
-            try { await deleteDoc(doc(db, 'alansantos_config', 'seed_bzimports_v2')); } catch(e) {}
+            try { await deleteDoc(doc(db, 'alansantos_categories', 'seed_flag_v2')); } catch(e) {}
             window.location.reload();
         };
 
