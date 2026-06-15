@@ -3845,7 +3845,9 @@ service cloud.firestore {
                     <div class="dash-widget" style="border-color: var(--danger);">
                         <h4 class="font-title mb-2" style="color: var(--danger);">Zona de Perigo</h4>
                         <p class="text-xs mb-4">Atenção: Ações irreversíveis.</p>
-                        <div class="flex gap-2">
+                        <div class="flex gap-2" style="flex-wrap:wrap;">
+                            <button onclick="clearAllProducts()" class="btn btn-secondary btn-sm"
+                                style="color:var(--danger); border-color:var(--danger);">&#128465; Limpar Todos os Produtos</button>
                             <button onclick="forceRestore()" class="btn btn-secondary btn-sm"
                                 style="color:var(--danger);">Restaurar Peças Iniciais</button>
                             <button onclick="resetSystem()" class="btn btn-primary btn-sm"
@@ -7629,8 +7631,47 @@ service cloud.firestore {
 
         // Backups e Zera BD
         window.saveSettings = () => { window.pixKey = document.getElementById('configPixKey').value; localStorage.setItem('luas_pix_key', window.pixKey); showToast('Configurações salvas!'); }
-        window.resetSystem = async () => { if (confirm('Isso apagará TODOS os dados?')) { if (prompt('Senha de confirmação (luas2026):') === 'luas2026') { showToast("Limpando banco..."); await DBService.clear('produtos'); await DBService.clear('orders'); await DBService.clear('clients'); window.location.reload(); } } }
-        window.forceRestore = async () => { if (confirm("Deseja restaurar as peças originais? Isos apagará as atuais.")) { showToast("Restaurando..."); await DBService.clear('produtos'); window.location.reload(); } }
+        
+        // Limpa SOMENTE os produtos e salva o flag para não semear mais
+        window.clearAllProducts = async () => {
+            if (!confirm('Isso vai APAGAR TODOS OS PRODUTOS da loja. Deseja continuar?')) return;
+            if (!auth.currentUser) return showToast('Você precisa estar logado como admin.', 'error');
+            showToast('Deletando produtos...');
+            const prods = [...(window.products || [])];
+            let deleted = 0;
+            for (const p of prods) {
+                try { await DBService.delete('produtos', p.id); deleted++; } catch(e) { console.error('Erro ao deletar:', p.id, e); }
+            }
+            // Salva o flag no Firebase: não semear mais automaticamente
+            try {
+                await setDoc(doc(db, 'alansantos_config', 'seed_bzimports_v2'), { done: true, store: 'bzimports', ts: Date.now() });
+            } catch(e) { console.warn('Flag não salvo:', e); }
+            window.products = [];
+            if (window.renderAdminTable) window.renderAdminTable();
+            if (window.applyFilters) window.applyFilters();
+            showToast(`${deleted} produto(s) excluído(s) com sucesso!`);
+        };
+
+        window.resetSystem = async () => {
+            if (!confirm('Isso apagará TODOS os dados (produtos, pedidos, clientes)?')) return;
+            if (prompt('Senha de confirmação (luas2026):') !== 'luas2026') return;
+            showToast('Limpando banco...');
+            await DBService.clear('produtos');
+            await DBService.clear('orders');
+            await DBService.clear('clients');
+            // Salva flag para não semear mais
+            try { await setDoc(doc(db, 'alansantos_config', 'seed_bzimports_v2'), { done: true, store: 'bzimports', ts: Date.now() }); } catch(e) {}
+            window.location.reload();
+        };
+
+        window.forceRestore = async () => {
+            if (!confirm('Deseja restaurar as peças originais? Isso apagará os produtos atuais e voltará as 30 peças padrão.')) return;
+            showToast('Restaurando...');
+            await DBService.clear('produtos');
+            // Remove o flag para permitir a semeadura
+            try { await deleteDoc(doc(db, 'alansantos_config', 'seed_bzimports_v2')); } catch(e) {}
+            window.location.reload();
+        };
 
         window.exportData = async () => {
             showToast("Gerando backup na nuvem...");
