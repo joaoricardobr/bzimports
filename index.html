@@ -2813,14 +2813,11 @@
             
             <div style="background: var(--secondary); padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem;">
                 <label style="font-weight: bold; display: block; margin-bottom: 10px; color: var(--text-main);">PAGUE COM PIX</label>
-                <div style="display: flex; justify-content: center; margin-bottom: 1rem;">
+                <div id="confPixQrContainer" style="display: flex; justify-content: center; margin-bottom: 1rem;">
                     <img id="confPixQrCode" src="" alt="QR Code PIX" style="width: 200px; height: 200px; border: 1px solid var(--border); border-radius: 8px; background: white; padding: 5px;">
                 </div>
-                <div style="text-align: center; margin-bottom: 15px; padding: 10px; background: white; border: 1px solid var(--border); border-radius: 8px;">
-                    <span style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Chave PIX cadastrada:</span>
-                    <strong id="confPixKeyText" style="font-size: 1.05rem; color: var(--text-main); word-break: break-all; font-family: monospace;">-</strong>
-                </div>
-                <button type="button" onclick="copyConfPixKey()" class="btn btn-secondary w-full" style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <textarea id="confPixCodeText" readonly style="width: 100%; height: 60px; font-family: monospace; font-size: 0.8rem; padding: 8px; border-radius: 6px; border: 1px solid var(--border); resize: none; margin-bottom: 10px; background: white;"></textarea>
+                <button type="button" onclick="copyConfPixCode()" class="btn btn-secondary w-full" style="display: flex; align-items: center; justify-content: center; gap: 8px;">
                     <i data-lucide="copy" style="width: 16px; height: 16px;"></i> Copiar Chave PIX
                 </button>
             </div>
@@ -6519,20 +6516,15 @@ service cloud.firestore {
             document.getElementById('orderConfirmationModal').classList.remove('active');
         };
 
-        window.copyConfPixKey = () => {
-            const keyText = document.getElementById('confPixKeyText').innerText;
+        window.copyConfPixCode = () => {
+            const el = document.getElementById('confPixCodeText');
+            el.select();
+            el.setSelectionRange(0, 99999);
             try {
-                navigator.clipboard.writeText(keyText);
-                showToast("✅ Chave PIX copiada!", "success");
+                navigator.clipboard.writeText(el.value);
+                showToast("✅ Código Pix Copia e Cola copiado!", "success");
             } catch (err) {
-                // Fallback de cópia
-                const t = document.createElement('textarea');
-                t.value = keyText;
-                document.body.appendChild(t);
-                t.select();
-                document.execCommand('copy');
-                t.remove();
-                showToast("✅ Chave PIX copiada!", "success");
+                showToast("❌ Não foi possível copiar.", "error");
             }
         };
 
@@ -6595,12 +6587,6 @@ service cloud.firestore {
 
             const orderId = 'LP-' + Math.random().toString(36).substr(2, 5).toUpperCase();
 
-            // Geração de Payload Pix e QR Code
-            const siteName = (window.siteSettings && window.siteSettings.name) ? window.siteSettings.name : "Bz Imports";
-            const siteCity = (window.siteSettings && window.siteSettings.address) ? window.siteSettings.address.split(',')[0].trim() : "Juazeiro";
-            const pixPayload = generatePixPayload(window.pixKey || "bzimports@gmail.com", total, siteName, siteCity);
-            const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(pixPayload)}`;
-
             const o = {
                 id: orderId,
                 timestamp: Date.now(),
@@ -6619,7 +6605,7 @@ service cloud.firestore {
                 staffName: window.currentStaff?.name || 'Venda Direta',
                 store: 'bzimports',
                 pixQrImage: window.pixQrImage || '',
-                pixPayload: pixPayload || ''
+                pixKey: window.pixKey || ''
             };
 
             await DBService.put('orders', o); 
@@ -6684,12 +6670,24 @@ service cloud.firestore {
             m += `Você tem até as *${limitTimeStr}* para realizar o pagamento. Caso não pague, o pedido será cancelado automaticamente e os itens retornarão ao estoque da loja.\n\n`;
             
             m += `🔑 *Chave Pix para Pagamento:* ${window.pixKey || "bzimports@gmail.com"}\n`;
+            if (window.pixQrImage) {
+                m += `🖼️ *QR Code:* Escaneie o QR Code anexado na tela de confirmação.\n`;
+            }
+            m += `\n`;
 
             // Abre o modal de confirmação
             document.getElementById('confOrderId').innerText = o.id;
             document.getElementById('confOrderLimitTime').innerText = limitTimeStr;
-            document.getElementById('confPixQrCode').src = window.pixQrImage || qrCodeUrl;
-            document.getElementById('confPixKeyText').innerText = window.pixKey || "bzimports@gmail.com";
+            
+            const qrImg = document.getElementById('confPixQrCode');
+            const qrCont = document.getElementById('confPixQrContainer');
+            if (window.pixQrImage) {
+                if (qrImg) qrImg.src = window.pixQrImage;
+                if (qrCont) qrCont.style.display = 'flex';
+            } else {
+                if (qrCont) qrCont.style.display = 'none';
+            }
+            document.getElementById('confPixCodeText').value = window.pixKey || "bzimports@gmail.com";
             
             const s = window.siteSettings || {};
             const waNumber = s.wa ? (s.wa.startsWith('55') ? s.wa : '55' + s.wa) : '5574988020692';
