@@ -2816,9 +2816,9 @@
                 <div style="display: flex; justify-content: center; margin-bottom: 1rem;">
                     <img id="confPixQrCode" src="" alt="QR Code PIX" style="width: 200px; height: 200px; border: 1px solid var(--border); border-radius: 8px; background: white; padding: 5px;">
                 </div>
-                <textarea id="confPixCodeText" readonly style="width: 100%; height: 60px; font-family: monospace; font-size: 0.8rem; padding: 8px; border-radius: 6px; border: 1px solid var(--border); resize: none; margin-bottom: 10px; background: white;"></textarea>
+                <input type="text" id="confPixCodeText" readonly style="width: 100%; text-align: center; font-family: monospace; font-size: 1rem; font-weight: bold; padding: 10px; border-radius: 6px; border: 1px solid var(--border); margin-bottom: 10px; background: white;">
                 <button type="button" onclick="copyConfPixCode()" class="btn btn-secondary w-full" style="display: flex; align-items: center; justify-content: center; gap: 8px;">
-                    <i data-lucide="copy" style="width: 16px; height: 16px;"></i> Copiar Pix Copia e Cola
+                    <i data-lucide="copy" style="width: 16px; height: 16px;"></i> Copiar Chave PIX
                 </button>
             </div>
             
@@ -6522,7 +6522,7 @@ service cloud.firestore {
             el.setSelectionRange(0, 99999);
             try {
                 navigator.clipboard.writeText(el.value);
-                showToast("✅ Código Pix Copia e Cola copiado!", "success");
+                showToast("✅ Chave Pix copiada com sucesso!", "success");
             } catch (err) {
                 showToast("❌ Não foi possível copiar.", "error");
             }
@@ -6675,22 +6675,18 @@ service cloud.firestore {
             m += `⚠️ *RESERVADO POR 1 HORA:*\n`;
             m += `Você tem até as *${limitTimeStr}* para realizar o pagamento. Caso não pague, o pedido será cancelado automaticamente e os itens retornarão ao estoque da loja.\n\n`;
             
-            if (pixPayload) {
-                m += `🔑 *Pix Copia e Cola:*\n\`${pixPayload}\`\n\n`;
-                if (window.pixQrImage) {
-                    m += `🖼️ *QR Code:* Escaneie o QR Code anexado na tela de confirmação.\n`;
-                } else {
-                    m += `📱 *QR Code do Pix (Link):*\n${qrCodeUrl}\n`;
-                }
+            m += `🔑 *Chave PIX:* ${window.pixKey || "74988020692"}\n\n`;
+            if (window.pixQrImage) {
+                m += `🖼️ *QR Code:* Escaneie o QR Code anexado na tela de confirmação.\n`;
             } else {
-                m += `🔑 *Chave Pix para Transferência:* ${window.pixKey || "bzimports@gmail.com"}\n`;
+                m += `📱 *QR Code do Pix (Link):*\n${qrCodeUrl}\n`;
             }
 
             // Abre o modal de confirmação
             document.getElementById('confOrderId').innerText = o.id;
             document.getElementById('confOrderLimitTime').innerText = limitTimeStr;
             document.getElementById('confPixQrCode').src = window.pixQrImage || qrCodeUrl;
-            document.getElementById('confPixCodeText').value = pixPayload || window.pixKey || "bzimports@gmail.com";
+            document.getElementById('confPixCodeText').value = window.pixKey || "74988020692";
             
             const s = window.siteSettings || {};
             const waNumber = s.wa ? (s.wa.startsWith('55') ? s.wa : '55' + s.wa) : '5574988020692';
