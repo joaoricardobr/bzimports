@@ -4228,6 +4228,7 @@ service cloud.firestore {
                     return [];
                 }
             }
+        };
         window.currentFilter = 'Todos'; window.pixKey = localStorage.getItem('luas_pix_key') || "sua_chave_pix_aqui";
         window.visibleProductsLimit = 50; window.adminViewMode = 'list';
 
@@ -5468,7 +5469,6 @@ service cloud.firestore {
             if (!window.products || window.products.length === 0) {
                 console.log("Vitrine/Catálogo vazia no Firebase. Carregando produtos padrão (fallback).");
                 window.products = seedProducts;
-            }
             }
             window.brands = await DBService.getAll('brands');
             window.banners = await DBService.getAll('banners');
