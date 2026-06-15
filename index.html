@@ -5699,9 +5699,15 @@ service cloud.firestore {
             if (storyInterval) clearInterval(storyInterval);
             window.avpState = null;
 
-            if (currentDetailProduct.video && currentDetailProduct.video.trim() !== '') {
-                // Produto tem URL de vídeo real
-                const videoUrl = currentDetailProduct.video.trim();
+            const videoUrl = (currentDetailProduct.video || '').trim();
+            const isDirectVideo = videoUrl !== '' && (
+                videoUrl.match(/\.(mp4|webm|ogg|mov|m4v)(\?|$)/i) || 
+                videoUrl.includes('firebasestorage.googleapis.com') ||
+                videoUrl.includes('vimeo.com/external/')
+            );
+
+            if (isDirectVideo) {
+                // Produto tem URL de vídeo real direto (ex: MP4)
                 body.innerHTML = `
                     <video class="video-full-player" controls autoplay loop>
                         <source src="${videoUrl}">
