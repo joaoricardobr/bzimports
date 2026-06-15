@@ -2816,8 +2816,11 @@
                 <div style="display: flex; justify-content: center; margin-bottom: 1rem;">
                     <img id="confPixQrCode" src="" alt="QR Code PIX" style="width: 200px; height: 200px; border: 1px solid var(--border); border-radius: 8px; background: white; padding: 5px;">
                 </div>
-                <input type="text" id="confPixCodeText" readonly style="width: 100%; text-align: center; font-family: monospace; font-size: 1rem; font-weight: bold; padding: 10px; border-radius: 6px; border: 1px solid var(--border); margin-bottom: 10px; background: white;">
-                <button type="button" onclick="copyConfPixCode()" class="btn btn-secondary w-full" style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <div style="text-align: center; margin-bottom: 15px; padding: 10px; background: white; border: 1px solid var(--border); border-radius: 8px;">
+                    <span style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Chave PIX cadastrada:</span>
+                    <strong id="confPixKeyText" style="font-size: 1.05rem; color: var(--text-main); word-break: break-all; font-family: monospace;">-</strong>
+                </div>
+                <button type="button" onclick="copyConfPixKey()" class="btn btn-secondary w-full" style="display: flex; align-items: center; justify-content: center; gap: 8px;">
                     <i data-lucide="copy" style="width: 16px; height: 16px;"></i> Copiar Chave PIX
                 </button>
             </div>
@@ -6516,15 +6519,20 @@ service cloud.firestore {
             document.getElementById('orderConfirmationModal').classList.remove('active');
         };
 
-        window.copyConfPixCode = () => {
-            const el = document.getElementById('confPixCodeText');
-            el.select();
-            el.setSelectionRange(0, 99999);
+        window.copyConfPixKey = () => {
+            const keyText = document.getElementById('confPixKeyText').innerText;
             try {
-                navigator.clipboard.writeText(el.value);
-                showToast("✅ Chave Pix copiada com sucesso!", "success");
+                navigator.clipboard.writeText(keyText);
+                showToast("✅ Chave PIX copiada!", "success");
             } catch (err) {
-                showToast("❌ Não foi possível copiar.", "error");
+                // Fallback de cópia
+                const t = document.createElement('textarea');
+                t.value = keyText;
+                document.body.appendChild(t);
+                t.select();
+                document.execCommand('copy');
+                t.remove();
+                showToast("✅ Chave PIX copiada!", "success");
             }
         };
 
@@ -6675,18 +6683,13 @@ service cloud.firestore {
             m += `⚠️ *RESERVADO POR 1 HORA:*\n`;
             m += `Você tem até as *${limitTimeStr}* para realizar o pagamento. Caso não pague, o pedido será cancelado automaticamente e os itens retornarão ao estoque da loja.\n\n`;
             
-            m += `🔑 *Chave PIX:* ${window.pixKey || "74988020692"}\n\n`;
-            if (window.pixQrImage) {
-                m += `🖼️ *QR Code:* Escaneie o QR Code anexado na tela de confirmação.\n`;
-            } else {
-                m += `📱 *QR Code do Pix (Link):*\n${qrCodeUrl}\n`;
-            }
+            m += `🔑 *Chave Pix para Pagamento:* ${window.pixKey || "bzimports@gmail.com"}\n`;
 
             // Abre o modal de confirmação
             document.getElementById('confOrderId').innerText = o.id;
             document.getElementById('confOrderLimitTime').innerText = limitTimeStr;
             document.getElementById('confPixQrCode').src = window.pixQrImage || qrCodeUrl;
-            document.getElementById('confPixCodeText').value = window.pixKey || "74988020692";
+            document.getElementById('confPixKeyText').innerText = window.pixKey || "bzimports@gmail.com";
             
             const s = window.siteSettings || {};
             const waNumber = s.wa ? (s.wa.startsWith('55') ? s.wa : '55' + s.wa) : '5574988020692';
