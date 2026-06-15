@@ -2067,6 +2067,10 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             border: 1px solid rgba(255,255,255,0.1);
         }
+        #videoModalBody {
+            width: 100%;
+            height: 100%;
+        }
         .close-video-modal {
             position: absolute;
             top: 15px;
@@ -5699,69 +5703,79 @@ service cloud.firestore {
             if (storyInterval) clearInterval(storyInterval);
             window.avpState = null;
 
-            const videoUrl = (currentDetailProduct.video || '').trim();
-            const isDirectVideo = videoUrl !== '' && (
-                videoUrl.match(/\.(mp4|webm|ogg|mov|m4v)(\?|$)/i) || 
-                videoUrl.includes('firebasestorage.googleapis.com') ||
-                videoUrl.includes('vimeo.com/external/')
-            );
+            try {
+                const videoUrl = (currentDetailProduct.video || '').trim();
+                const isDirectVideo = videoUrl !== '' && (
+                    videoUrl.match(/\.(mp4|webm|ogg|mov|m4v)(\?|$)/i) || 
+                    videoUrl.includes('firebasestorage.googleapis.com') ||
+                    videoUrl.includes('vimeo.com/external/')
+                );
 
-            if (isDirectVideo) {
-                // Produto tem URL de vídeo real direto (ex: MP4)
-                body.innerHTML = `
-                    <video class="video-full-player" controls autoplay loop>
-                        <source src="${videoUrl}">
-                        Seu navegador não suporta vídeo HTML5.
-                    </video>
-                `;
-                const videoEl = body.querySelector('video');
-                if (videoEl) { videoEl.load(); videoEl.play().catch(() => {}); }
-            } else {
-                // Gera vídeo automático com as imagens do produto (Ken Burns)
-                const imgs = currentDetailProduct.images && currentDetailProduct.images.length > 0
-                    ? currentDetailProduct.images
-                    : [currentDetailProduct.image || DEFAULT_PLACEHOLDER];
-                const p = currentDetailProduct;
-                const totalSecs = imgs.length * 5;
-                const priceHtml = p.pricePromo
-                    ? `<span class="avp-old-price">${formatMoney(p.price)}</span>${formatMoney(p.pricePromo)}`
-                    : formatMoney(p.price);
+                if (isDirectVideo) {
+                    // Produto tem URL de vídeo real direto (ex: MP4)
+                    body.innerHTML = `
+                        <video class="video-full-player" controls autoplay loop>
+                            <source src="${videoUrl}">
+                            Seu navegador não suporta vídeo HTML5.
+                        </video>
+                    `;
+                    const videoEl = body.querySelector('video');
+                    if (videoEl) { videoEl.load(); videoEl.play().catch(() => {}); }
+                } else {
+                    // Gera vídeo automático com as imagens do produto (Ken Burns)
+                    const imgs = currentDetailProduct.images && currentDetailProduct.images.length > 0
+                        ? currentDetailProduct.images
+                        : [currentDetailProduct.image || DEFAULT_PLACEHOLDER];
+                    const p = currentDetailProduct;
+                    const totalSecs = imgs.length * 5;
+                    const priceHtml = p.pricePromo
+                        ? `<span class="avp-old-price">${formatMoney(p.price)}</span>${formatMoney(p.pricePromo)}`
+                        : formatMoney(p.price);
 
+                    body.innerHTML = `
+                        <div class="auto-video-player" id="autoVideoPlayer">
+                            <div class="avp-slides" id="avpSlides">
+                                ${imgs.map((img, idx) => `<div class="avp-slide" data-idx="${idx}"><img src="${img}" alt="" /></div>`).join('')}
+                            </div>
+                            <div class="avp-logo">BZ IMPORTS</div>
+                            <div class="avp-dots" id="avpDots">
+                                ${imgs.map((_, idx) => `<div class="avp-dot ${idx===0?'active':''}" data-dot="${idx}"></div>`).join('')}
+                            </div>
+                            <div class="avp-overlay-bottom">
+                                <div class="avp-product-name">${p.name}</div>
+                                <div class="avp-product-price">${priceHtml}</div>
+                            </div>
+                            <div class="avp-controls">
+                                <div class="avp-progress-track">
+                                    <div class="avp-progress-fill" id="avpProgressFill"></div>
+                                </div>
+                                <div class="avp-controls-row">
+                                    <button class="avp-ctrl-btn" id="avpPlayBtn" onclick="toggleAutoVideo()" title="Play/Pause">
+                                        <i data-lucide="pause" style="width:16px;height:16px;"></i>
+                                    </button>
+                                    <button class="avp-ctrl-btn" onclick="avpPrevSlide()" title="Anterior">
+                                        <i data-lucide="skip-back" style="width:14px;height:14px;"></i>
+                                    </button>
+                                    <button class="avp-ctrl-btn" onclick="avpNextSlide()" title="Próxima">
+                                        <i data-lucide="skip-forward" style="width:14px;height:14px;"></i>
+                                    </button>
+                                    <span class="avp-time" id="avpTimeLabel">0:00 / ${Math.floor(totalSecs/60)}:${String(totalSecs%60).padStart(2,'0')}</span>
+                                    <span class="avp-brand">${p.sku || 'BZIMPORTS'}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    lucide.createIcons();
+                    startAutoVideoPlayer(imgs, totalSecs);
+                }
+            } catch (err) {
+                console.error("Erro no Player de Vídeo Automático:", err);
                 body.innerHTML = `
-                    <div class="auto-video-player" id="autoVideoPlayer">
-                        <div class="avp-slides" id="avpSlides">
-                            ${imgs.map((img, idx) => `<div class="avp-slide" data-idx="${idx}"><img src="${img}" alt="" /></div>`).join('')}
-                        </div>
-                        <div class="avp-logo">BZ IMPORTS</div>
-                        <div class="avp-dots" id="avpDots">
-                            ${imgs.map((_, idx) => `<div class="avp-dot ${idx===0?'active':''}" data-dot="${idx}"></div>`).join('')}
-                        </div>
-                        <div class="avp-overlay-bottom">
-                            <div class="avp-product-name">${p.name}</div>
-                            <div class="avp-product-price">${priceHtml}</div>
-                        </div>
-                        <div class="avp-controls">
-                            <div class="avp-progress-track">
-                                <div class="avp-progress-fill" id="avpProgressFill"></div>
-                            </div>
-                            <div class="avp-controls-row">
-                                <button class="avp-ctrl-btn" id="avpPlayBtn" onclick="toggleAutoVideo()" title="Play/Pause">
-                                    <i data-lucide="pause" style="width:16px;height:16px;"></i>
-                                </button>
-                                <button class="avp-ctrl-btn" onclick="avpPrevSlide()" title="Anterior">
-                                    <i data-lucide="skip-back" style="width:14px;height:14px;"></i>
-                                </button>
-                                <button class="avp-ctrl-btn" onclick="avpNextSlide()" title="Próxima">
-                                    <i data-lucide="skip-forward" style="width:14px;height:14px;"></i>
-                                </button>
-                                <span class="avp-time" id="avpTimeLabel">0:00 / ${Math.floor(totalSecs/60)}:${String(totalSecs%60).padStart(2,'0')}</span>
-                                <span class="avp-brand">${p.sku || 'BZIMPORTS'}</span>
-                            </div>
-                        </div>
+                    <div style="color: white; padding: 20px; font-family: sans-serif; text-align: center;">
+                        <p style="color: var(--danger); font-weight: bold;">Erro ao carregar vídeo automático</p>
+                        <pre style="text-align: left; font-size: 11px; background: #222; padding: 10px; border-radius: 4px; overflow-x: auto; white-space: pre-wrap;">${err.stack || err.message || err}</pre>
                     </div>
                 `;
-                lucide.createIcons();
-                startAutoVideoPlayer(imgs, totalSecs);
             }
         };
 
