@@ -3540,10 +3540,13 @@ service cloud.firestore {
             `).join('');
 
             sizeGroup.innerHTML = window.AVAILABLE_SIZES.map(s => `
-                <label class="attr-checkbox-item">
-                    <input type="checkbox" class="size-cb" value="${s}">
-                    ${s}
-                </label>
+                <div class="attr-checkbox-item" style="display:flex; align-items:center; gap:0.5rem; justify-content:space-between; margin-bottom:0.5rem; width:100%;">
+                    <label style="display:flex; align-items:center; margin:0; flex:1;">
+                        <input type="checkbox" class="size-cb" value="${s}" onchange="document.getElementById('stock_size_${s}').disabled = !this.checked">
+                        ${s}
+                    </label>
+                    <input type="number" id="stock_size_${s}" class="size-stock-input" placeholder="Qtd." style="width: 70px; padding: 2px 8px; height: 30px; border-radius: 4px; border: 1px solid var(--border); margin:0;" disabled>
+                </div>
             `).join('');
         };
 
@@ -3570,7 +3573,7 @@ service cloud.firestore {
                 try {
                     const q = await getDocs(collection(db, 'alansantos_' + collectionName));
                     const allData = q.docs.map(d => d.data());
-                    return allData.filter(d => d.store === 'bzimports' || !d.store);
+                    return allData.filter(d => d.store === 'bzimports');
                 } catch (e) {
                     if (e.code === 'permission-denied') { } else {
                         console.error("Erro ao ler:", e);
@@ -3612,7 +3615,7 @@ service cloud.firestore {
                     if (!auth.currentUser) return;
                     const q = await getDocs(collection(db, 'alansantos_' + collectionName));
                     const promises = q.docs
-                        .filter(d => d.data().store === 'bzimports' || !d.data().store)
+                        .filter(d => d.data().store === 'bzimports')
                         .map((d) => deleteDoc(d.ref));
                     await Promise.all(promises);
                 } catch (e) {
@@ -3637,7 +3640,7 @@ service cloud.firestore {
                     const snap = await getDocs(q);
                     return snap.docs
                         .map(d => ({ id: d.id, ...d.data() }))
-                        .filter(d => d.store === 'bzimports' || !d.store);
+                        .filter(d => d.store === 'bzimports');
                 } catch (e) {
                     console.error("Erro ao buscar backups:", e);
                     return [];
@@ -6719,6 +6722,7 @@ service cloud.firestore {
         window.openProductForm = () => {
             document.querySelector('#productFormModal form').reset();
             document.getElementById('prodId').value = '';
+            document.querySelectorAll('.size-stock-input').forEach(i => { i.value = ''; i.disabled = true; });
             currentProductImages = [];
             renderPhotoGallery();
 
@@ -6762,7 +6766,15 @@ service cloud.firestore {
 
             prodSizes.forEach(s => {
                 const cb = Array.from(document.querySelectorAll('.size-cb')).find(x => x.value === s);
-                if (cb) { cb.checked = true; predefinedSizes.push(s); }
+                if (cb) { 
+                    cb.checked = true; 
+                    predefinedSizes.push(s); 
+                    const stockInput = document.getElementById('stock_size_' + s);
+                    if (stockInput) {
+                        stockInput.disabled = false;
+                        stockInput.value = (p.stockBySize && p.stockBySize[s] !== undefined) ? p.stockBySize[s] : '';
+                    }
+                }
                 else customSizes.push(s);
             });
             document.getElementById('prodSizeCustom').value = customSizes.join(', ');
@@ -6816,11 +6828,23 @@ service cloud.firestore {
                     ...Array.from(document.querySelectorAll('.color-cb:checked')).map(cb => cb.value),
                     ...document.getElementById('prodColorCustom').value.split(',').map(s => s.trim()).filter(s => s !== '')
                 ],
-                // Tamanhos Múltiplos
-                sizes: [
-                    ...Array.from(document.querySelectorAll('.size-cb:checked')).map(cb => cb.value),
-                    ...document.getElementById('prodSizeCustom').value.split(',').map(s => s.trim()).filter(s => s !== '')
-                ],
+                // Tamanhos Múltiplos e Estoque por Tamanho
+                sizes: (() => {
+                    const sz = [];
+                    Array.from(document.querySelectorAll('.size-cb:checked')).forEach(cb => sz.push(cb.value));
+                    const cSz = document.getElementById('prodSizeCustom').value;
+                    if (cSz) cSz.split(',').forEach(s => { if (s.trim()) sz.push(s.trim()); });
+                    return sz;
+                })(),
+                stockBySize: (() => {
+                    const sbs = {};
+                    Array.from(document.querySelectorAll('.size-cb:checked')).forEach(cb => {
+                        sbs[cb.value] = parseInt(document.getElementById('stock_size_' + cb.value).value) || 0;
+                    });
+                    const cSz = document.getElementById('prodSizeCustom').value;
+                    if (cSz) cSz.split(',').forEach(s => { if (s.trim()) sbs[s.trim()] = 0; });
+                    return sbs;
+                })(),
 
                 material: document.getElementById('prodMaterial').value,
                 gender: document.getElementById('prodGender').value,
@@ -6830,6 +6854,13 @@ service cloud.firestore {
                 images: currentProductImages.length ? currentProductImages : [],
                 image: currentProductImages.length ? currentProductImages[0] : ''
             };
+
+            // Se o usuário preencheu estoque por tamanho, atualizamos o estoque total
+            if (p.sizes.length > 0) {
+                const sum = Object.values(p.stockBySize).reduce((a, b) => a + b, 0);
+                if (sum > 0) p.stock = sum;
+            }
+
             await DBService.put('produtos', p);
             if (id) {
                 const idx = window.products.findIndex(x => x.id == id);
