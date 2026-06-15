@@ -3841,11 +3841,19 @@
 
                     <div class="dash-widget">
                         <h3 class="font-title mb-4"><i data-lucide="settings-2"></i> Pagamento PIX</h3>
-                        <div style="flex:1">
-                            <label>Configurações de Pagamento</label>
-                            <input type="text" id="configPixKey" placeholder="Chave PIX" autocomplete="off">
+                        <div style="flex:1; margin-bottom: 1.5rem;">
+                            <label style="font-weight: 600; display: block; margin-bottom: 5px;">Chave PIX</label>
+                            <input type="text" id="configPixKey" placeholder="Chave PIX" autocomplete="off" style="width: 100%; margin-bottom: 15px;">
+                            
+                            <label style="font-weight: 600; display: block; margin-bottom: 5px;">Imagem do QR Code Estático (Opcional)</label>
+                            <input type="file" id="configPixQrFile" accept="image/*" onchange="handlePixQrUpload(event)" style="width: 100%; margin-bottom: 10px; border: 1px solid var(--border); padding: 8px; border-radius: 4px; background: var(--secondary);">
+                            <input type="hidden" id="configPixQrBase64">
+                            <div id="configPixQrPreviewContainer" style="display: none; align-items: center; gap: 15px; margin-top: 10px; padding: 10px; background: var(--secondary); border-radius: 8px; border: 1px dashed var(--border);">
+                                <img id="configPixQrPreview" src="" style="width: 100px; height: 100px; border: 1px solid var(--border); border-radius: 6px; object-fit: contain; background: white; padding: 5px;">
+                                <button type="button" onclick="removePixQrImage()" class="btn btn-secondary btn-sm text-danger" style="padding: 6px 12px; font-weight: 600; border-color: rgba(220, 38, 38, 0.2); background: rgba(220, 38, 38, 0.05);">Remover QR Code</button>
+                            </div>
                         </div>
-                        <button onclick="saveSettings()" class="btn btn-primary">Salvar</button>
+                        <button onclick="saveSettings()" class="btn btn-primary">Salvar Configurações</button>
                     </div>
 
                     <div class="dash-widget" style="background: #fff5f5; border-color: #feb2b2;">
@@ -3974,7 +3982,7 @@ service cloud.firestore {
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, getDocs, getDoc, setDoc, doc, deleteDoc, addDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
         // ================= CONFIGURAÇÕES DE ATRIBUTOS =================
         window.AVAILABLE_COLORS = [
@@ -4263,8 +4271,19 @@ service cloud.firestore {
                 }
             }
         };
-        window.currentFilter = 'Todos'; window.pixKey = localStorage.getItem('luas_pix_key') || "sua_chave_pix_aqui";
-        window.visibleProductsLimit = 50; window.adminViewMode = 'list';
+        window.currentFilter = 'Todos'; 
+        window.pixKey = localStorage.getItem('luas_pix_key') || "sua_chave_pix_aqui";
+        window.pixQrImage = localStorage.getItem('luas_pix_qr_image') || "";
+        window.orders = [];
+        window.clients = [];
+        window.products = [];
+        window.brands = [];
+        window.banners = [];
+        window.coupons = [];
+        window.categories = [];
+        window.staff = [];
+        window.visibleProductsLimit = 50; 
+        window.adminViewMode = 'list';
 
         // TOAST
         window.showToast = function (msg, type = 'success') {
@@ -4290,6 +4309,11 @@ service cloud.firestore {
                 document.getElementById('adminView').classList.add('hidden'); document.getElementById('storeView').classList.add('hidden'); document.getElementById('catalogView').classList.remove('hidden'); return;
             }
             if (user) {
+                if (user.isAnonymous) {
+                    console.log("👤 Usuário logado anonimamente para compras.");
+                    window.currentStaff = null;
+                    return;
+                }
                 const staffList = await DBService.getAll('staff');
                 window.staff = staffList;
 
@@ -4318,6 +4342,11 @@ service cloud.firestore {
                 DBService.stopAutoSync();
                 document.getElementById('adminView').classList.add('hidden'); document.getElementById('storeView').classList.remove('hidden');
                 window.orders = []; window.clients = [];
+                try {
+                    await signInAnonymously(auth);
+                } catch (err) {
+                    console.warn("Falha no login anônimo:", err);
+                }
             }
         });
 
@@ -4407,6 +4436,19 @@ service cloud.firestore {
         window.onload = async function () {
             lucide.createIcons();
             document.getElementById('configPixKey').value = window.pixKey;
+            
+            // Preenche também o QR Code do Pix se houver
+            const preview = document.getElementById('configPixQrPreview');
+            const previewContainer = document.getElementById('configPixQrPreviewContainer');
+            const hiddenInput = document.getElementById('configPixQrBase64');
+            if (window.pixQrImage) {
+                if (hiddenInput) hiddenInput.value = window.pixQrImage;
+                if (preview) preview.src = window.pixQrImage;
+                if (previewContainer) previewContainer.style.display = 'flex';
+            } else {
+                if (hiddenInput) hiddenInput.value = '';
+                if (previewContainer) previewContainer.style.display = 'none';
+            }
             
             window.initAttributeGroups(); // Inicializa grupos de atributos
 
@@ -5628,6 +5670,19 @@ service cloud.firestore {
                     }
                 }
                 window.siteSettings = ms;
+                if (ms) {
+                    window.pixKey = localStorage.getItem('luas_pix_key') || ms.pixKey || window.pixKey || "sua_chave_pix_aqui";
+                    window.pixQrImage = localStorage.getItem('luas_pix_qr_image') || ms.pixQrImage || window.pixQrImage || "";
+                    
+                    const keyInput = document.getElementById('configPixKey');
+                    const filePreview = document.getElementById('configPixQrPreview');
+                    const filePreviewContainer = document.getElementById('configPixQrPreviewContainer');
+                    const hiddenInput = document.getElementById('configPixQrBase64');
+                    if (keyInput) keyInput.value = window.pixKey;
+                    if (hiddenInput) hiddenInput.value = window.pixQrImage;
+                    if (filePreview && window.pixQrImage) filePreview.src = window.pixQrImage;
+                    if (filePreviewContainer) filePreviewContainer.style.display = window.pixQrImage ? 'flex' : 'none';
+                }
             } catch (e) { }
             if (window.applySiteSettings) window.applySiteSettings();
 
@@ -6532,6 +6587,12 @@ service cloud.firestore {
 
             const orderId = 'LP-' + Math.random().toString(36).substr(2, 5).toUpperCase();
 
+            // Geração de Payload Pix e QR Code
+            const siteName = (window.siteSettings && window.siteSettings.name) ? window.siteSettings.name : "Bz Imports";
+            const siteCity = (window.siteSettings && window.siteSettings.address) ? window.siteSettings.address.split(',')[0].trim() : "Juazeiro";
+            const pixPayload = generatePixPayload(window.pixKey || "bzimports@gmail.com", total, siteName, siteCity);
+            const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(pixPayload)}`;
+
             const o = {
                 id: orderId,
                 timestamp: Date.now(),
@@ -6548,10 +6609,13 @@ service cloud.firestore {
                 coupon: window.appliedCoupon,
                 staffToken: window.currentStaff?.token || 'CLIENTE',
                 staffName: window.currentStaff?.name || 'Venda Direta',
-                store: 'bzimports'
+                store: 'bzimports',
+                pixQrImage: window.pixQrImage || '',
+                pixPayload: pixPayload || ''
             };
 
-            await DBService.put('orders', o); window.orders.unshift(o);
+            await DBService.put('orders', o); 
+            if (window.orders) window.orders.unshift(o);
 
             const clientData = {
                 id: t.replace(/\D/g, ''),
@@ -6564,16 +6628,10 @@ service cloud.firestore {
                 lastOrder: Date.now()
             };
             await DBService.put('clients', clientData);
-            if (!window.clients.find(c => c.id === clientData.id)) window.clients.push(clientData);
+            if (window.clients && !window.clients.find(c => c.id === clientData.id)) window.clients.push(clientData);
 
             const mapsQuery = encodeURIComponent(`${addr}, ${city} - CEP: ${cep}`);
             const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${mapsQuery}`;
-
-            // Geração de Payload Pix e QR Code
-            const siteName = (window.siteSettings && window.siteSettings.name) ? window.siteSettings.name : "Bz Imports";
-            const siteCity = (window.siteSettings && window.siteSettings.address) ? window.siteSettings.address.split(',')[0].trim() : "Juazeiro";
-            const pixPayload = generatePixPayload(window.pixKey || "bzimports@gmail.com", total, siteName, siteCity);
-            const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(pixPayload)}`;
 
             // Relatório Organizado do WhatsApp
             let m = `✨ *BZ IMPORTS - NOVO PEDIDO* ✨\n`;
@@ -6619,7 +6677,11 @@ service cloud.firestore {
             
             if (pixPayload) {
                 m += `🔑 *Pix Copia e Cola:*\n\`${pixPayload}\`\n\n`;
-                m += `📱 *QR Code do Pix (Link):*\n${qrCodeUrl}\n`;
+                if (window.pixQrImage) {
+                    m += `🖼️ *QR Code:* Escaneie o QR Code anexado na tela de confirmação.\n`;
+                } else {
+                    m += `📱 *QR Code do Pix (Link):*\n${qrCodeUrl}\n`;
+                }
             } else {
                 m += `🔑 *Chave Pix para Transferência:* ${window.pixKey || "bzimports@gmail.com"}\n`;
             }
@@ -6627,7 +6689,7 @@ service cloud.firestore {
             // Abre o modal de confirmação
             document.getElementById('confOrderId').innerText = o.id;
             document.getElementById('confOrderLimitTime').innerText = limitTimeStr;
-            document.getElementById('confPixQrCode').src = qrCodeUrl;
+            document.getElementById('confPixQrCode').src = window.pixQrImage || qrCodeUrl;
             document.getElementById('confPixCodeText').value = pixPayload || window.pixKey || "bzimports@gmail.com";
             
             const s = window.siteSettings || {};
@@ -7030,8 +7092,9 @@ service cloud.firestore {
             const periodMs = period === 'all' ? Infinity : (parseInt(period) * 24 * 60 * 60 * 1000);
 
             // Filtra pedidos pelo período
-            const filteredOrders = window.orders.filter(o => (now - o.timestamp) <= periodMs);
-            const prevOrders = window.orders.filter(o => (now - o.timestamp) > periodMs && (now - o.timestamp) <= periodMs * 2);
+            const allOrders = window.orders || [];
+            const filteredOrders = allOrders.filter(o => (now - o.timestamp) <= periodMs);
+            const prevOrders = allOrders.filter(o => (now - o.timestamp) > periodMs && (now - o.timestamp) <= periodMs * 2);
 
             // 1. KPI Vendas
             const sales = filteredOrders.reduce((acc, o) => acc + (o.total || 0), 0);
@@ -7178,11 +7241,12 @@ service cloud.firestore {
         window.renderOrdersTable = function () {
             const container = document.getElementById('adminOrdersContainer');
             if (!container) return;
+            const ordersList = window.orders || [];
             container.innerHTML = `
                 <div class="data-table-wrapper">
                 <table class="data-table">
                     <thead><tr><th>ID / Data</th><th>Cliente</th><th>Total</th><th>Status</th><th>Ações</th></tr></thead>
-                    <tbody>${window.orders.map(o => `
+                    <tbody>${ordersList.map(o => `
                         <tr>
                             <td><strong>${o.id}</strong><br><small class="text-muted">${o.date}</small></td>
                             <td>${o.customer}<br><small>${o.phone}</small></td>
@@ -7202,14 +7266,14 @@ service cloud.firestore {
             lucide.createIcons();
             const badge = document.getElementById('orderCountBadge');
             if (badge) {
-                const pendings = window.orders.filter(o => o.status === 'Pendente').length;
+                const pendings = ordersList.filter(o => o.status === 'Pendente').length;
                 badge.innerText = pendings;
                 badge.style.display = pendings > 0 ? 'inline' : 'none';
             }
         };
 
         window.openOrderDetail = function (id) {
-            const o = window.orders.find(x => x.id === id);
+            const o = (window.orders || []).find(x => x.id === id);
             if (!o) return;
             const c = document.getElementById('orderDetailContent');
             c.innerHTML = `
@@ -7230,13 +7294,13 @@ service cloud.firestore {
         window.deleteOrder = async (id) => {
             if (confirm('Excluir este pedido permanentemente?')) {
                 await DBService.delete('orders', id);
-                window.orders = window.orders.filter(o => o.id !== id);
+                window.orders = (window.orders || []).filter(o => o.id !== id);
                 renderOrdersTable();
                 showToast('Pedido excluído!');
             }
         };
         window.confirmOrder = async function (id) {
-            const o = window.orders.find(x => x.id === id);
+            const o = (window.orders || []).find(x => x.id === id);
             if (!o) return;
             if (o.status === 'Concluído') return showToast("Este pedido já foi concluído.", "info");
 
@@ -7257,8 +7321,8 @@ service cloud.firestore {
             if (id === 'new') {
                 window.currentEditOrder = { id: 'LP-' + Math.random().toString(36).substr(2, 5).toUpperCase(), items: [], customer: '', phone: '', email: '', total: 0, status: 'Pendente', timestamp: Date.now(), date: new Date().toLocaleDateString() };
             } else {
-                const o = window.orders.find(x => x.id === id);
-                window.currentEditOrder = JSON.parse(JSON.stringify(o));
+                const o = (window.orders || []).find(x => x.id === id);
+                window.currentEditOrder = JSON.parse(JSON.stringify(o || {}));
             }
 
             document.getElementById('editClientName').value = window.currentEditOrder.customer || '';
@@ -7360,6 +7424,7 @@ service cloud.firestore {
             await DBService.put('orders', o);
 
             // Atualiza na lista local
+            if (!window.orders) window.orders = [];
             const idx = window.orders.findIndex(x => x.id === o.id);
             if (idx !== -1) window.orders[idx] = o;
             else window.orders.unshift(o);
@@ -8158,7 +8223,54 @@ service cloud.firestore {
         }
 
         // Backups e Zera BD
-        window.saveSettings = () => { window.pixKey = document.getElementById('configPixKey').value; localStorage.setItem('luas_pix_key', window.pixKey); showToast('Configurações salvas!'); }
+        window.saveSettings = async () => {
+            const pk = document.getElementById('configPixKey').value;
+            const pqr = document.getElementById('configPixQrBase64').value;
+            
+            window.pixKey = pk;
+            window.pixQrImage = pqr;
+            
+            localStorage.setItem('luas_pix_key', pk);
+            localStorage.setItem('luas_pix_qr_image', pqr);
+            
+            // Salva também nas configurações globais no Firebase
+            try {
+                const sett = await DBService.getAll('settings');
+                let ms = sett.find(x => x.id === 'main_bzimports') || {};
+                ms.id = 'main_bzimports';
+                ms.pixKey = pk;
+                ms.pixQrImage = pqr;
+                ms.store = 'bzimports';
+                await DBService.put('settings', ms);
+                showToast('Configurações salvas no Firebase e localmente!');
+            } catch (err) {
+                console.error("Erro ao salvar settings no Firebase:", err);
+                showToast('Configurações salvas apenas localmente.');
+            }
+        }
+
+        window.handlePixQrUpload = async (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+            try {
+                const compressedBase64 = await compressImage(file, 600, 600, 0.7);
+                document.getElementById('configPixQrBase64').value = compressedBase64;
+                const preview = document.getElementById('configPixQrPreview');
+                preview.src = compressedBase64;
+                document.getElementById('configPixQrPreviewContainer').style.display = 'flex';
+                showToast("Imagem do QR Code carregada!");
+            } catch (err) {
+                console.error("Erro no upload do QR Code:", err);
+                showToast("Erro ao processar imagem.", "error");
+            }
+        }
+        
+        window.removePixQrImage = () => {
+            document.getElementById('configPixQrFile').value = '';
+            document.getElementById('configPixQrBase64').value = '';
+            document.getElementById('configPixQrPreviewContainer').style.display = 'none';
+            showToast("Imagem do QR Code removida.");
+        }
         
         // Limpa SOMENTE os produtos e salva o flag para não semear mais
         window.clearAllProducts = async () => {
