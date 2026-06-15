@@ -6397,7 +6397,20 @@ service cloud.firestore {
             c.innerHTML += `
                 <div style="margin-top:2rem; padding-top:1rem; border-top:1px dashed var(--border);">
                     <label style="font-size:0.7rem;">CUPOM DE DESCONTO</label>
-                           // Função auxiliar para gerar Payload Pix estático em padrão EMV (BR Code)
+                    <div class="flex gap-2">
+                        <input type="text" id="couponInput" placeholder="Código" style="margin:0; text-transform:uppercase;" value="${window.appliedCoupon?.code || ''}">
+                        <button onclick="applyCoupon()" class="btn btn-primary btn-sm">Ok</button>
+                    </div>
+                    ${window.appliedCoupon ? `<div style="font-size:0.8rem; color:var(--success); margin-top:5px;">Desconto: -${formatMoney(discount)} (${window.appliedCoupon.code})</div>` : ''}
+                    <div style="font-size:0.9rem; margin-top:10px; display:flex; justify-content:space-between;"><span>Subtotal:</span><span>${formatMoney(subtotal)}</span></div>
+                </div>
+            `;
+            setTimeout(() => {
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+            }, 50);
+        }
+
+        // Função auxiliar para gerar Payload Pix estático em padrão EMV (BR Code)
         function generatePixPayload(key, value, merchantName = "Bz Imports", merchantCity = "Juazeiro") {
             if (!key || key === "sua_chave_pix_aqui") return "";
             
@@ -6468,7 +6481,7 @@ service cloud.firestore {
             for (let o of window.orders) {
                 // Se o pedido está pendente e foi criado a mais de 1 hora (3600000ms)
                 if (o.status === 'Pendente' && (now - o.timestamp) > 3600000) {
-                    console.log(`⏰ Expirando pedido #${o.id} por falta de pagamento (1 hora de prazo)`);
+                    console.log(`[Prazo Expirado] Expirando pedido #${o.id} por falta de pagamento (1 hora de prazo)`);
                     o.status = 'Cancelado';
                     o.expiredReason = 'Tempo limite de 1 hora excedido para pagamento';
                     await DBService.put('orders', o);
