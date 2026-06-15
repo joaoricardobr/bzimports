@@ -2794,6 +2794,40 @@
         </div>
     </div>
 
+    <!-- MODAL DE CONFIRMAÇÃO DE PEDIDO & PIX -->
+    <div id="orderConfirmationModal" class="modal-overlay" onclick="if(event.target === this) closeOrderConfirmation()">
+        <div class="modal" style="max-width: 500px; text-align: center; padding: 2rem;">
+            <div class="close-modal" onclick="closeOrderConfirmation()"><i data-lucide="x"></i></div>
+            <div style="font-size: 3rem; color: var(--success); margin-bottom: 1rem; display: flex; justify-content: center;">
+                <i data-lucide="check-circle" style="width: 60px; height: 60px; color: var(--success);"></i>
+            </div>
+            <h3 class="font-title" style="font-size: 1.5rem; margin-bottom: 0.5rem;">Pedido Realizado!</h3>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Seu pedido <strong id="confOrderId">#XXXX</strong> foi registrado com sucesso.</p>
+            
+            <div style="background: #FFF9E6; border: 1px solid #FFE0B2; padding: 12px; border-radius: 8px; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px; text-align: left;">
+                <i data-lucide="clock" style="color: #FF9800; flex-shrink: 0;"></i>
+                <span style="font-size: 0.9rem; color: #E65100; font-weight: 600;">
+                    Você tem no máximo 1 hora (até as <span id="confOrderLimitTime">00:00</span>) para efetuar o pagamento. Caso contrário, os itens voltarão ao estoque.
+                </span>
+            </div>
+            
+            <div style="background: var(--secondary); padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem;">
+                <label style="font-weight: bold; display: block; margin-bottom: 10px; color: var(--text-main);">PAGUE COM PIX</label>
+                <div style="display: flex; justify-content: center; margin-bottom: 1rem;">
+                    <img id="confPixQrCode" src="" alt="QR Code PIX" style="width: 200px; height: 200px; border: 1px solid var(--border); border-radius: 8px; background: white; padding: 5px;">
+                </div>
+                <textarea id="confPixCodeText" readonly style="width: 100%; height: 60px; font-family: monospace; font-size: 0.8rem; padding: 8px; border-radius: 6px; border: 1px solid var(--border); resize: none; margin-bottom: 10px; background: white;"></textarea>
+                <button type="button" onclick="copyConfPixCode()" class="btn btn-secondary w-full" style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <i data-lucide="copy" style="width: 16px; height: 16px;"></i> Copiar Pix Copia e Cola
+                </button>
+            </div>
+            
+            <button id="confWhatsAppBtn" class="btn btn-primary w-full" style="display: flex; align-items: center; justify-content: center; gap: 8px; height: 48px; font-size: 1rem;">
+                <i data-lucide="message-square"></i> Enviar Pedido no WhatsApp
+            </button>
+        </div>
+    </div>
+
     <!-- MODAL GERENCIAR PRODUTO (ADMIN) -->
     <div id="productFormModal" class="modal-overlay" onclick="if(event.target === this) closeProductForm()">
         <div class="modal" style="max-width: 900px;">
@@ -4404,29 +4438,25 @@ service cloud.firestore {
         window.shareProduct = async function(event, id, name) {
             if (event) event.stopPropagation();
             const shareUrl = window.location.origin + window.location.pathname + '?p=' + id;
-            const text = `Confira ${name} na Bz Imports!`;
+            const text = `🛍️ *Confira este produto incrível na Bz Imports!*\n\n🔥 *${name}*\n\n👉 Clique no link abaixo para ver mais detalhes e comprar:\n🔗 ${shareUrl}`;
             
+            try { navigator.clipboard.writeText(shareUrl); } catch (e) {}
+
             if (navigator.share) {
                 try {
                     await navigator.share({
                         title: name,
-                        text: text,
+                        text: `Confira ${name} na Bz Imports!`,
                         url: shareUrl
                     });
+                    return;
                 } catch (err) {
-                    if (err.name !== 'AbortError') {
-                        console.warn("Share failed:", err);
-                    }
-                }
-            } else {
-                // Fallback to clipboard copy
-                try {
-                    await navigator.clipboard.writeText(shareUrl);
-                    showToast("Link do produto copiado!", "success");
-                } catch (err) {
-                    showToast("Não foi possível copiar o link.", "error");
+                    if (err.name === 'AbortError') return;
                 }
             }
+            
+            // Abre o WhatsApp diretamente para compartilhar
+            window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
         };
 
         async function loadData() {
@@ -5608,6 +5638,12 @@ service cloud.firestore {
                 if (window.loadAdminDashboard) window.loadAdminDashboard();
             }
             if (window.applyFilters) window.applyFilters();
+            
+            // Inicia checagem de pedidos expirados (limite de 1 hora)
+            if (window.checkExpiredOrders) {
+                window.checkExpiredOrders();
+                setInterval(window.checkExpiredOrders, 60000); // Executa a cada 1 minuto
+            }
         }
 
         window.renderFiltersUI = function () {
@@ -6361,18 +6397,106 @@ service cloud.firestore {
             c.innerHTML += `
                 <div style="margin-top:2rem; padding-top:1rem; border-top:1px dashed var(--border);">
                     <label style="font-size:0.7rem;">CUPOM DE DESCONTO</label>
-                    <div class="flex gap-2">
-                        <input type="text" id="couponInput" placeholder="Código" style="margin:0; text-transform:uppercase;" value="${window.appliedCoupon?.code || ''}">
-                        <button onclick="applyCoupon()" class="btn btn-primary btn-sm">Ok</button>
-                    </div>
-                    ${window.appliedCoupon ? `<div style="font-size:0.8rem; color:var(--success); margin-top:5px;">Desconto: -${formatMoney(discount)} (${window.appliedCoupon.code})</div>` : ''}
-                    <div style="font-size:0.9rem; margin-top:10px; display:flex; justify-content:space-between;"><span>Subtotal:</span><span>${formatMoney(subtotal)}</span></div>
-                </div>
-            `;
-            setTimeout(() => {
-                if (typeof lucide !== 'undefined') lucide.createIcons();
-            }, 50);
+                           // Função auxiliar para gerar Payload Pix estático em padrão EMV (BR Code)
+        function generatePixPayload(key, value, merchantName = "Bz Imports", merchantCity = "Juazeiro") {
+            if (!key || key === "sua_chave_pix_aqui") return "";
+            
+            const formattedValue = parseFloat(value).toFixed(2);
+            const cleanKey = key.trim();
+            
+            function emvField(id, val) {
+                const len = String(val).length.toString().padStart(2, '0');
+                return id + len + val;
+            }
+            
+            let payload = "";
+            payload += emvField("00", "01"); // Payload Format Indicator
+            
+            let merchantInfo = "";
+            merchantInfo += emvField("00", "br.gov.bcb.pix"); // GUI
+            merchantInfo += emvField("01", cleanKey); // Chave Pix
+            
+            payload += emvField("26", merchantInfo);
+            payload += emvField("52", "0000"); // Merchant Category Code
+            payload += emvField("53", "986"); // Currency (BRL)
+            
+            if (value > 0) {
+                payload += emvField("54", formattedValue); // Transaction Amount
+            }
+            
+            payload += emvField("58", "BR"); // Country Code
+            payload += emvField("59", merchantName.normalize("NFD").replace(/[\u0300-\u036f]/g, "").substring(0, 25)); // Merchant Name
+            payload += emvField("60", merchantCity.normalize("NFD").replace(/[\u0300-\u036f]/g, "").substring(0, 15)); // Merchant City
+            
+            let additionalData = emvField("05", "***"); // Reference Label
+            payload += emvField("62", additionalData);
+            
+            payload += "6304"; // ID + CRC Length
+            
+            // Cálculo CRC16 CCITT
+            let crc = 0xFFFF;
+            for (let i = 0; i < payload.length; i++) {
+                let x = ((crc >> 8) ^ payload.charCodeAt(i)) & 0xFF;
+                x ^= x >> 4;
+                crc = ((crc << 8) ^ (x << 12) ^ (x << 5) ^ x) & 0xFFFF;
+            }
+            const crcString = crc.toString(16).toUpperCase().padStart(4, '0');
+            return payload + crcString;
         }
+
+        window.closeOrderConfirmation = () => {
+            document.getElementById('orderConfirmationModal').classList.remove('active');
+        };
+
+        window.copyConfPixCode = () => {
+            const el = document.getElementById('confPixCodeText');
+            el.select();
+            el.setSelectionRange(0, 99999);
+            try {
+                navigator.clipboard.writeText(el.value);
+                showToast("✅ Código Pix Copia e Cola copiado!", "success");
+            } catch (err) {
+                showToast("❌ Não foi possível copiar.", "error");
+            }
+        };
+
+        // Verifica e cancela pedidos pendentes com mais de 1 hora de existência devolvendo ao estoque
+        window.checkExpiredOrders = async function () {
+            if (!window.orders || window.orders.length === 0) return;
+            const now = Date.now();
+            let changed = false;
+            for (let o of window.orders) {
+                // Se o pedido está pendente e foi criado a mais de 1 hora (3600000ms)
+                if (o.status === 'Pendente' && (now - o.timestamp) > 3600000) {
+                    console.log(`⏰ Expirando pedido #${o.id} por falta de pagamento (1 hora de prazo)`);
+                    o.status = 'Cancelado';
+                    o.expiredReason = 'Tempo limite de 1 hora excedido para pagamento';
+                    await DBService.put('orders', o);
+                    
+                    // Devolve itens ao estoque
+                    if (o.items && Array.isArray(o.items)) {
+                        for (let item of o.items) {
+                            const p = window.products.find(x => x.id === item.id);
+                            if (p && !p.noLimit) {
+                                p.stock = (p.stock || 0) + (item.quantity || 0);
+                                if (p.stock > 0) p.outStock = false;
+                                
+                                if (item.selectedSize && p.stockBySize && p.stockBySize[item.selectedSize] !== undefined) {
+                                    p.stockBySize[item.selectedSize] = (p.stockBySize[item.selectedSize] || 0) + (item.quantity || 0);
+                                }
+                                await DBService.put('produtos', p);
+                            }
+                        }
+                    }
+                    changed = true;
+                }
+            }
+            if (changed) {
+                if (typeof renderAdminTable === 'function') renderAdminTable();
+                if (typeof renderOrdersTable === 'function') renderOrdersTable();
+                if (typeof applyFilters === 'function') applyFilters();
+            }
+        };
 
         window.checkout = async function () {
             if (window.cart.length === 0) return;
@@ -6410,14 +6534,14 @@ service cloud.firestore {
                 items: window.cart.map(x => ({ ...x })),
                 coupon: window.appliedCoupon,
                 staffToken: window.currentStaff?.token || 'CLIENTE',
-                staffName: window.currentStaff?.name || 'Venda Direta'
+                staffName: window.currentStaff?.name || 'Venda Direta',
+                store: 'bzimports'
             };
 
             await DBService.put('orders', o); window.orders.unshift(o);
 
-            // Salva ou atualiza o cliente na coleção de clientes
             const clientData = {
-                id: t.replace(/\D/g, ''), // Usa o telefone como ID único do cliente
+                id: t.replace(/\D/g, ''),
                 name: n,
                 phone: t,
                 email: e,
@@ -6432,37 +6556,77 @@ service cloud.firestore {
             const mapsQuery = encodeURIComponent(`${addr}, ${city} - CEP: ${cep}`);
             const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${mapsQuery}`;
 
-            let m = `*PEDIDO #${o.id}*\n\n`;
+            // Geração de Payload Pix e QR Code
+            const siteName = (window.siteSettings && window.siteSettings.name) ? window.siteSettings.name : "Bz Imports";
+            const siteCity = (window.siteSettings && window.siteSettings.address) ? window.siteSettings.address.split(',')[0].trim() : "Juazeiro";
+            const pixPayload = generatePixPayload(window.pixKey || "bzimports@gmail.com", total, siteName, siteCity);
+            const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(pixPayload)}`;
+
+            // Relatório Organizado do WhatsApp
+            let m = `✨ *BZ IMPORTS - NOVO PEDIDO* ✨\n`;
+            m += `━━━━━━━━━━━━━━━━━━━━━\n\n`;
+            m += `📦 *Pedido:* #${o.id}\n`;
             m += `👤 *Cliente:* ${n}\n`;
-            m += `📧 *E-mail:* ${e}\n`;
-            m += `📍 *Entrega:* ${addr}\n`;
-            m += `🏙️ *Cidade:* ${city} - CEP: ${cep}\n`;
-            m += `🗺️ *Google Maps:* ${mapsUrl}\n\n`;
-            m += `🛍️ *Produtos:*\n`;
+            m += `📞 *Telefone:* ${t}\n`;
+            m += `📧 *E-mail:* ${e}\n\n`;
+            m += `📍 *ENDEREÇO DE ENTREGA:*\n`;
+            m += `🏠 ${addr}\n`;
+            m += `🏙️ ${city} - CEP: ${cep}\n`;
+            m += `🗺️ *Localização:* ${mapsUrl}\n\n`;
+            m += `🛍️ *ITENS SOLICITADOS:*\n`;
 
             for (const i of window.cart) {
                 const optStr = [];
-                if (i.selectedSize || i.size) optStr.push(`Tam:${i.selectedSize || i.size}`);
-                if (i.selectedColor || i.color) optStr.push(`Cor:${i.selectedColor || i.color}`);
+                if (i.selectedSize || i.size) optStr.push(`Tam: ${i.selectedSize || i.size}`);
+                if (i.selectedColor || i.color) optStr.push(`Cor: ${i.selectedColor || i.color}`);
                 const opts = optStr.length > 0 ? ` (${optStr.join(', ')})` : '';
-                m += `- ${i.quantity}x ${i.name}${opts}\n`;
+                
+                const pLink = window.location.origin + window.location.pathname + '?p=' + i.id;
+                m += `▪️ ${i.quantity}x *${i.name}*${opts}\n   🔗 Link: ${pLink}\n`;
 
                 const p = window.products.find(x => x.id === i.id);
                 if (p && !p.noLimit) {
                     p.stock = Math.max(0, p.stock - i.quantity);
                     if (p.stock === 0) p.outStock = true;
+                    
+                    if (i.selectedSize && p.stockBySize && p.stockBySize[i.selectedSize] !== undefined) {
+                        p.stockBySize[i.selectedSize] = Math.max(0, p.stockBySize[i.selectedSize] - i.quantity);
+                    }
                     await DBService.put('produtos', p);
                 }
             }
-            if (window.appliedCoupon) m += `\n🎟️ *Cupom:* ${window.appliedCoupon.code}`;
-            m += `\n\n💰 *Total: ${formatMoney(total)}*\n🔑 *PIX:* ${window.pixKey}`;
+            if (window.appliedCoupon) m += `\n🎟️ *Cupom Aplicado:* ${window.appliedCoupon.code}`;
+            
+            m += `\n\n━━━━━━━━━━━━━━━━━━━━━\n`;
+            m += `💵 *Valor Total:* ${formatMoney(total)}\n\n`;
+            
+            const limitTimeStr = new Date(Date.now() + 3600000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            m += `⚠️ *RESERVADO POR 1 HORA:*\n`;
+            m += `Você tem até as *${limitTimeStr}* para realizar o pagamento. Caso não pague, o pedido será cancelado automaticamente e os itens retornarão ao estoque da loja.\n\n`;
+            
+            if (pixPayload) {
+                m += `🔑 *Pix Copia e Cola:*\n\`${pixPayload}\`\n\n`;
+                m += `📱 *QR Code do Pix (Link):*\n${qrCodeUrl}\n`;
+            } else {
+                m += `🔑 *Chave Pix para Transferência:* ${window.pixKey || "bzimports@gmail.com"}\n`;
+            }
+
+            // Abre o modal de confirmação
+            document.getElementById('confOrderId').innerText = o.id;
+            document.getElementById('confOrderLimitTime').innerText = limitTimeStr;
+            document.getElementById('confPixQrCode').src = qrCodeUrl;
+            document.getElementById('confPixCodeText').value = pixPayload || window.pixKey || "bzimports@gmail.com";
+            
+            const s = window.siteSettings || {};
+            const waNumber = s.wa ? (s.wa.startsWith('55') ? s.wa : '55' + s.wa) : '5574988020692';
+            document.getElementById('confWhatsAppBtn').onclick = () => {
+                window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(m)}`, '_blank');
+            };
+            
+            document.getElementById('orderConfirmationModal').classList.add('active');
 
             window.cart = []; window.appliedCoupon = null; localStorage.removeItem('luas_cart'); updateCartUI(); toggleCart(); applyFilters();
 
-            // Número solicitado para envio no checkout via WhatsApp
-            const s = window.siteSettings || {};
-            const waNumber = s.wa ? (s.wa.startsWith('55') ? s.wa : '55' + s.wa) : '5574988020692';
-            window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(m)}`, '_blank');
         }
 
         window.applySiteSettings = function () {
