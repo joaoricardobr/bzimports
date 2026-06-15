@@ -2152,15 +2152,24 @@
         .avp-slides {
             position: absolute;
             inset: 0;
+            overflow: hidden;
         }
         .avp-slide {
             position: absolute;
             inset: 0;
-            background-size: cover;
-            background-position: center;
             opacity: 0;
             transition: opacity 0.9s ease-in-out;
             will-change: transform, opacity;
+            overflow: hidden;
+        }
+        .avp-slide img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            pointer-events: none;
         }
         .avp-slide.active {
             opacity: 1;
@@ -3877,7 +3886,7 @@ service cloud.firestore {
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, getDocs, setDoc, doc, deleteDoc, addDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, getDoc, setDoc, doc, deleteDoc, addDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
         // ================= CONFIGURAÇÕES DE ATRIBUTOS =================
@@ -4177,9 +4186,29 @@ service cloud.firestore {
 
         async function loadData() {
             window.products = await DBService.getAll('produtos');
-            // Semeia apenas se: não há produtos OU produtos são da versão antiga (Brasileira 2024)
+
+            // Verifica flag de seed no Firebase antes de semear
+            // Se o flag existir, o admin já semeou antes (ou optou por não ter produtos)
+            // e os produtos não devem ser re-criados automaticamente
             const hasOldData = window.products.some(p => p.id === 'prod-1' && p.name.includes('Brasileira I 2024'));
+            
+            let shouldSeed = false;
             if (window.products.length === 0 || hasOldData) {
+                // Só semeia se o flag não existir no Firebase
+                try {
+                    const flagRef = doc(db, 'alansantos_config', 'seed_bzimports_v2');
+                    const flagSnap = await getDoc(flagRef);
+                    if (!flagSnap.exists()) {
+                        shouldSeed = true; // Primeira vez: semeia
+                    }
+                    // Se flag existe: usuário deletou intencionalmente, não semeia
+                } catch(e) {
+                    // Se não conseguir ler o flag, não semeia (seguro para não sobrescrever)
+                    console.warn('Não foi possível verificar flag de seed:', e.message);
+                }
+            }
+
+            if (shouldSeed) {
                 const seedProducts = [
           {
                     "id": "prod-1",
@@ -5182,7 +5211,10 @@ service cloud.firestore {
           }
 ];
                 if (auth.currentUser) {
+                    // Semeia produtos padrão pela 1a vez
                     for (let p of seedProducts) await DBService.put('produtos', p);
+                    // Salva flag no Firebase: nunca mais semear automaticamente
+                    await setDoc(doc(db, 'alansantos_config', 'seed_bzimports_v2'), { done: true, store: 'bzimports', ts: Date.now() });
                     window.products = await DBService.getAll('produtos');
                 } else {
                     window.products = seedProducts;
@@ -5686,7 +5718,7 @@ service cloud.firestore {
                 body.innerHTML = `
                     <div class="auto-video-player" id="autoVideoPlayer">
                         <div class="avp-slides" id="avpSlides">
-                            ${imgs.map((img, idx) => `<div class="avp-slide" data-idx="${idx}" style="background-image:url('${img}')"></div>`).join('')}
+                            ${imgs.map((img, idx) => `<div class="avp-slide" data-idx="${idx}"><img src="${img}" alt="" /></div>`).join('')}
                         </div>
                         <div class="avp-logo">BZ IMPORTS</div>
                         <div class="avp-dots" id="avpDots">
