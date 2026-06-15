@@ -3080,7 +3080,6 @@
                 <!-- Dot indicators -->
                 <div id="toonDots" style="position:absolute;bottom:1.5rem;left:50%;transform:translateX(-50%);z-index:60;display:flex;gap:6px;"></div>
             </div>
-        </div>
         <!-- ===== END TOONHUB CAROUSEL ===== -->
 
         <!-- Banners pequenos abaixo do carrossel TOONHUB -->
@@ -4195,17 +4194,17 @@ service cloud.firestore {
             const hasOldData = window.products.some(p => p.id === 'prod-1' && p.name.includes('Brasileira I 2024'));
             
             let shouldSeed = false;
-            if (window.products.length === 0 || hasOldData) {
-                // Só semeia se o flag não existir no Firebase
+            // Só verifica e semeia quando o admin está logado
+            // Visitantes anônimos não têm permissão para ler alansantos_config
+            if (auth.currentUser && (window.products.length === 0 || hasOldData)) {
                 try {
                     const flagRef = doc(db, 'alansantos_config', 'seed_bzimports_v2');
                     const flagSnap = await getDoc(flagRef);
                     if (!flagSnap.exists()) {
-                        shouldSeed = true; // Primeira vez: semeia
+                        shouldSeed = true; // Primeira vez com admin logado: semeia
                     }
-                    // Se flag existe: usuário deletou intencionalmente, não semeia
+                    // Se flag existe: admin deletou intencionalmente, não semeia
                 } catch(e) {
-                    // Se não conseguir ler o flag, não semeia (seguro para não sobrescrever)
                     console.warn('Não foi possível verificar flag de seed:', e.message);
                 }
             }
@@ -7891,13 +7890,27 @@ service cloud.firestore {
 
         function getToonProducts() {
             const prods = window.products || [];
-            // Pega os 4 primeiros com imagem
-            return prods.filter(p => p.images && p.images[0]).slice(0, 4);
+            const withImgs = prods.filter(p => p.images && p.images[0]).slice(0, 4);
+            
+            // Se não há produtos suficientes, usa os banners como fallback
+            if (withImgs.length < 2) {
+                const bannerProds = (window.banners || []).filter(b => b.type === 'top' && b.img).slice(0, 4).map(b => ({
+                    id: b.id, name: b.title || 'BZ IMPORTS', price: 0,
+                    images: [b.img], category: 'Seleções'
+                }));
+                return bannerProds;
+            }
+            return withImgs;
         }
 
         function buildToon() {
             toonItems = getToonProducts();
-            if (toonItems.length < 2) return; // não monta com menos de 2 produtos
+            if (toonItems.length < 2) {
+                // Sem produtos e sem banners: esconde a seção para não deixar espaço em branco
+                const sec = document.getElementById('toonhubSection');
+                if (sec) sec.style.display = 'none';
+                return;
+            }
 
             // Preload imagens
             toonItems.forEach(p => {
@@ -8017,14 +8030,21 @@ service cloud.firestore {
             startAutoplay();
         }
 
-        // Aguarda os produtos estarem disponíveis
+        // Aguarda os produtos OU banners estarem disponíveis
+        let toonBuilt = false;
         function waitAndBuild() {
-            if (window.products && window.products.length > 1) {
+            if (toonBuilt) return;
+            const hasProd = window.products && window.products.length > 1;
+            const hasBanners = window.banners && window.banners.filter(b => b.type === 'top').length >= 2;
+            if (hasProd || hasBanners) {
+                toonBuilt = true;
                 buildToon();
             } else {
                 setTimeout(waitAndBuild, 300);
             }
         }
+        // Timeout de segurança: após 5s, tenta mesmo assim (evita loop infinito)
+        setTimeout(() => { if (!toonBuilt) { toonBuilt = true; buildToon(); } }, 5000);
 
         // Inicializa após a loja carregar
         document.addEventListener('DOMContentLoaded', () => setTimeout(waitAndBuild, 800));
