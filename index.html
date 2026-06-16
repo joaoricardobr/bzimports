@@ -2807,7 +2807,7 @@
             <div style="background: #FFF9E6; border: 1px solid #FFE0B2; padding: 12px; border-radius: 8px; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px; text-align: left;">
                 <i data-lucide="clock" style="color: #FF9800; flex-shrink: 0;"></i>
                 <span style="font-size: 0.9rem; color: #E65100; font-weight: 600;">
-                    Você tem no máximo 1 hora (até as <span id="confOrderLimitTime">00:00</span>) para efetuar o pagamento. Caso contrário, os itens voltarão ao estoque.
+                    Você tem no máximo 12 horas (até as <span id="confOrderLimitTime">00:00</span>) para efetuar o pagamento. Caso contrário, os itens voltarão ao estoque.
                 </span>
             </div>
             
@@ -5694,7 +5694,7 @@ service cloud.firestore {
             }
             if (window.applyFilters) window.applyFilters();
             
-            // Inicia checagem de pedidos expirados (limite de 1 hora)
+            // Inicia checagem de pedidos expirados (limite de 12 horas)
             if (window.checkExpiredOrders) {
                 window.checkExpiredOrders();
                 setInterval(window.checkExpiredOrders, 60000); // Executa a cada 1 minuto
@@ -6528,17 +6528,17 @@ service cloud.firestore {
             }
         };
 
-        // Verifica e cancela pedidos pendentes com mais de 1 hora de existência devolvendo ao estoque
+        // Verifica e cancela pedidos pendentes com mais de 12 horas de existência devolvendo ao estoque
         window.checkExpiredOrders = async function () {
             if (!window.orders || window.orders.length === 0) return;
             const now = Date.now();
             let changed = false;
             for (let o of window.orders) {
-                // Se o pedido está pendente e foi criado a mais de 1 hora (3600000ms)
-                if (o.status === 'Pendente' && (now - o.timestamp) > 3600000) {
-                    console.log(`[Prazo Expirado] Expirando pedido #${o.id} por falta de pagamento (1 hora de prazo)`);
+                // Se o pedido está pendente e foi criado a mais de 12 horas (43200000ms)
+                if (o.status === 'Pendente' && (now - o.timestamp) > 43200000) {
+                    console.log(`[Prazo Expirado] Expirando pedido #${o.id} por falta de pagamento (12 horas de prazo)`);
                     o.status = 'Cancelado';
-                    o.expiredReason = 'Tempo limite de 1 hora excedido para pagamento';
+                    o.expiredReason = 'Tempo limite de 12 horas excedido para pagamento';
                     await DBService.put('orders', o);
                     
                     // Devolve itens ao estoque
@@ -6665,8 +6665,9 @@ service cloud.firestore {
             m += `\n\n━━━━━━━━━━━━━━━━━━━━━\n`;
             m += `💵 *Valor Total:* ${formatMoney(total)}\n\n`;
             
-            const limitTimeStr = new Date(Date.now() + 3600000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            m += `⚠️ *RESERVADO POR 1 HORA:*\n`;
+            const limitDate = new Date(Date.now() + 43200000);
+            const limitTimeStr = limitDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' de ' + limitDate.toLocaleDateString([], { day: '2-digit', month: '2-digit' });
+            m += `⚠️ *RESERVADO POR 12 HORAS:*\n`;
             m += `Você tem até as *${limitTimeStr}* para realizar o pagamento. Caso não pague, o pedido será cancelado automaticamente e os itens retornarão ao estoque da loja.\n\n`;
             
             m += `🔑 *Chave Pix para Pagamento:* ${window.pixKey || "bzimports@gmail.com"}\n`;
